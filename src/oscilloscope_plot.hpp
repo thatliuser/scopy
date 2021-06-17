@@ -25,9 +25,9 @@
 #include "symbol_controller.h"
 #include "handles_area.hpp"
 #include "plot_line_handle.h"
-#include "cursor_readouts.h"
-#include "measure.h"
-#include "customplotpositionbutton.h"
+#include "gui/cursor_readouts.h"
+#include "gui/measure.h"
+#include "gui/customplotpositionbutton.h"
 #include "graticule.h"
 
 #include <functional>

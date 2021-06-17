@@ -28,8 +28,9 @@
 #include "customFifo.hpp"
 #include "symbol_controller.h"
 #include "plot_line_handle.h"
-#include "cursor_readouts.h"
 #include "plotpickerwrapper.h"
+#include "gui/cursor_readouts.h"
+
 
 namespace adiscope {
 class OscScaleDraw;
