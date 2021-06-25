@@ -372,6 +372,15 @@ Oscilloscope::Oscilloscope(struct iio_context *ctx, Filter *filt,
 	plotDocker->setWidget(centralWidget);
 	plotDocker->setWindowTitle("TimeDomain");
 
+	connect(plotDocker, &QDockWidget::topLevelChanged, [=](bool topLevel){
+		if(topLevel) {
+			plotDocker->setContentsMargins(10, 0, 10, 10);
+
+		} else {
+			plotDocker->setContentsMargins(0, 0, 0, 0);
+		}
+	});
+
 	plot.setBonusWidthForHistogram(25);
 
 
@@ -380,7 +389,6 @@ Oscilloscope::Oscilloscope(struct iio_context *ctx, Filter *filt,
 	histDocker->setFeatures(plotDocker->features() & ~QDockWidget::DockWidgetClosable);
 	histDocker->setAllowedAreas(Qt::AllDockWidgetAreas);
 	histDocker->setWindowTitle("Histogram");
-
 
 	// build histogram widget
 	histWidget = new QWidget(histDocker);
@@ -434,8 +442,8 @@ Oscilloscope::Oscilloscope(struct iio_context *ctx, Filter *filt,
 	hist_plot.setMinimumWidth(25);
 	hist_plot.setMaximumWidth(25);
 
-//	xy_plot.setMinimumHeight(50);
-//	xy_plot.setMinimumWidth(50);
+	xy_plot.setMinimumHeight(50);
+	xy_plot.setMinimumWidth(50);
 
 	xy_plot.setVertUnitsPerDiv(5);
 	xy_plot.setHorizUnitsPerDiv(5);
@@ -460,6 +468,14 @@ Oscilloscope::Oscilloscope(struct iio_context *ctx, Filter *filt,
 	fftDocker->setWindowTitle("FFT");
 	fftDocker->setWidget(&fft_plot);
 
+	connect(fftDocker, &QDockWidget::topLevelChanged, [=](bool topLevel){
+		if(topLevel) {
+			fftDocker->setContentsMargins(10, 0, 10, 10);
+		} else {
+			fftDocker->setContentsMargins(0, 0, 0, 10);
+		}
+	});
+
 	fftDocker->hide();
 
 
@@ -480,6 +496,14 @@ Oscilloscope::Oscilloscope(struct iio_context *ctx, Filter *filt,
 	xyDocker->setWindowTitle("XY");
 	xyDocker->setWidget(xyWidget);
 
+	connect(xyDocker, &QDockWidget::topLevelChanged, [=](bool topLevel){
+		if(topLevel) {
+			xyDocker->setContentsMargins(10, 0, 10, 10);
+		} else {
+			xyDocker->setContentsMargins(0, 0, 0, 0);
+		}
+	});
+
 	xyDocker->hide();
 
 	// arange all dockers
@@ -491,12 +515,6 @@ Oscilloscope::Oscilloscope(struct iio_context *ctx, Filter *filt,
 	centralWindow->tabifyDockWidget(plotDocker, fftDocker);
 	centralWindow->tabifyDockWidget(plotDocker, histDocker);
 
-#ifdef PLOT_MENU_BAR_ENABLED
-	DockerUtils::configureTopBar(plotDocker);
-	DockerUtils::configureTopBar(histDocker);
-	DockerUtils::configureTopBar(fftDocker);
-	DockerUtils::configureTopBar(xyDocker);
-#endif
 
 	ui->rightMenu->setMaximumWidth(0);
 
@@ -928,10 +946,6 @@ Oscilloscope::Oscilloscope(struct iio_context *ctx, Filter *filt,
 	connect(&plot,SIGNAL(rightGateChanged(double)),SLOT(onRightGateChanged(double)));
 
 	ui->btnHelp->setUrl("https://wiki.analog.com/university/tools/m2k/scopy/oscilloscope");
-
-#ifdef __ANDROID__
-	ui->btnAddMath->setIconSize(QSize(24, 24));
-#endif
 
 }
 
@@ -3028,7 +3042,6 @@ void Oscilloscope::onHistogram_view_toggled(bool visible)
 		histWidget->layout()->addWidget(&hist_plot);
 		plot.setBonusWidthForHistogram(0);
 		scaleHistogramPlot();
-		hist_plot.setVisible(true);
 	}
 	hist_is_visible = visible;
 }
@@ -4300,8 +4313,7 @@ void Oscilloscope::measureUpdateValues()
 
 void Oscilloscope::measure_settings_init()
 {
-	QList<Measure *>* measure_obj = plot.getMeasurements();
-	measure_settings = new MeasureSettings(measure_obj, this);
+	measure_settings = new MeasureSettings(&plot, this);
 
 	int measure_panel = ui->stackedWidget->insertWidget(-1, measure_settings);
 

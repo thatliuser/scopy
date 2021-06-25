@@ -1,5 +1,3 @@
-#include "values.h"
-
 /* Default background color */
 QMainWindow > .QWidget, adiscope--Sismograph > QwtPlotCanvas, QMessageBox, QToolTip {
 	background-color: #F7F7F7;
@@ -15,12 +13,7 @@ QWidget {
 }
 
 QDockWidget {
-	titlebar-normal-icon: url();
-	background-color: #F7F7F7;
-}
-
-QDockWidget::title {
-	background-color: transparent;
+    titlebar-normal-icon: "";
 }
 
 QToolTip {
@@ -111,8 +104,8 @@ QRadioButton {
 }
 
 QRadioButton::indicator {
-	width: INDICATOR_SIZE;
-	height: INDICATOR_SIZE;
+	width: 14px;
+	height: 14px;
 	border: 2px solid;
 	border-radius: 9px;
 	border-color: #4963FF;
@@ -353,9 +346,7 @@ QPushButton[blue_button=true]{
 
 QPushButton[blue_button=true]:pressed{ background-color: #2a44df; }
 
-#ifndef __ANDROID__
 QPushButton[blue_button=true]:hover{ background-color: #4a34ff; }
-#endif
 
 QPushButton[blue_button=true]:disabled { background-color: grey; }
 
@@ -370,9 +361,7 @@ QPushButton[info_button=true]{
 	 border-radius: 4px;
 }
 
-#ifndef __ANDROID__
 QPushButton[info_button=true]:hover { background-color: rgba(0, 0, 0, 60); }
-#endif
 
 /* Menu title label */
 
@@ -401,8 +390,8 @@ QCheckBox {
 }
 
 QCheckBox::indicator {
-  width: INDICATOR_SIZE;
-  height: INDICATOR_SIZE;
+  width: 14px;
+  height: 14px;
   border: 2px solid rgb(74,100,255);
   border-radius: 4px;
 }
@@ -459,21 +448,11 @@ QPushButton[tool_launcher_custom_widget=true] {
 	background-color: none;
 }
 
-#ifndef __ANDROID__
 .QWidget[tool_launcher_custom_widget=true]:hover {
 	background-color: rgba(0, 0, 0, 60);
 	border: 1px solid rgba(0, 0, 0, 30);
 	border-radius:5px;
 }
-#endif
-
-#ifdef __ANDROID__
-.QWidget[tool_launcher_custom_widget=true]:pressed {
-	background-color: rgba(0, 0, 0, 60);
-	border: 1px solid rgba(0, 0, 0, 30);
-	border-radius:5px;
-}
-#endif
 
 QWidget[tool_launcher_custom_widget=true][selected=true] {
 	background-color: rgba(0, 0, 0, 60);
@@ -651,14 +630,12 @@ adiscope--ChannelWidget QCheckBox#box{
   font-size: 14px;
   font-weight: bold;
 }
-
 adiscope--ChannelWidget QCheckBox#box::indicator {
-  width: INDICATOR_SIZE;
-  height: INDICATOR_SIZE;
+  width: 14px;
+  height: 14px;
   border: 2px solid #000000; /* Will be overwritted in the ChannelWidget constructor */
   border-radius: 9px;
 }
-
 adiscope--ChannelWidget QCheckBox#box::indicator:unchecked {
   background-color: transparent;
 }

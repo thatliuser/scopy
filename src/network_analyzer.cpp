@@ -454,12 +454,19 @@ NetworkAnalyzer::NetworkAnalyzer(struct iio_context *ctx, Filter *filt,
 
 	QDockWidget* docker = new QDockWidget(m_centralMainWindow);
 	docker->setFeatures(docker->features() & ~QDockWidget::DockWidgetClosable);
-	docker->setAllowedAreas(Qt::AllDockWidgetAreas);
+	docker->setAllowedAreas(Qt::DockWidgetArea::NoDockWidgetArea);
 	docker->setWidget(widget);
 
-#ifdef PLOT_MENU_BAR_ENABLED
-	DockerUtils::configureTopBar(docker);
-#endif
+	connect(docker, &QDockWidget::topLevelChanged, [=](bool topLevel){
+		if(topLevel) {
+			docker->setContentsMargins(10, 0, 10, 10);
+//			ui->stackedWidget->hide();
+		} else {
+			docker->setContentsMargins(0, 0, 0, 0);
+//			ui->stackedWidget->show();
+		}
+	});
+
 
 	m_centralMainWindow->addDockWidget(Qt::LeftDockWidgetArea, docker);
 
@@ -589,10 +596,6 @@ NetworkAnalyzer::NetworkAnalyzer(struct iio_context *ctx, Filter *filt,
 	connect(&m_dBgraph,SIGNAL(resetZoom()),&m_phaseGraph,SLOT(onResetZoom()));
 	connect(&m_phaseGraph,SIGNAL(resetZoom()),&m_dBgraph,SLOT(onResetZoom()));
 
-#ifdef __ANDROID__
-	connect(&m_dBgraph, &dBgraph::zoomOut, &m_phaseGraph, &dBgraph::onZoomOut);
-	connect(&m_phaseGraph, &dBgraph::zoomOut, &m_dBgraph, &dBgraph::onZoomOut);
-#endif
 
 	connect(ui->rightMenu, &MenuAnim::finished, this,
 		&NetworkAnalyzer::rightMenuFinished);

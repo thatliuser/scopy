@@ -626,13 +626,9 @@ SignalGenerator::SignalGenerator(struct iio_context *_ctx, Filter *filt,
 
 	QDockWidget* docker = new QDockWidget(m_centralMainWindow);
 	docker->setFeatures(docker->features() & ~QDockWidget::DockWidgetClosable);
-	docker->setAllowedAreas(Qt::AllDockWidgetAreas);
+	docker->setAllowedAreas(Qt::DockWidgetArea::NoDockWidgetArea);
 	docker->setWidget(widget);
 	docker->setContentsMargins(0, 0, 0, 10);
-
-#ifdef PLOT_MENU_BAR_ENABLED
-	DockerUtils::configureTopBar(docker);
-#endif
 
 	m_centralMainWindow->addDockWidget(Qt::LeftDockWidgetArea, docker);
 
