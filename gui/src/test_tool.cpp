@@ -42,7 +42,6 @@ TestTool::TestTool()
 	recipe.hasPairSettingsBtn = true;
 
 	recipe.hasChannels = true;
-	//	recipe.channelsPosition = ChannelsPositionEnum::VERTICAL;
 
 	ChannelManager* channelManager = new ChannelManager(recipe.channelsPosition);
 
@@ -54,15 +53,6 @@ TestTool::TestTool()
 	m_toolView->buildNewInstrumentMenu(new SpectrumAnalyzerMarkersMenu, true, "Markers");
 	m_toolView->buildNewInstrumentMenu(new TestMenu, true, "Interactive");
 
-	//	MeasureSettings* measureMenu = new MeasureSettings;
-	//	measureMenu->setChannelName("Channel 1");
-	//	measureMenu->setChannelUnderlineColor(new QColor("#FF7200"));
-
-	//	m_toolView->buildNewInstrumentMenu(new CursorsSettings, true, "Cursors", true, true);
-	//	m_toolView->buildNewInstrumentMenu(measureMenu, true, "Measure", true, true);
-	//	m_toolView->buildNewInstrumentMenu(new TriggerMenu, true, "Trigger");
-
-
 	SpectrumAnalyzerChannelMenu* ch1Menu = new SpectrumAnalyzerChannelMenu("Channel 1", new QColor("#FF7200"));
 	SpectrumAnalyzerChannelMenu* ch2Menu = new SpectrumAnalyzerChannelMenu("Channel 2", new QColor("#9013FE"));
 	SpectrumAnalyzerChannelMenu* ch3Menu = new SpectrumAnalyzerChannelMenu("Math 1", new QColor("green"));
@@ -72,94 +62,6 @@ TestTool::TestTool()
 	m_toolView->buildNewChannel(channelManager, ch3Menu, true, 0, true, false, QColor("green"), "Math", "M");
 
 	channelManager->insertAddBtn(new SpectrumAnalyzerAddReferenceMenu, true);
-
-
-	FftDisplayPlot* plot = new FftDisplayPlot(2, this);
-	plot->disableLegend();
-	plot->setXaxisMouseGesturesEnabled(false);
-	for (uint i = 0; i < 2; i++)
-		plot->setYaxisMouseGesturesEnabled(i, false);
-	plot->setZoomerEnabled();
-
-	unsigned int noPoints = 1024;
-	unsigned int sampleRate = 1024;
-
-	QVector<double> data;
-	unsigned int maxValue = 99;
-	for(unsigned int i = 0; i < noPoints; i++) {
-		data.push_back(i % 100);
-	}
-
-	QVector<double> indexes(1024);
-	std::iota(std::begin(indexes), std::end(indexes), 0);
-
-	plot->registerReferenceWaveform("", indexes, data);
-
-	plot->Curve(0)->setAxes(
-			QwtAxisId(QwtPlot::xBottom, 0),
-			QwtAxisId(QwtPlot::yLeft, 0));
-	plot->Curve(0)->setTitle("CH " + QString::number(1));
-
-	/* Default plot settings */
-
-	plot->setSampleRate(sampleRate, 1, "");
-
-	plot->setHorizUnitsPerDiv(noPoints/10.0);
-	plot->setVertUnitsPerDiv(maxValue/10.0);
-
-	//	plot->setHorizOffset(noPoints/2.0);
-	//	plot->setVertOffset(maxValue/2.0);
-
-	plot->setYaxis(0, 99);
-	plot->setXaxis(0, 1024);
-
-	plot->setBtmHorAxisUnit("Hz");
-	plot->setLeftVertAxisUnit("dB");
-
-	m_toolView->addCentralWidget(plot, false, "");
-
-
-//	CapturePlot* plot = new CapturePlot(this, false, 10, 10, new MetricPrefixFormatter, new MetricPrefixFormatter);
-//	plot->disableLegend();
-
-//	unsigned int noPoints = 1024;
-//	unsigned int sampleRate = 1024;
-
-//	QVector<double> data;
-//	unsigned int maxValue = 99;
-//	for(unsigned int i = 0; i < noPoints; i++) {
-//		data.push_back(i % 100);
-//	}
-
-//	QVector<double> indexes(1024);
-//	std::iota(std::begin(indexes), std::end(indexes), 0);
-
-//	plot->registerReferenceWaveform("", indexes, data);
-
-//	plot->Curve(0)->setAxes(
-//			QwtAxisId(QwtPlot::xBottom, 0),
-//			QwtAxisId(QwtPlot::yLeft, 0));
-//	plot->addZoomer(0);
-//	plot->Curve(0)->setTitle("CH " + QString::number(1));
-
-//	/* Default plot settings */
-//	plot->setZoomerEnabled(true);
-
-//	plot->setSampleRate(sampleRate, 1, "");
-
-//	plot->setHorizUnitsPerDiv(noPoints/10.0);
-//	plot->setVertUnitsPerDiv(maxValue/10.0);
-
-//	//	plot->setHorizOffset(noPoints/2.0);
-//	//	plot->setVertOffset(maxValue/2.0);
-
-//	plot->setYaxis(0, 99);
-//	plot->setXaxis(0, 1024);
-
-//	plot->setXaxisUnit("Spl");
-//	plot->setYaxisUnit("Val");
-
-//	m_toolView->addCentralWidget(plot, false, "");
 
 
 	// dockable plots

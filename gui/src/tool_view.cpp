@@ -1,7 +1,7 @@
 #include "ui_tool_view.h"
 
 #include <QMainWindow>
-
+#include "utils.hpp"
 #include <scopy/gui/channel_widget.hpp>
 #include <scopy/gui/menu_header.hpp>
 #include <scopy/gui/tool_view.hpp>
@@ -168,6 +168,10 @@ QDockWidget* ToolView::createDetachableMenu(QWidget* menu, int& id)
 	subWindow->addDockWidget(Qt::RightDockWidgetArea, docker);
 	docker->setWidget(menu);
 
+#ifdef SETTINGS_MENU_BAR_ENABLED
+	DockerUtils::configureTopBar(docker);
+#endif
+
 	id = m_ui->stackedWidget->addWidget(subWindow);
 
 	return docker;
@@ -330,6 +334,10 @@ void ToolView::addCentralWidget(QWidget* widget, bool dockable, const QString& d
 		docker->setFeatures(docker->features() & ~QDockWidget::DockWidgetClosable);
 		docker->setAllowedAreas(Qt::DockWidgetArea::NoDockWidgetArea);
 		docker->setWidget(widget);
+
+#ifdef PLOT_MENU_BAR_ENABLED
+	DockerUtils::configureTopBar(docker);
+#endif
 
 		if (m_dockables < 3) {
 			if (m_dockables % 3 == 0) {
