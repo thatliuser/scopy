@@ -125,7 +125,7 @@ FftDisplayPlot::FftDisplayPlot(int nplots, QWidget *parent) :
 	setAxisScaleDraw(QwtPlot::yLeft, yScaleDraw);
 	yScaleDraw->setFloatPrecision(2);
 
-	OscScaleDraw *xScaleDraw = new OscScaleDraw(&freqFormatter, "Hz");
+	OscScaleDraw *xScaleDraw = new OscScaleDraw(&freqFormatter, "");
 	setAxisScaleDraw(QwtPlot::xBottom, xScaleDraw);
 	xScaleDraw->setFloatPrecision(2);
 
@@ -768,23 +768,32 @@ FftDisplayPlot::average_sptr FftDisplayPlot::getNewAvgObject(
 	}
 }
 
-QString FftDisplayPlot::leftVerAxisUnit() const
-{
-	QString unit;
-	auto scale_draw = dynamic_cast<const OscScaleDraw *>(
-		axisScaleDraw(QwtPlot::yLeft));
-	if (scale_draw)
-		unit = scale_draw->getUnitType();
-
-	return unit;
-}
+QString FftDisplayPlot::leftVerAxisUnit() const { return d_yAxisUnit; }
 
 void FftDisplayPlot::setLeftVertAxisUnit(const QString& unit)
 {
-	auto scale_draw = dynamic_cast<OscScaleDraw *>(
-		axisScaleDraw(QwtPlot::yLeft));
-	if (scale_draw)
-		scale_draw->setUnitType(unit);
+	if (d_yAxisUnit != unit) {
+			d_yAxisUnit = unit;
+
+		auto scale_draw = dynamic_cast<OscScaleDraw *>(
+			axisScaleDraw(QwtPlot::yLeft));
+		if (scale_draw) {
+			scale_draw->setUnitType(unit);
+		}
+	}
+}
+
+QString FftDisplayPlot::btmHorAxisUnit() const { return d_xAxisUnit; }
+
+void FftDisplayPlot::setBtmHorAxisUnit(const QString &unit)
+{
+	if (d_xAxisUnit != unit) {
+		d_xAxisUnit = unit;
+
+		auto scale_draw = dynamic_cast<OscScaleDraw*>(axisScaleDraw(QwtPlot::xBottom));
+		if (scale_draw)
+			scale_draw->setUnitType(unit);
+	}
 }
 
 void FftDisplayPlot::findPeaks(int chn)

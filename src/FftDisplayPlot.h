@@ -174,6 +174,9 @@ namespace adiscope {
 		QString leftVerAxisUnit() const;
 		void setLeftVertAxisUnit(const QString& unit);
 
+		QString btmHorAxisUnit() const;
+		void setBtmHorAxisUnit(const QString& unit);
+
 		enum MagnitudeType magnitudeType() const;
 		void setMagnitudeType(enum MagnitudeType);
 

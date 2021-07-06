@@ -207,6 +207,8 @@ SpectrumAnalyzer::SpectrumAnalyzer(struct iio_context *ctx, Filter *filt,
 
 	fft_plot = new FftDisplayPlot(m_adc_nb_channels, this);
 	fft_plot->disableLegend();
+	fft_plot->setBtmHorAxisUnit("Hz");
+
 	// Disable mouse interactions with the axes until they are in a working state
 	fft_plot->setXaxisMouseGesturesEnabled(false);
 
