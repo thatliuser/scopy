@@ -64,19 +64,19 @@ TestTool::TestTool()
 	channelManager->insertAddBtn(new SpectrumAnalyzerAddReferenceMenu, true);
 
 
-	// dockable plots
-	//	m_toolView->addCentralWidget(new CapturePlot(this, false, 10, 10), true, "1");
-	//	m_toolView->addCentralWidget(new CapturePlot(this, false, 10, 10), true, "2");
-	//	m_toolView->addCentralWidget(new CapturePlot(this, false, 10, 10), true, "3");
-	//	m_toolView->addCentralWidget(new CapturePlot(this, false, 10, 10), true, "4");
-	//	m_toolView->addCentralWidget(new CapturePlot(this, false, 10, 10), true, "5");
-	//	m_toolView->addCentralWidget(new CapturePlot(this, false, 10, 10), true, "6");
-	//	m_toolView->addCentralWidget(new CapturePlot(this, false, 10, 10), true, "7");
+//	 dockable plots
+		m_toolView->addCentralWidget(new CapturePlot(this, false, 10, 10, new TimePrefixFormatter, new MetricPrefixFormatter), true, "1");
+		m_toolView->addCentralWidget(new CapturePlot(this, false, 10, 10, new TimePrefixFormatter, new MetricPrefixFormatter), true, "2");
+		m_toolView->addCentralWidget(new CapturePlot(this, false, 10, 10, new TimePrefixFormatter, new MetricPrefixFormatter), true, "3");
+		m_toolView->addCentralWidget(new CapturePlot(this, false, 10, 10, new TimePrefixFormatter, new MetricPrefixFormatter), true, "4");
+		m_toolView->addCentralWidget(new CapturePlot(this, false, 10, 10, new TimePrefixFormatter, new MetricPrefixFormatter), true, "5");
+		m_toolView->addCentralWidget(new CapturePlot(this, false, 10, 10, new TimePrefixFormatter, new MetricPrefixFormatter), true, "6");
+		m_toolView->addCentralWidget(new CapturePlot(this, false, 10, 10, new TimePrefixFormatter, new MetricPrefixFormatter), true, "7");
 
 	// fixed plots
-	//	m_toolView->addCentralWidget(new CapturePlot(this, false, 10, 10), false, "");
-	//	m_toolView->addCentralWidget(new CapturePlot(this, false, 10, 10), false, "", 0, 1);
-	//	m_toolView->addCentralWidget(new CapturePlot(this, false, 10, 10), false, "", 1, 0, 2, 0);
+	//	m_toolView->addCentralWidget(new CapturePlot(this, false, 10, 10, new TimePrefixFormatter, new MetricPrefixFormatter), false, "");
+	//	m_toolView->addCentralWidget(new CapturePlot(this, false, 10, 10, new TimePrefixFormatter, new MetricPrefixFormatter), false, "", 0, 1);
+	//	m_toolView->addCentralWidget(new CapturePlot(this, false, 10, 10, new TimePrefixFormatter, new MetricPrefixFormatter), false, "", 1, 0, 2, 0);
 
 	//	FftDisplayPlot* fft_plot = new FftDisplayPlot(3, centralWidget);
 
