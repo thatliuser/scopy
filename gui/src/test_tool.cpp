@@ -72,13 +72,15 @@ TestTool::TestTool()
 
 
 //	 dockable plots
-		m_toolView->addCentralWidget(new CapturePlot(this, false, 10, 10, new TimePrefixFormatter, new MetricPrefixFormatter), true, "1");
-		m_toolView->addCentralWidget(new CapturePlot(this, false, 10, 10, new TimePrefixFormatter, new MetricPrefixFormatter), true, "2");
-		m_toolView->addCentralWidget(new CapturePlot(this, false, 10, 10, new TimePrefixFormatter, new MetricPrefixFormatter), true, "3");
-		m_toolView->addCentralWidget(new CapturePlot(this, false, 10, 10, new TimePrefixFormatter, new MetricPrefixFormatter), true, "4");
-		m_toolView->addCentralWidget(new CapturePlot(this, false, 10, 10, new TimePrefixFormatter, new MetricPrefixFormatter), true, "5");
-		m_toolView->addCentralWidget(new CapturePlot(this, false, 10, 10, new TimePrefixFormatter, new MetricPrefixFormatter), true, "6");
-		m_toolView->addCentralWidget(new CapturePlot(this, false, 10, 10, new TimePrefixFormatter, new MetricPrefixFormatter), true, "7");
+
+		int id = m_toolView->addDockableCentralWidget(new CapturePlot(this, false, 10, 10, new TimePrefixFormatter, new MetricPrefixFormatter), Qt::TopDockWidgetArea, "1");
+//		m_toolView->addDockableCentralWidget(new CapturePlot(this, false, 10, 10, new TimePrefixFormatter, new MetricPrefixFormatter), Qt::TopDockWidgetArea, "2");
+		m_toolView->addDockableTabedWidget(new CapturePlot(this, false, 10, 10, new TimePrefixFormatter, new MetricPrefixFormatter), "2", id);
+		m_toolView->addDockableCentralWidget(new CapturePlot(this, false, 10, 10, new TimePrefixFormatter, new MetricPrefixFormatter), Qt::TopDockWidgetArea, "3");
+		m_toolView->addDockableCentralWidget(new CapturePlot(this, false, 10, 10, new TimePrefixFormatter, new MetricPrefixFormatter), Qt::BottomDockWidgetArea, "4");
+		m_toolView->addDockableCentralWidget(new CapturePlot(this, false, 10, 10, new TimePrefixFormatter, new MetricPrefixFormatter), Qt::BottomDockWidgetArea, "5");
+		m_toolView->addDockableCentralWidget(new CapturePlot(this, false, 10, 10, new TimePrefixFormatter, new MetricPrefixFormatter), Qt::LeftDockWidgetArea, "6");
+		m_toolView->addDockableCentralWidget(new CapturePlot(this, false, 10, 10, new TimePrefixFormatter, new MetricPrefixFormatter), Qt::RightDockWidgetArea, "7");
 
 	// fixed plots
 	//	m_toolView->addCentralWidget(new CapturePlot(this, false, 10, 10, new TimePrefixFormatter, new MetricPrefixFormatter), false, "");
