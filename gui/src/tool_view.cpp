@@ -1,6 +1,7 @@
 ﻿#include "ui_tool_view.h"
 
 #include <QMainWindow>
+#include <QTabWidget>
 #include "utils.hpp"
 #include <scopy/gui/channel_widget.hpp>
 #include <scopy/gui/menu_header.hpp>
@@ -361,15 +362,33 @@ int ToolView::addDockableCentralWidget(QWidget *widget, Qt::DockWidgetArea area,
 	return m_docksList.size() - 1;
 }
 
-void ToolView::addDockableTabedWidget(QWidget *widget, const QString &dockerName, int plotId)
+void ToolView::addDockableTabbedWidget(QWidget *widget, const QString &dockerName, int plotId)
 {
 	QDockWidget* docker = this->createDockableWidget(widget, dockerName);
 	m_centralMainWindow->tabifyDockWidget(m_docksList.at(plotId), docker);
 }
 
-void ToolView::addFixedTabedWidget(QWidget *widget, int plotId)
+int ToolView::addFixedTabbedWidget(QWidget *widget, const QString& title, int plotId, int row, int column, int rowspan, int columnspan)
 {
-	// TODO
+	if(m_centralFixedWidgets.size() > plotId && plotId != -1) {
+		// adding widget to an existing TabWidget
+
+		QTabWidget* tabWidget = static_cast<QTabWidget*>(m_centralFixedWidgets.at(plotId));
+		tabWidget->addTab(widget, title);
+
+		return plotId;
+
+	} else {
+		// creating new TabWidget
+
+		QTabWidget* tabWidget = new QTabWidget(m_ui->widgetCentral);
+		tabWidget->addTab(widget, title);
+		m_centralFixedWidgets.append(tabWidget);
+
+		this->addFixedCentralWidget(tabWidget, row, column, rowspan, columnspan);
+
+		return m_centralFixedWidgets.size() - 1;
+	}
 }
 
 void ToolView::setGeneralSettingsMenu(QWidget* menu, bool dockable)
