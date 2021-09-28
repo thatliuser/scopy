@@ -5,7 +5,7 @@
 #include "tool_launcher.hpp"
 #include "ui_dmmlist.h"
 #include "tool.hpp"
-#include "gui/tool_view_builder"
+#include "gui/tool_view_builder.hpp"
 
 /* libm2k includes */
 #include <libm2k/analog/m2kanalogin.hpp>

@@ -1,7 +1,6 @@
 #include "iiomonitor.hpp"
 #include "iiomonitorgeneralsettingsmenu.hpp"
 
-#include "testwidget.hpp"
 #include "gui/generic_menu.hpp"
 
 using namespace adiscope;
