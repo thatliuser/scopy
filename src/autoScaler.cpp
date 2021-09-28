@@ -52,21 +52,21 @@ void AutoScaler::setValue(double val)
 	else if (val > max)
 		max = val;
 
-	if (val < current_div->lowerBound()) {
-		for (auto it = divs.cbegin(); it != divs.cend(); ++it) {
+    if (val < current_div->lowerBound()) {
+        for (auto it = divs.cbegin(); it != divs.cend(); ++it) {
 			if (it->lowerBound() <= val) {
 				changeScaleDiv(&*it);
 				break;
 			}
-		}
-	} else if (val > current_div->upperBound()) {
+        }
+    } else if (val > current_div->upperBound()) {
 		for (auto it = divs.cbegin(); it != divs.cend(); ++it) {
 			if (it->upperBound() >= val) {
 				changeScaleDiv(&*it);
 				break;
 			}
-		}
-	}
+        }
+    }
 }
 
 void AutoScaler::changeScaleDiv(const QwtScaleDiv *div)

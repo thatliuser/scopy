@@ -25,6 +25,8 @@
 
 #include "autoScaler.hpp"
 
+#include "plot_utils.hpp"
+
 namespace adiscope {
 	class CustomScale : public QwtThermo
 	{
@@ -33,6 +35,8 @@ namespace adiscope {
 		public:
 			explicit CustomScale(QWidget *parent = nullptr);
 			~CustomScale();
+
+        void setScaleForTemp(bool temp);
 
 		public Q_SLOTS:
 			void setValue(double);
@@ -44,6 +48,10 @@ namespace adiscope {
 
 		private:
 			AutoScaler *scaler;
+            bool m_scaleForTemp;
+            int m_currentScale;
+
+
 	};
 }
 

@@ -25,16 +25,19 @@
 using namespace adiscope;
 
 CustomScale::CustomScale(QWidget *parent) :
-	QwtThermo(parent)
+    QwtThermo(parent),
+    m_scaleForTemp(false),
+    m_currentScale(0)
 {
 	QVector<QwtScaleDiv> divs;
 
-	divs.push_back(scaleEngine()->divideScale(-0.1, +0.1, 5, 5));
-	divs.push_back(scaleEngine()->divideScale(-1.0, +1.0, 5, 5));
-	divs.push_back(scaleEngine()->divideScale(-5.0, +5.0, 10, 2));
-	divs.push_back(scaleEngine()->divideScale(-25.0, +25.0, 10, 5));
+        divs.push_back(scaleEngine()->divideScale(-0.1, +0.1, 5, 5));
+      //  divs.push_back(scaleEngine()->divideScale(-1.0, +1.0, 5, 5));
+      //  divs.push_back(scaleEngine()->divideScale(-5.0, +5.0, 10, 2));
+      //  divs.push_back(scaleEngine()->divideScale(-25.0, +25.0, 10, 5));
+      //   divs.push_back(scaleEngine()->divideScale(-100.0, +100, 5, 10));
 
-	scaler = new AutoScaler(this, divs);
+    scaler = new AutoScaler(this, divs);
 
 	connect(scaler, SIGNAL(updateScale(const QwtScaleDiv)),
 			this, SLOT(updateScale(const QwtScaleDiv)));
@@ -60,8 +63,32 @@ void CustomScale::stop()
 	scaler->stopTimer();
 }
 
+int numDigits(double num){
+    if(int(num) == 0) {return -1; }
+
+    int digits = 0;
+    while((int)num){
+        num /= 10;
+        digits++;
+    }
+    return digits;
+}
+
 void CustomScale::setValue(double value)
 {
-	scaler->setValue(value);
+
+    int n = numDigits(value);
+    double scale = pow(10 , n);
+    if (scale < value){ scale *= 10; }
+    if(scale != m_currentScale){
+        updateScale(scaleEngine()->divideScale((-1*scale),scale,5,10));
+        m_currentScale = scale;
+    }
+
+    scaler->setValue(value);
 	QwtThermo::setValue(value);
+}
+
+void CustomScale::setScaleForTemp(bool temp){
+    m_scaleForTemp = temp;
 }

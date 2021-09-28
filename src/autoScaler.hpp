@@ -56,6 +56,8 @@ namespace adiscope {
 		const QwtScaleDiv *current_div;
 
 		void changeScaleDiv(const QwtScaleDiv *div);
+
+        void updateScaleValue(double value);
 	};
 };
 
