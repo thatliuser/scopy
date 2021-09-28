@@ -41,6 +41,7 @@
 
 #include "apiObject.hpp"
 #include "dmm.hpp"
+#include "gui/iiomonitor.hpp"
 #include "filter.hpp"
 #include "calibration.hpp"
 #include "oscilloscope.hpp"
@@ -73,6 +74,7 @@ class Device;
 namespace adiscope {
 class ToolLauncher_API;
 class SpectrumAnalyzer;
+class IIOMonitor;
 class Debugger;
 class ManualCalibration;
 class UserNotes;
@@ -228,6 +230,7 @@ private:
 	QFutureWatcher<QPair<bool, bool>> calibration_thread_watcher;
 
 	DMM *dmm;
+    IIOMonitor *iio_monitor;
 	PowerController *power_control;
 	SignalGenerator *signal_generator;
 	Oscilloscope *oscilloscope;

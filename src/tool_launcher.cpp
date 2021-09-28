@@ -429,6 +429,9 @@ void ToolLauncher::_toolSelected(enum tool tool)
 	case TOOL_CALIBRATION:
 		selectedTool = manual_calibration;
 		break;
+    case TOOL_IIOMONITOR:
+        selectedTool = iio_monitor;
+        break;
 	case TOOL_LAUNCHER:
 		break;
 	}
@@ -1310,6 +1313,11 @@ void adiscope::ToolLauncher::destroyContext()
 		dmm = nullptr;
 	}
 
+    if(iio_monitor){
+        delete iio_monitor;
+        iio_monitor = nullptr;
+    }
+
 	if (power_control) {
 		delete power_control;
 		power_control = nullptr;
@@ -1579,6 +1587,10 @@ void adiscope::ToolLauncher::enableAdcBasedTools()
 			}
 		}
 
+
+
+
+
 		if (filter->compatible(TOOL_DMM)) {
 			dmm = new DMM(ctx, filter, menu->getToolMenuItemFor(TOOL_DMM),
 				      &js_engine, this);
@@ -1596,6 +1608,8 @@ void adiscope::ToolLauncher::enableAdcBasedTools()
 			QObject::connect(debugger, &Debugger::newDebuggerInstance, this,
 					 &ToolLauncher::addDebugWindow);
 		}
+
+
 
 		if (filter->compatible(TOOL_CALIBRATION)) {
 			manual_calibration = new ManualCalibration(ctx, filter,menu->getToolMenuItemFor(TOOL_CALIBRATION),
@@ -1735,6 +1749,15 @@ bool adiscope::ToolLauncher::switchContext(const QString& uri)
 			});
 		}
 
+        if (filter->compatible(TOOL_IIOMONITOR)) {
+             iio_monitor = new IIOMonitor(ctx, filter, menu->getToolMenuItemFor(TOOL_IIOMONITOR),&js_engine, this);
+             toolList.push_back(iio_monitor);
+             connect(menu->getToolMenuItemFor(TOOL_IIOMONITOR)->getToolBtn(), &QPushButton::clicked, [=](){
+                 swapMenu(iio_monitor->getToolView());
+             });
+        }
+
+
 
 		if (filter->compatible(TOOL_POWER_CONTROLLER)) {
 			power_control = new PowerController(ctx, menu->getToolMenuItemFor(TOOL_POWER_CONTROLLER),
@@ -1812,8 +1835,8 @@ bool adiscope::ToolLauncher::switchContext(const QString& uri)
 
 	selectedDev->infoPage()->setCalibrationStatusLabel(tr("Calibrating"));
 
-	calibration_thread = QtConcurrent::run(std::bind(&ToolLauncher::initialCalibration,
-							 this));
+    calibration_thread = QtConcurrent::run(std::bind(&ToolLauncher::initialCalibration,
+                             this));
 
 	calibration_thread_watcher.setFuture(calibration_thread);
 	connect(&calibration_thread_watcher, SIGNAL(finished()), this, SLOT(calibrationThreadWatcherFinished()));

@@ -31,6 +31,7 @@
 #include "customFifo.hpp"
 
 namespace adiscope {
+
 	class Sismograph : public QwtPlot
 	{
 		Q_OBJECT
@@ -55,6 +56,9 @@ namespace adiscope {
 		double getSampleRate() const;
 		void setSampleRate(double rate);
 
+        void setUnitOfMeasure(QString unitOfMeasure);
+        void setPlotAxisXTitle(QString title);
+
 	public Q_SLOTS:
 		void plot(double sample);
 		void reset();
@@ -67,6 +71,8 @@ namespace adiscope {
 		unsigned int numSamples;
 		double sampleRate;
 		AutoScaler *scaler;
+        long int m_currentScale;
+        QString m_unitOfMeasure;
 
 		QVector<double> ydata;
 		CustomFifo<double> xdata;
