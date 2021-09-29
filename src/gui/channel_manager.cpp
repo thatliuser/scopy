@@ -15,10 +15,6 @@ ChannelManager::ChannelManager(ChannelsPositionEnum position, QWidget* parent)
 	, m_hasAddBtn(false)
 	, m_position(position)
 {
-    m_channelsWidget->setStyleSheet("background:red;");
-     m_scrollArea->setStyleSheet("background:blue;");
-   //  m_scrollArea->setSizePolicy(m_channelsWidget->sizePolicy());
-
 	if (m_position == ChannelsPositionEnum::VERTICAL) {
 		m_channelsWidget->setLayout(new QVBoxLayout(m_channelsWidget));
 
@@ -39,6 +35,7 @@ ChannelManager::ChannelManager(ChannelsPositionEnum position, QWidget* parent)
 
     //m_scrollArea->setStyleSheet("background-color:orange");
     //m_channelsWidget->setStyleSheet("background-color:red");
+      //  m_scrollArea->setSizePolicy(m_channelsWidget->sizePolicy());
 }
 
 ChannelManager::~ChannelManager()
