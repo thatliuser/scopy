@@ -91,7 +91,7 @@ ToolLauncher::ToolLauncher(QString prevCrashDump, QWidget *parent) :
 	power_control(nullptr), dmm(nullptr), signal_generator(nullptr),
 	oscilloscope(nullptr), current(nullptr), filter(nullptr),
 	logic_analyzer(nullptr), pattern_generator(nullptr), dio(nullptr),
-	network_analyzer(nullptr), spectrum_analyzer(nullptr), debugger(nullptr),
+    network_analyzer(nullptr), spectrum_analyzer(nullptr),iio_monitor(nullptr), debugger(nullptr),
 	manual_calibration(nullptr), tl_api(new ToolLauncher_API(this)),
 	dioManager(nullptr),
 	notifier(STDIN_FILENO, QSocketNotifier::Read),
