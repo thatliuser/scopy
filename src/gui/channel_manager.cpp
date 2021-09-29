@@ -16,6 +16,10 @@ ChannelManager::ChannelManager(ChannelsPositionEnum position, QWidget* parent)
 	, m_addChannelBtn(new CustomPushButton(m_scrollArea))
 	, m_position(position)
 {
+    m_channelsWidget->setStyleSheet("background:red;");
+     m_scrollArea->setStyleSheet("background:blue;");
+   //  m_scrollArea->setSizePolicy(m_channelsWidget->sizePolicy());
+
 	if (m_position == ChannelsPositionEnum::VERTICAL) {
 		m_channelsWidget->setLayout(new QVBoxLayout(m_channelsWidget));
 
@@ -34,13 +38,13 @@ ChannelManager::ChannelManager(ChannelsPositionEnum position, QWidget* parent)
 
 	m_scrollArea->setWidget(m_channelsWidget);
 
-	m_scrollArea->setStyleSheet("background-color:orange");
-	m_channelsWidget->setStyleSheet("background-color:red");
+    //m_scrollArea->setStyleSheet("background-color:orange");
+    //m_channelsWidget->setStyleSheet("background-color:red");
 }
 
 ChannelManager::~ChannelManager()
 {
-	delete m_channelsWidget;
+    if(m_channelsWidget){delete m_channelsWidget;}
 	delete m_addChannelBtn;
 	delete m_switchBtn;
 	delete m_parent;
@@ -51,7 +55,8 @@ void ChannelManager::build(QWidget* parent)
 	m_parent = parent;
 
 	// Experimental - change orientation at runtime
-	setDynamicProperty(m_switchBtn, "blue_button", true);
+    /*
+    setDynamicProperty(m_switchBtn, "blue_button", true);
 	m_switchBtn->setCheckable(true);
 	m_switchBtn->setFlat(true);
 	m_switchBtn->setText("Switch");
@@ -64,12 +69,14 @@ void ChannelManager::build(QWidget* parent)
 		Q_EMIT positionChanged(m_position);
 	});
 
-	m_parent->layout()->addWidget(m_switchBtn);
+    m_parent->layout()->addWidget(m_switchBtn);
+    */
 	m_parent->layout()->addWidget(m_scrollArea);
+
 }
 
 ChannelWidget* ChannelManager::buildNewChannel(int chId, bool deletable, bool simplefied, QColor color,
-					       const QString& fullName, const QString& shortName)
+                           const QString& fullName, const QString& shortName)
 {
 	ChannelWidget* ch = new ChannelWidget(chId, deletable, simplefied, color);
 
@@ -177,14 +184,17 @@ void ChannelManager::insertAddBtn(QWidget* menu, bool dockable)
 {
 	m_hasAddBtn = true;
 
-	// TO DO: center + btn when position is vertical
+    // TO DO: center + btn when position is vertical
 	m_addChannelBtn->setCheckable(true);
 	m_addChannelBtn->setFlat(true);
-	m_addChannelBtn->setIcon(QIcon(":/icons/common/add.svg"));
-	m_addChannelBtn->setIconSize(QSize(16, 16));
-	m_addChannelBtn->setMaximumSize(25, 25);
+    m_addChannelBtn->setIcon(QIcon(":/menu/add.svg"));
+    m_addChannelBtn->setIconSize(QSize(25, 25));
+    m_addChannelBtn->setMaximumSize(25, 25);
 
-	m_parent->layout()->addWidget(m_addChannelBtn);
+    m_parent->layout()->addWidget(m_addChannelBtn);
+    m_parent->layout()->setAlignment(m_addChannelBtn,Qt::AlignHCenter);
+
+
 
 	Q_EMIT(configureAddBtn(menu, dockable));
 }

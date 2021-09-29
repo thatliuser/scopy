@@ -287,10 +287,27 @@ ChannelWidget* ToolView::buildNewChannel(ChannelManager* channelManager, Generic
 	return ch;
 }
 
+void ToolView::buildChannelGroup(ChannelWidget* mainChannal, std::vector<ChannelWidget*> channelGroup){
+
+    connect(mainChannal, &ChannelWidget::enabled,this, [=](){
+        if(mainChannal->menuButton()->isEnabled()){
+            for(ChannelWidget* ch : channelGroup){
+                ch->show();
+            }
+        }else{
+            for(ChannelWidget* ch : channelGroup){
+                ch->hide();
+            }
+        }
+
+    });
+}
+
 void ToolView::buildNewInstrumentMenu(GenericMenu* menu, bool dockable, const QString& name, bool checkBoxVisible,
 				      bool checkBoxChecked)
 {
 	m_ui->widgetFooter->setVisible(true);
+    m_ui->widgetFooter->setStyleSheet("background:blue;");
 	m_ui->widgetMenuBtns->setVisible(true);
 
 	CustomMenuButton* btn = new CustomMenuButton(name, checkBoxVisible, checkBoxChecked);
@@ -361,6 +378,20 @@ int ToolView::addDockableCentralWidget(QWidget *widget, Qt::DockWidgetArea area,
 
 	return m_docksList.size() - 1;
 }
+
+void ToolView::setWidgetVisibility(int widgetId, bool visible){
+   if (visible) {
+       m_docksList.at(widgetId)->show();
+   }else{
+       m_docksList.at(widgetId)->hide();
+   }
+}
+
+bool ToolView::isWidgetHidden(int widgetId){
+    return  m_docksList.at(widgetId)->isHidden();
+}
+
+
 
 void ToolView::addDockableTabbedWidget(QWidget *widget, const QString &dockerName, int plotId)
 {
