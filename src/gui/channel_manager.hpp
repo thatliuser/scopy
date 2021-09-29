@@ -32,12 +32,15 @@ public:
 	void insertAddBtn(QWidget* menu, bool dockable);
 
 	ChannelWidget* buildNewChannel(int chId, bool deletable, bool simplefied, QColor color, const QString& fullName,
-				       const QString& shortName);
+                       const QString& shortName);
+
 	void removeChannel(ChannelWidget* ch);
 	QList<ChannelWidget*> getEnabledChannels();
 
 	CustomPushButton* getAddChannelBtn();
 	QList<ChannelWidget*> getChannelsList();
+
+
 
 public Q_SLOTS:
 	void changeParent(QWidget* newParent);
@@ -58,6 +61,7 @@ private:
 	ChannelsPositionEnum m_position;
 
 	QList<ChannelWidget*> m_channelsList;
+
 };
 } // namespace gui
 } // namespace scopy

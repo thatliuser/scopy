@@ -68,6 +68,7 @@ public:
 	ChannelWidget* buildNewChannel(ChannelManager* channelManager, GenericMenu* menu, bool dockable, int chId,
 				       bool deletable, bool simplified, QColor color, const QString& fullName,
 				       const QString& shortName);
+    void buildChannelGroup(ChannelWidget* mainChannal, std::vector<ChannelWidget*> channelGroup);
 	void buildNewInstrumentMenu(GenericMenu* menu, bool dockable, const QString& name, bool checkBoxVisible = false,
 				    bool checkBoxChecked = false);
 
@@ -75,6 +76,9 @@ public:
 	int addDockableCentralWidget(QWidget* widget, Qt::DockWidgetArea area, const QString& dockerName);
 	void addDockableTabbedWidget(QWidget* widget, const QString &dockerName, int plotId);
 	int addFixedTabbedWidget(QWidget* widget, const QString& title, int plotId = -1, int row = -1, int column = -1,int rowspan = -1, int columnspan = -1);
+
+    void setWidgetVisibility(int widgetId, bool visible);
+    bool isWidgetHidden(int widgetId);
 
 private:
 	void configureLastOpenedMenu();
