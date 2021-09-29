@@ -22,6 +22,8 @@
 
 #include <qwt_scale_engine.h>
 
+#include <math.h>
+
 using namespace adiscope;
 
 CustomScale::CustomScale(QWidget *parent) :
@@ -29,38 +31,38 @@ CustomScale::CustomScale(QWidget *parent) :
     m_scaleForTemp(false),
     m_currentScale(0)
 {
-	QVector<QwtScaleDiv> divs;
+    QVector<QwtScaleDiv> divs;
 
-        divs.push_back(scaleEngine()->divideScale(-0.1, +0.1, 5, 5));
-      //  divs.push_back(scaleEngine()->divideScale(-1.0, +1.0, 5, 5));
-      //  divs.push_back(scaleEngine()->divideScale(-5.0, +5.0, 10, 2));
-      //  divs.push_back(scaleEngine()->divideScale(-25.0, +25.0, 10, 5));
-      //   divs.push_back(scaleEngine()->divideScale(-100.0, +100, 5, 10));
+    divs.push_back(scaleEngine()->divideScale(-0.1, +0.1, 5, 5));
+    //  divs.push_back(scaleEngine()->divideScale(-1.0, +1.0, 5, 5));
+    //  divs.push_back(scaleEngine()->divideScale(-5.0, +5.0, 10, 2));
+    //  divs.push_back(scaleEngine()->divideScale(-25.0, +25.0, 10, 5));
+    //   divs.push_back(scaleEngine()->divideScale(-100.0, +100, 5, 10));
 
     scaler = new AutoScaler(this, divs);
 
-	connect(scaler, SIGNAL(updateScale(const QwtScaleDiv)),
-			this, SLOT(updateScale(const QwtScaleDiv)));
+    connect(scaler, SIGNAL(updateScale(const QwtScaleDiv)),
+            this, SLOT(updateScale(const QwtScaleDiv)));
 }
 
 CustomScale::~CustomScale()
 {
-	delete scaler;
+    delete scaler;
 }
 
 void CustomScale::updateScale(const QwtScaleDiv div)
 {
-	setScale(div);
+    setScale(div);
 }
 
 void CustomScale::start()
 {
-	scaler->startTimer();
+    scaler->startTimer();
 }
 
 void CustomScale::stop()
 {
-	scaler->stopTimer();
+    scaler->stopTimer();
 }
 
 int numDigits(double num){
@@ -86,7 +88,7 @@ void CustomScale::setValue(double value)
     }
 
     scaler->setValue(value);
-	QwtThermo::setValue(value);
+    QwtThermo::setValue(value);
 }
 
 void CustomScale::setScaleForTemp(bool temp){

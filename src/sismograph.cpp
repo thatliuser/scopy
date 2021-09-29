@@ -26,6 +26,8 @@
 #include "plot_utils.hpp"
 #include "gui/customqwtscaledraw.hpp"
 
+#include <math.h>
+
 using namespace adiscope;
 
 Sismograph::Sismograph(QWidget *parent) : QwtPlot(parent),
