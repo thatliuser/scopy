@@ -24,7 +24,7 @@
 #include <qwt_plot_layout.h>
 #include <qwt_scale_engine.h>
 #include "plot_utils.hpp"
-#include "gui/customqwtscaledraw.hpp"
+
 
 #include <math.h>
 
@@ -60,7 +60,10 @@ Sismograph::Sismograph(QWidget *parent) : QwtPlot(parent),
 
 	plotLayout()->setAlignCanvasToScales(true);
 
-    this->setAxisScaleDraw(QwtPlot::xTop,new CustomQwtScaleDraw());
+    scaleLabel = new CustomQwtScaleDraw();
+    scaleLabel->setUnitOfMeasure(m_unitOfMeasureSymbol);
+
+    this->setAxisScaleDraw(QwtPlot::xTop,scaleLabel);
 
 	curve.attach(this);
 	curve.setXAxis(QwtPlot::xTop);
@@ -73,9 +76,16 @@ Sismograph::~Sismograph()
 }
 
 int numDigits2(double num){
-    if(int(num) == 0) {return -1; }
-
     int digits = 0;
+
+    if(int(num) == 0) {
+        while((int)num*10 == 0){
+            num *= 10;
+            digits++;
+        }
+        return -1 * (digits - 1);
+    }
+
     while((int)num){
         num /= 10;
         digits++;
@@ -85,10 +95,12 @@ int numDigits2(double num){
 
 void Sismograph::plot(double sample)
 {
-	if (xdata.size() == numSamples + 1)
-		xdata.pop();
+    if (xdata.size() == numSamples + 1){
+        xdata.pop();
+    }
 
 	xdata.push(sample);
+
 
     int n = numDigits2(sample);
     double scale = pow(10 , n);
@@ -97,15 +109,14 @@ void Sismograph::plot(double sample)
 
         MetricPrefixFormatter m_prefixFormater;
         QString formatedPrefix = m_prefixFormater.getFormatedMeasureUnit(sample);
-        setPlotAxisXTitle(formatedPrefix + m_unitOfMeasure);
+        setPlotAxisXTitle(formatedPrefix + m_unitOfMeasureName + "(" + formatedPrefix + m_unitOfMeasureSymbol + ")");
+        scaleLabel->setUnitOfMeasure(m_unitOfMeasureSymbol);
 
         QwtScaleEngine *scaleEngine = axisScaleEngine(QwtPlot::xTop);
         updateScale(scaleEngine->divideScale((-1*scale),scale,5,10));
 
         m_currentScale = scale;
     }
-
-
 
      scaler->setValue(sample);
 
@@ -162,7 +173,7 @@ void Sismograph::setColor(const QColor& color)
 void Sismograph::updateScale(const QwtScaleDiv div)
 {
 	setAxisScale(QwtPlot::xTop, div.lowerBound(), div.upperBound());
-    setAxisScaleDraw(QwtPlot::xTop,new CustomQwtScaleDraw());
+    setAxisScaleDraw(QwtPlot::xTop,scaleLabel);
 }
 
 void Sismograph::setLineWidth(qreal width)
@@ -172,8 +183,9 @@ void Sismograph::setLineWidth(qreal width)
         curve.setPen(QPen(pen));
 }
 
-void Sismograph::setUnitOfMeasure(QString unitOfMeasure){
-    m_unitOfMeasure = unitOfMeasure;
+void Sismograph::setUnitOfMeasure(QString unitOfMeasureName,QString unitOfMeasureSymbol){
+    m_unitOfMeasureName = unitOfMeasureName;
+    m_unitOfMeasureSymbol = unitOfMeasureSymbol;
 }
 
 void Sismograph::setPlotAxisXTitle(QString title){

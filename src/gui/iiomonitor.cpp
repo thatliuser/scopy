@@ -33,6 +33,7 @@ IIOMonitor::IIOMonitor(struct iio_context *ctx, Filter *filt,
     //m_channelManager->getAddChannelBtn()->setVisible(true);
 
     m_channelManager = new scopy::gui::ChannelManager(recepie.channelsPosition);
+    m_channelManager->setChannelIdVisible(false);
 
     m_toolView = scopy::gui::ToolViewBuilder(recepie,m_channelManager).build();
 
@@ -71,18 +72,23 @@ IIOMonitor::IIOMonitor(struct iio_context *ctx, Filter *filt,
 
 
      // ////////////////////////////////////////////
-     connect(m_toolView->getSingleBtn(), SIGNAL(toggled(bool)),this, SLOT(readChannelValues()));
+     connect(m_toolView->getSingleBtn(), SIGNAL(toggled(bool)),this, SLOT(testScaleFct()));
 
     connect(m_toolView->getSingleBtn(), &QPushButton::clicked,this, [=](bool checked){
             m_toolView->getSingleBtn()->setChecked(!checked);
+            m_toolView->getRunBtn()->toggled(false);
      });
 
     connect(m_generalSettingsMenu, &scopy::gui::IIOMonitorGeneralSettingsMenu::recordingTimeChanged,this, [=](double value){
-
         VALUE_READING_TIME_INTERVAL = value;
-        toggleTimer(false);
-        toggleTimer(true);
     });
+
+    plotContainer = new PlotContainer(m_m2k_context,this);
+    plotContainer->setXAxisUnit("s");
+    plotContainer->setYAxisUnit("V");
+    m_toolView->addFixedTabbedWidget(plotContainer,"Plot",0,0,0,0,0);
+
+    connect(m_timer, &QTimer::timeout , this, &IIOMonitor::readChannelValues);
 }
 
 
@@ -95,9 +101,10 @@ void IIOMonitor::initChannels(){
 
        scopy::gui::IIOMonitorMenu* menu = new scopy::gui::IIOMonitorMenu(this);
        menu->showAllMenu(true);
+       menu->showChangeColor(false);
 
        ChannelWidget *ch_widget =
-               m_toolView->buildNewChannel(m_channelManager, menu, true, chId , false, false, QColor("green"), "Channel", QString::fromStdString(dmm->getName()) );
+               m_toolView->buildNewChannel(m_channelManager, menu, true, chId, false, false, QColor("green"), QString::fromStdString(dmm->getName()), QString::fromStdString(dmm->getName()) );
 
        ch_widget->enableButton()->setChecked(false);
 
@@ -108,7 +115,7 @@ void IIOMonitor::initChannels(){
          scopy::gui::IIOMonitorMenu* m = new scopy::gui::IIOMonitorMenu(this);
 
          ChannelWidget *ch_widget =
-                 m_toolView->buildNewChannel(m_channelManager, m, true, chId , false, false, QColor("#ff7200"), "Channel", QString::fromStdString(channel.id) );
+                 m_toolView->buildNewChannel(m_channelManager, m, true, chId, false, false, QColor("#ff7200"), QString::fromStdString(channel.id), QString::fromStdString(channel.id) );
 
        channelList.push_back(ch_widget);
 
@@ -117,7 +124,7 @@ void IIOMonitor::initChannels(){
 
        adiscope::ChannelMonitorComponent* monitor = new adiscope::ChannelMonitorComponent();
 
-       monitor->init(0,QString::fromStdString(channel.unit),QString::fromStdString(dmm->getName() + ": " + channel.id));
+       monitor->init(0,QString::fromStdString(channel.unit_name),QString::fromStdString(channel.unit_symbol),QString::fromStdString(dmm->getName() + ": " + channel.id), QColor("#ff7200"));
        //channel.value,QString::fromStdString(channel.unit), QString::fromStdString(dmm->getName() + ": " + channel.id));
        monitor->setChannelId(channel.id);
 
@@ -148,6 +155,10 @@ void IIOMonitor::initChannels(){
 
        });
 
+       connect(menu, &scopy::gui::IIOMonitorMenu::changeHistorySize, this, [=](int numSamples){
+            monitor->setNumSamples(numSamples);
+       });
+
        connect(m_generalSettingsMenu, &scopy::gui::IIOMonitorGeneralSettingsMenu::precisionChanged, this, [=](int precision){
             monitor->updateLcdNumberPrecision(precision);
        });
@@ -169,6 +180,15 @@ void IIOMonitor::initChannels(){
           monitor->resetPeakHolder();
        });
 
+       connect(m, &scopy::gui::IIOMonitorMenu::monitorColorChanged,this, [=](QString color){
+           monitor->setMonitorColor(color);
+       });
+
+       connect(m, &scopy::gui::IIOMonitorMenu::changeHistorySize, this, [=](int numSamples){
+           monitor->setNumSamples(numSamples);
+       });
+
+
       int widgetId =monitorContainer->addMonitorContainerToList(monitor);
 
       // logic for adding/removing channels
@@ -188,17 +208,17 @@ void IIOMonitor::initChannels(){
           });
 
        //make channel read value after timeout
-        connect(m_timer, &QTimer::timeout , this, &IIOMonitor::readChannelValues);
+
           chId++;
          }
 
        chId++;
-       m_toolView->buildChannelGroup(ch_widget,channelList);
+       m_toolView->buildChannelGroup(m_channelManager, ch_widget,channelList);
 
      }
 
-     m_channelManager->insertAddBtn(new scopy::gui::GenericMenu,true);
-    m_toolView->addDockableCentralWidget(monitorContainer,Qt::TopDockWidgetArea, QString::fromStdString(""));
+    m_channelManager->insertAddBtn(new scopy::gui::GenericMenu,true);
+    m_toolView->addFixedTabbedWidget(monitorContainer,"Monitors",0,0,0,0,0);
 }
 
 scopy::gui::ToolView* IIOMonitor::getToolView(){
@@ -210,17 +230,23 @@ std::vector<libm2k::analog::DMM*> IIOMonitor::getDmmList(libm2k::context::M2k* m
 }
 
 void IIOMonitor::readChannelValues(){
+    QMap<QString,double> updateVal;
     for(auto ch : m_activeChannels){
         auto aux = ch.second->readChannel(ch.first->getChannelId());
-        ch.first->updateValue(aux.value, QString::fromStdString(aux.unit));
+        ch.first->updateValue(aux.value,QString::fromStdString(aux.unit_name), QString::fromStdString(aux.unit_symbol));
+     //   plotContainer->setPlotData(aux.value,ch.first->getTitle());
+        updateVal[ch.first->getTitle()] = aux.value;
+
     }
+    plotContainer->updatePlot(updateVal);
 }
 
 
 void IIOMonitor::toggleTimer(bool enabled){
-    readChannelValues();
+
     // set timer for 5s
     if(enabled){
+        readChannelValues();
         m_timer->start(VALUE_READING_TIME_INTERVAL);
     }else{
         m_timer->stop();
@@ -229,8 +255,10 @@ void IIOMonitor::toggleTimer(bool enabled){
 
 void IIOMonitor::testScaleFct(){
     auto aux = m_activeChannels.at(0).second->readChannel(m_activeChannels.at(0).first->getChannelId());
-    m_activeChannels.at(0).first->updateValue(testScale.at(i), QString::fromStdString(aux.unit));
-
+    m_activeChannels.at(0).first->updateValue(testScale.at(i),QString::fromStdString(aux.unit_name), QString::fromStdString(aux.unit_symbol));
+    QMap<QString, double> val;
+    val[QString::fromStdString(aux.id )] =testScale.at(i);
+    plotContainer->updatePlot(val);
     if ( i < testScale.size() - 1 ){
         i++;
     }else{

@@ -286,3 +286,11 @@ void ChannelWidget::setButtonNoGroup(QAbstractButton *btn)
 		group->removeButton(btn);
 	}
 }
+
+void ChannelWidget::setMenuButtonVisibility(bool visible){
+    if(visible){
+        m_ui->btn->hide();
+    }else{
+        m_ui->btn->hide();
+    }
+}

@@ -30,6 +30,8 @@
 #include "autoScaler.hpp"
 #include "customFifo.hpp"
 
+#include "gui/customqwtscaledraw.hpp"
+
 namespace adiscope {
 
 	class Sismograph : public QwtPlot
@@ -56,7 +58,7 @@ namespace adiscope {
 		double getSampleRate() const;
 		void setSampleRate(double rate);
 
-        void setUnitOfMeasure(QString unitOfMeasure);
+        void setUnitOfMeasure(QString unitOfMeasureName,QString unitOfMeasureSymbol);
         void setPlotAxisXTitle(QString title);
 
 	public Q_SLOTS:
@@ -71,11 +73,18 @@ namespace adiscope {
 		unsigned int numSamples;
 		double sampleRate;
 		AutoScaler *scaler;
-        long int m_currentScale;
-        QString m_unitOfMeasure;
+        double m_currentScale;
+        QString m_unitOfMeasureName;
+        QString m_unitOfMeasureSymbol;
 
 		QVector<double> ydata;
 		CustomFifo<double> xdata;
+
+     Q_SIGNALS:
+        void dataChanged(std::vector<double> data);
+
+    private:
+         CustomQwtScaleDraw* scaleLabel;
 	};
 }
 

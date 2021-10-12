@@ -13,7 +13,10 @@ ChannelManager::ChannelManager(ChannelsPositionEnum position, QWidget* parent)
 	, m_channelsWidget(new QWidget(m_scrollArea))
 	, m_switchBtn(new QPushButton(m_scrollArea))
 	, m_hasAddBtn(false)
-	, m_position(position)
+	, m_addChannelBtn(new CustomPushButton(m_scrollArea))
+    , m_position(position)
+    , m_channelIdVisible(true)
+
 {
 	if (m_position == ChannelsPositionEnum::VERTICAL) {
 		m_channelsWidget->setLayout(new QVBoxLayout(m_channelsWidget));
@@ -78,9 +81,14 @@ ChannelWidget* ChannelManager::buildNewChannel(int chId, bool deletable, bool si
 {
 	ChannelWidget* ch = new ChannelWidget(chId, deletable, simplefied, color);
 
-	m_channelsWidget->layout()->addWidget(ch);
-	ch->setFullName(fullName + QString(" %1").arg(chId + 1));
-	ch->setShortName(shortName + QString(" %1").arg(chId + 1));
+    m_channelsWidget->layout()->addWidget(ch);
+    if(m_channelIdVisible){
+        ch->setFullName(fullName + QString(" %1").arg(chId + 1));
+        ch->setShortName(shortName + QString(" %1").arg(chId + 1));
+    }else{
+        ch->setFullName(fullName);
+        ch->setShortName(shortName);
+    }
 	ch->nameButton()->setText(ch->shortName());
 
 	m_channelsList.append(ch);
@@ -192,8 +200,17 @@ void ChannelManager::insertAddBtn(QWidget* menu, bool dockable)
     m_addChannelBtn->setIconSize(QSize(25, 25));
     m_addChannelBtn->setMaximumSize(25, 25);
 
+
     m_parent->layout()->addWidget(m_addChannelBtn);
     m_parent->layout()->setAlignment(m_addChannelBtn,Qt::AlignHCenter);
 
 	Q_EMIT(configureAddBtn(menu, dockable));
+}
+
+void ChannelManager::setChannelAlignment(ChannelWidget* ch, Qt::Alignment alignment){   
+    m_channelsWidget->layout()->setAlignment(ch,alignment);
+}
+
+void ChannelManager::setChannelIdVisible(bool visible){
+    m_channelIdVisible = visible;
 }

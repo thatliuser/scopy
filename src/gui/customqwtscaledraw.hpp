@@ -14,9 +14,13 @@ class CustomQwtScaleDraw : public QwtScaleDraw
 {
 public:
     CustomQwtScaleDraw();
+    void setUnitOfMeasure(QString unitOfMeasure);
 
 protected:
    virtual QwtText label(double value) const;
+
+private:
+    QString m_unitOfMeasure;
 
 };
 }

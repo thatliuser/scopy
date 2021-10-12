@@ -18,6 +18,7 @@ public:
     ~IIOMonitorMenu();
 
     void showAllMenu(bool enable);
+    void showChangeColor(bool enabled);
 
 Q_SIGNALS:
     void togglePeakHolder(bool toggled);
@@ -25,6 +26,9 @@ Q_SIGNALS:
     void toggleHistory(bool toggled);
     void toggleScale(bool toggle);
     void toggleAll(bool toggle);
+    void monitorColorChanged(QString color);
+    void changeHistorySize(int size);
+    //void showHistElements(bool toggled);
 
 
 public Q_SLOTS:
@@ -34,11 +38,12 @@ public Q_SLOTS:
     void setScaleToggled(bool toggled);
     void resetPeakHolderActivated(bool toggled);
     void toggleAllWidgets(bool toggled);
-
-
+    void setHistorySize(int idx);
+    void displayHistory(bool toggled);
 
 private:
     Ui::IIOMonitorMenu *ui;
+    int numSamplesFromIdx(int idx);
 };
 } // namespace gui
 } // namespace scopy

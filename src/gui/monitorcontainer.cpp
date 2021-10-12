@@ -1,6 +1,7 @@
 #include "monitorcontainer.hpp"
 #include "ui_monitorcontainer.h"
 #include "QScrollArea"
+#include <QSpacerItem>
 
 MonitorContainer::MonitorContainer(QWidget *parent) :
     QWidget(parent),
@@ -16,11 +17,17 @@ MonitorContainer::MonitorContainer(QWidget *parent) :
     ui->scrollArea->setWidget(test);
     m_gridLayout = new QGridLayout;
     test->setLayout(m_gridLayout);
+    test->layout()->setContentsMargins(0, 0, 0, 0);
+    test->layout()->setSpacing(0);
+
+    QGridLayout* testAL = new QGridLayout;
+    testAL->addLayout(m_gridLayout,0,0);
+    testAL->addItem(new QSpacerItem(20,40,QSizePolicy::Minimum,QSizePolicy::Expanding),0,1);
+
 }
 
 // adds widget to internal widget list and return the index of the added widget
 int MonitorContainer::addMonitorContainerToList(QWidget *widget){
-
     m_widgetList.push_back(widget);
     return  m_widgetList.size() -1;
 }
@@ -28,9 +35,11 @@ int MonitorContainer::addMonitorContainerToList(QWidget *widget){
 // adds a widget at index to the layout and it's index to the active widget list
 void MonitorContainer::addWidget(int index){
 
+  //  m_widgetList.at(index)->setStyleSheet("border: 3px solid #ff7200;");
     //add widget from intex to next available position based on row and column
     auto gridLayout = dynamic_cast<QGridLayout*>(ui->scrollArea->widget()->layout());
-    gridLayout->addWidget(m_widgetList.at(index),row,col);
+    gridLayout->addWidget(m_widgetList.at(index),row,col, Qt::AlignCenter);
+    gridLayout->setSpacing(0);
     m_widgetList.at(index)->show();
     m_activeWidgetList.push_back(index);
 

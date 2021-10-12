@@ -24,14 +24,14 @@ class ChannelManager : public QWidget
 	Q_OBJECT
 
 public:
-	explicit ChannelManager(ChannelsPositionEnum position = ChannelsPositionEnum::HORIZONTAL,
+    explicit ChannelManager(ChannelsPositionEnum position = ChannelsPositionEnum::HORIZONTAL,
 				QWidget* parent = nullptr);
 	~ChannelManager();
 
 	void build(QWidget* parent);
 	void insertAddBtn(QWidget* menu, bool dockable);
 
-	ChannelWidget* buildNewChannel(int chId, bool deletable, bool simplefied, QColor color, const QString& fullName,
+    ChannelWidget* buildNewChannel(int chId, bool deletable, bool simplefied, QColor color, const QString& fullName,
                        const QString& shortName);
 
 	void removeChannel(ChannelWidget* ch);
@@ -40,6 +40,9 @@ public:
 	CustomPushButton* getAddChannelBtn();
 	QList<ChannelWidget*> getChannelsList();
 
+    void setChannelAlignment(ChannelWidget* ch,Qt::Alignment alignment);
+
+    void setChannelIdVisible(bool visible);
 
 
 public Q_SLOTS:
@@ -62,6 +65,7 @@ private:
 
 	QList<ChannelWidget*> m_channelsList;
 
+    bool m_channelIdVisible;
 };
 } // namespace gui
 } // namespace scopy

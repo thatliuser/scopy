@@ -17,6 +17,12 @@ IIOMonitorMenu::IIOMonitorMenu(QWidget *parent) :
     connect(ui->histogramCh, SIGNAL(toggled(bool)), this, SLOT(setHistoryToggled(bool)));
     connect(ui->scaleBtn, SIGNAL(toggled(bool)), this, SLOT(setScaleToggled(bool)));
     connect(ui->showAllBtn, SIGNAL(toggled(bool)),this, SLOT(toggleAllWidgets(bool)));
+    connect(ui->historySize, SIGNAL(currentIndexChanged(int)), this, SLOT(setHistorySize(int)));
+    connect(ui->btnCollapseHistory, SIGNAL(toggled(bool)), this, SLOT(displayHistory(bool)));
+
+    connect(ui->setColorBtn, &QPushButton::clicked,this, [=](){
+       Q_EMIT monitorColorChanged(ui->colorValue->text());
+    });
 
 }
 
@@ -62,6 +68,47 @@ void IIOMonitorMenu::showAllMenu(bool enable){
         ui->showAllBtn->hide();
         ui->label_7->hide();
     }
+}
+
+
+void IIOMonitorMenu::showChangeColor(bool enabled){
+    if(enabled){
+        ui->setColorBtn->show();
+        ui->colorValue->show();
+    }else{
+        ui->setColorBtn->hide();
+        ui->colorValue->hide();
+    }
+}
+
+void IIOMonitorMenu::setHistorySize(int idx)
+{
+    Q_EMIT changeHistorySize(numSamplesFromIdx(idx));
+}
+
+int IIOMonitorMenu::numSamplesFromIdx(int idx)
+{
+    switch(idx) {
+    case 0:
+        return 10;
+    case 1:
+        return 100;
+    case 2:
+        return 600;
+    default:
+        throw std::runtime_error("Invalid IDX");
+    }
+}
+
+void IIOMonitorMenu::displayHistory(bool toggled){
+    if(toggled){
+        ui->histogramCh->hide();
+        ui->historySize->hide();
+    }else{
+         ui->histogramCh->show();
+         ui->historySize->show();
+    }
+
 }
 
 IIOMonitorMenu::~IIOMonitorMenu()

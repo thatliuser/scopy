@@ -1,6 +1,9 @@
 #include "channelmonitorcomponent.hpp"
 #include "ui_channelmonitorcomponent.h"
 
+#include <QDebug>
+
+
 using namespace adiscope;
 
 ChannelMonitorComponent::ChannelMonitorComponent(QWidget *parent) :
@@ -11,39 +14,49 @@ ChannelMonitorComponent::ChannelMonitorComponent(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    ui->frame->setStyleSheet("QWidget#frame{border: 3px solid grey;}");
+
+
 }
 
-void ChannelMonitorComponent::init(double value,QString unitOfMeasure, QString title){
+void ChannelMonitorComponent::init(double value,QString nameOfUnitOfMeasure,QString symbolOfUnitOfMeasure, QString title,QColor color){
 
     //updateValue(value,unitOfMeasure);
     ui->scaleCh1->setOrientation(Qt::Horizontal);
     ui->scaleCh1->setScalePosition(QwtThermo::LeadingScale);
     ui->scaleCh1->setOriginMode(QwtThermo::OriginCustom);
+    ui->scaleCh1->setStyleSheet("font-size:16px;");
     ui->scaleCh1->setObjectName("IIOMonitor");
-    ui->monitorTitle->setText(title);
-    ui->sismograph_ch1_2->setColor(QColor("#ff7200"));
 
-    ui->labelCh1->setText(unitOfMeasure);
-    ui->sismograph_ch1_2->setPlotAxisXTitle(unitOfMeasure);
+    ui->monitorTitle->setText(title);
+
+    //set unit of measure for components
+    ui->labelCh1->setText(symbolOfUnitOfMeasure);
+    ui->label_minUnitOfMeasure->setText(symbolOfUnitOfMeasure);
+    ui->label_maxUnitOfMeasure->setText(symbolOfUnitOfMeasure);
+    ui->sismograph_ch1_2->setPlotAxisXTitle(nameOfUnitOfMeasure + "(" +symbolOfUnitOfMeasure + ")");
 
     ui->lcdCh1->setPrecision(3);
 
+    setMonitorColor(color.name());
+
+    ui->currentGainCh1Label_2->hide();
 }
 
-void ChannelMonitorComponent::updateValue(double value, QString unitOfMeasure){
+void ChannelMonitorComponent::updateValue(double value,QString nameOfUnitOfMeasure,QString symbolOfUnitOfMeasure){
 
    MetricPrefixFormatter m_prefixFormater;
    QString formatedPrefix = m_prefixFormater.getFormatedMeasureUnit(value);
    double formatedValue = m_prefixFormater.getFormatedValue(value);
 
     ui->lcdCh1->display(formatedValue);
-    ui->labelCh1->setText(formatedPrefix + unitOfMeasure);
+    ui->labelCh1->setText(formatedPrefix + symbolOfUnitOfMeasure);
 
     ui->scaleCh1->setValue(formatedValue);
 
-    ui->sismograph_ch1_2->setUnitOfMeasure(unitOfMeasure);
+    ui->sismograph_ch1_2->setUnitOfMeasure(nameOfUnitOfMeasure, symbolOfUnitOfMeasure);
     ui->sismograph_ch1_2->plot(value);
-    checkPeakValues(value, unitOfMeasure);
+    checkPeakValues(value, symbolOfUnitOfMeasure);
 }
 
 
@@ -54,15 +67,13 @@ void ChannelMonitorComponent::checkPeakValues(double value,QString unitOfMeasure
 
     if(value < m_minValue){
         m_minValue = value;
-
         ui->minCh1->display(formatedValue);
-        ui->label_min->setText(formatedPrefix + unitOfMeasure + " MIN");
+        ui->label_minUnitOfMeasure->setText(formatedPrefix + unitOfMeasure);
     }
     if(value > m_maxValue){
         m_maxValue = value;
-
         ui->maxCh1->display(formatedValue);
-        ui->label_max->setText(formatedPrefix + unitOfMeasure + " MAX");
+        ui->label_maxUnitOfMeasure->setText(formatedPrefix + unitOfMeasure);
     }
 }
 
@@ -106,6 +117,10 @@ std::string ChannelMonitorComponent::getChannelId(){ return m_channelId;}
 
 void ChannelMonitorComponent::setChannelId(std::string channelId){m_channelId = channelId;}
 
+QString ChannelMonitorComponent::getTitle(){
+    return ui->monitorTitle->text();
+}
+
 void ChannelMonitorComponent::updateUnitOfMeasure(QString unitOfMeasure){
     m_unitOfMeasure = unitOfMeasure;
     ui->labelCh1->setText(unitOfMeasure);
@@ -120,7 +135,6 @@ void ChannelMonitorComponent::updateLcdNumberPrecision(int precision){
     ui->minCh1->setPrecision(precision);
     ui->minCh1->setDigitCount(4 + precision);
 
-
     ui->maxCh1->setPrecision(precision);
     ui->maxCh1->setDigitCount(4 + precision);
 
@@ -131,6 +145,19 @@ void ChannelMonitorComponent::updateLcdNumberPrecision(int precision){
     ui->maxCh1->display(m_maxValue);
     }
 }
+
+void ChannelMonitorComponent::setMonitorColor(QString color){
+
+    ui->sismograph_ch1_2->setColor(QColor(color));
+    ui->lcdCh1->setStyleSheet("QLCDNumber{color: "+color+" ;}");
+    ui->minCh1->setStyleSheet("QLCDNumber{color: "+color+" ;}");
+    ui->maxCh1->setStyleSheet("QLCDNumber{color: "+color+" ;}");
+}
+
+void ChannelMonitorComponent::setNumSamples(int numSamples){
+    ui->sismograph_ch1_2->setNumSamples(numSamples);
+}
+
 
 ChannelMonitorComponent::~ChannelMonitorComponent()
 {

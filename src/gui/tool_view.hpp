@@ -15,6 +15,8 @@
 #include "generic_menu.hpp"
 #include "linked_button.hpp"
 
+#include <libm2k/analog/dmm.hpp>
+
 namespace Ui {
 class ToolView;
 }
@@ -66,9 +68,9 @@ public:
 	void setGeneralSettingsMenu(QWidget* menu, bool dockable);
 
 	ChannelWidget* buildNewChannel(ChannelManager* channelManager, GenericMenu* menu, bool dockable, int chId,
-				       bool deletable, bool simplified, QColor color, const QString& fullName,
+                       bool deletable, bool simplified, QColor color, const QString& fullName,
 				       const QString& shortName);
-    void buildChannelGroup(ChannelWidget* mainChannal, std::vector<ChannelWidget*> channelGroup);
+    void buildChannelGroup(ChannelManager* channelManager,ChannelWidget* mainChannal, std::vector<ChannelWidget*> channelGroup);
 	void buildNewInstrumentMenu(GenericMenu* menu, bool dockable, const QString& name, bool checkBoxVisible = false,
 				    bool checkBoxChecked = false);
 

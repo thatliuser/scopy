@@ -2,6 +2,7 @@
 #define CHANNELMONITORCOMPONENT_H
 
 #include <QWidget>
+#include "customFifo.hpp"
 
 namespace Ui {
 class ChannelMonitorComponent;
@@ -16,12 +17,15 @@ public:
     explicit ChannelMonitorComponent(QWidget *parent = nullptr);
     ~ChannelMonitorComponent();
 
-    void init(double value, QString unitOfMeasure, QString title);
+    void init(double value, QString nameOfUnitOfMeasure,QString symbolOfUnitOfMeasure, QString title, QColor color);
     std::string getChannelId();
     void setChannelId(std::string channelId);
     void checkPeakValues(double value, QString unitOfMeasure);
     void updateUnitOfMeasure(QString unitOfMeasure);
     QString getUnitOfMeasure();
+
+    QString getTitle();
+
 
 public Q_SLOTS:
     void displayPeakHold(bool checked);
@@ -29,9 +33,11 @@ public Q_SLOTS:
     void displayHistory(bool checked);
     void displayScale(bool checked);
     void updateLcdNumberPrecision(int precision);
+    void setMonitorColor(QString color);
+    void setNumSamples(int numSampls);
 
 public Q_SIGNAL:
-    void updateValue(double value, QString unitOfMeasure);
+    void updateValue(double value, QString nameOfUnitOfMeasure,QString symbolOfUnitOfMeasure);
 
 private:
     Ui::ChannelMonitorComponent *ui;
