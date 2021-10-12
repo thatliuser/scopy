@@ -13,6 +13,7 @@
 #include "gui/iiomonitormenu.hpp"
 #include "gui/monitorcontainer.hpp"
 #include "iiomonitorgeneralsettingsmenu.hpp"
+#include "plotcontainer.hpp"
 
 /* libm2k includes */
 #include <libm2k/analog/m2kanalogin.hpp>
@@ -54,8 +55,10 @@ private:
 
     void initChannels();
 
+    PlotContainer* plotContainer;
+
     // /////TO BE REOMVED/////
-    void testScaleFct();
+
     std::vector<double> testScale;
     int i;
 
@@ -64,6 +67,9 @@ private:
 public Q_SLOTS:
     void readChannelValues();
     void toggleTimer(bool enabled);
+
+    // /////TO BE REOMVED/////
+    void testScaleFct();
 };
 }
 

@@ -18,8 +18,8 @@ struct ToolViewRecipe
 
 	bool hasPairSettingsBtn{false};
 
-	bool hasChannels{false};
-	ChannelsPositionEnum channelsPosition{ChannelsPositionEnum::HORIZONTAL};
+    bool hasChannels{false};
+    ChannelsPositionEnum channelsPosition{ChannelsPositionEnum::HORIZONTAL};
 };
 
 class ToolViewBuilder

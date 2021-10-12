@@ -66,6 +66,8 @@ public:
 
 	void setMenuFloating(bool floating);
 
+    void setMenuButtonVisibility(bool visible);
+
 protected:
 	bool eventFilter(QObject *object, QEvent *event) override;
 
