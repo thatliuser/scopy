@@ -806,6 +806,11 @@ void dBgraph::mousePressEvent(QMouseEvent *event)
 {
 	if (event->button() == Qt::RightButton) {
 		Q_EMIT resetZoom();
+#ifdef __ANDROID__
+	} else if (event->type() == QEvent::MouseButtonDblClick) {
+		zoomer->popZoom();
+		Q_EMIT zoomOut();
+#endif
 	}
 }
 
@@ -813,6 +818,13 @@ void dBgraph::onResetZoom()
 {
 	zoomer->resetZoom();
 }
+
+#ifdef __ANDROID__
+void dBgraph::onZoomOut()
+{
+	zoomer->popZoom();
+}
+#endif
 
 void dBgraph::showEvent(QShowEvent *event)
 {
