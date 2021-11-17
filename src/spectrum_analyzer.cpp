@@ -605,6 +605,12 @@ SpectrumAnalyzer::SpectrumAnalyzer(struct iio_context *ctx, Filter *filt,
 	readPreferences();
 
 	ui->btnHelp->setUrl("https://wiki.analog.com/university/tools/m2k/scopy/spectrumanalyzer");
+
+
+#ifdef __ANDROID__
+	ui->btnAddRef->setIconSize(QSize(24, 24));
+#endif
+
 }
 
 SpectrumAnalyzer::~SpectrumAnalyzer()
