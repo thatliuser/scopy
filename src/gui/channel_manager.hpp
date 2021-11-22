@@ -47,16 +47,17 @@ public:
 
 public Q_SLOTS:
 	void changeParent(QWidget* newParent);
+	void toggleChannelManager(bool toggled);
 
 Q_SIGNALS:
 	void configureAddBtn(QWidget* menu, bool dockable);
 	void positionChanged(ChannelsPositionEnum position);
+	void channelManagerToggled(bool toggled);
 
 private:
 	QWidget* m_parent;
 	QScrollArea* m_scrollArea;
 	QWidget* m_channelsWidget;
-	QPushButton* m_switchBtn;
 
 	bool m_hasAddBtn;
 	CustomPushButton* m_addChannelBtn;
@@ -66,6 +67,9 @@ private:
 	QList<ChannelWidget*> m_channelsList;
 
     bool m_channelIdVisible;
+
+	QPushButton *toggleChannels;
+	bool channelMnagerToggled;
 };
 } // namespace gui
 } // namespace scopy

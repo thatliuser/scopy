@@ -34,6 +34,7 @@ ToolView::ToolView(QWidget* parent)
     m_ui->widgetMenuAnim->setMaximumWidth(0);
 
     connect(m_ui->widgetMenuAnim, &MenuAnim::finished, this, &ToolView::rightMenuFinished);
+
 }
 
 ToolView::~ToolView() { delete m_ui; }
@@ -128,17 +129,23 @@ void ToolView::settingsPanelUpdate(int id)
 
 void ToolView::buildChannelsContainer(ChannelManager* cm, ChannelsPositionEnum position)
 {
+	connect(cm, &ChannelManager::channelManagerToggled, this, [=](bool toggled){
+		m_ui->widgetVerticalChannels->toggleMenu(toggled);
+	});
     connect(cm, &ChannelManager::configureAddBtn, this, &ToolView::configureAddMathBtn);
 
     connect(this, &ToolView::changeParent, cm, &ChannelManager::changeParent);
     connect(cm, &ChannelManager::positionChanged, this, [=](ChannelsPositionEnum position) {
         if (position == ChannelsPositionEnum::VERTICAL) {
-            m_ui->widgetHorizontalChannels->setVisible(false);
+			m_ui->widgetHorizontalChannels->setVisible(false);
             m_ui->widgetVerticalChannels->setVisible(true);
 
             if (!m_ui->widgetMenuBtns->isVisible()) {
                 m_ui->widgetFooter->setVisible(false);
             }
+
+			m_ui->widgetHorizontalChannels->layout()->setSpacing(0);
+			m_ui->widgetHorizontalChannels->layout()->setMargin(0);
 
             Q_EMIT changeParent(m_ui->widgetVerticalChannelsContainer);
         } else {
@@ -287,12 +294,21 @@ ChannelWidget* ToolView::buildNewChannel(ChannelManager* channelManager, Generic
     return ch;
 }
 
+adiscope::MenuAnim* ToolView::addMenuToStack(){
+	return m_ui->widgetMenuAnim;
+}
+
 void ToolView::buildChannelGroup(ChannelManager* channelManager, ChannelWidget* mainChannal, std::vector<ChannelWidget*> channelGroup){
 
     for(ChannelWidget* ch : channelGroup){
         ch->setMenuButtonVisibility(false);
-        channelManager->setChannelAlignment(ch,Qt::AlignHCenter);
+        ch->setBottomLineVIsibility(false);
+//        channelManager->setChannelAlignment(ch,Qt::AlignHCenter);
     }
+	mainChannal->setIsMainChannel(true);
+	mainChannal->setBottomLineVIsibility(false);
+	channelManager->setChannelAlignment(mainChannal,Qt::AlignLeft);
+
     connect(mainChannal, &ChannelWidget::enabled,this, [=](){
         for(ChannelWidget* ch : channelGroup){
             if(mainChannal->menuButton()->isEnabled()){
@@ -390,7 +406,12 @@ void ToolView::setWidgetVisibility(int widgetId, bool visible){
 }
 
 bool ToolView::isWidgetHidden(int widgetId){
-    return  m_docksList.at(widgetId)->isHidden();
+	return  m_docksList.at(widgetId)->isHidden();
+}
+
+void ToolView::setHeaderVisibility(bool visible)
+{
+	m_ui->widgetHeader->setVisible(visible);
 }
 
 
@@ -482,6 +503,9 @@ void ToolView::addBottomExtraWidget(QWidget* widget) { m_ui->widgetBottomExtra->
 QWidget* ToolView::getCentralWidget() { return m_ui->widgetCentral; }
 
 QStackedWidget* ToolView::getStackedWidget() { return m_ui->stackedWidget; }
+void ToolView::setStackedWidget(QStackedWidget* sw){
+	m_ui->stackedWidget = sw;
+}
 
 void ToolView::setInstrumentNotesVisible(bool visible) { m_ui->widgetInstrumentNotes->setVisible(visible); }
 
