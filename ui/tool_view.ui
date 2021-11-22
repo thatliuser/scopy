@@ -226,23 +226,29 @@
          <number>0</number>
         </property>
         <item>
-         <widget class="QWidget" name="widgetVerticalChannels" native="true">
+         <widget class="adiscope::MenuAnim" name="widgetVerticalChannels" native="true">
           <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+           <sizepolicy hsizetype="Maximum" vsizetype="Expanding">
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
           </property>
           <property name="minimumSize">
            <size>
-            <width>190</width>
+            <width>110</width>
             <height>0</height>
            </size>
           </property>
           <property name="maximumSize">
            <size>
-            <width>190</width>
+            <width>160</width>
             <height>16777215</height>
+           </size>
+          </property>
+          <property name="baseSize">
+           <size>
+            <width>0</width>
+            <height>0</height>
            </size>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_5">
@@ -264,12 +270,21 @@
            <item>
             <widget class="QWidget" name="widgetVerticalChannelsContainer" native="true">
              <property name="sizePolicy">
-              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+              <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
                <horstretch>0</horstretch>
                <verstretch>0</verstretch>
               </sizepolicy>
              </property>
+             <property name="minimumSize">
+              <size>
+               <width>200</width>
+               <height>0</height>
+              </size>
+             </property>
              <layout class="QVBoxLayout" name="verticalLayout_4">
+              <property name="spacing">
+               <number>0</number>
+              </property>
               <property name="leftMargin">
                <number>0</number>
               </property>
@@ -393,7 +408,7 @@
                </property>
                <property name="minimumSize">
                 <size>
-                 <width>340</width>
+                 <width>300</width>
                  <height>0</height>
                 </size>
                </property>
@@ -615,15 +630,15 @@ QPushButton:checked { border-image: url(:/icons/common/setup_btn_checked.svg); }
    <container>1</container>
   </customwidget>
   <customwidget>
+   <class>adiscope::LinkedButton</class>
+   <extends>QPushButton</extends>
+   <header>gui/linked_button.hpp</header>
+  </customwidget>
+  <customwidget>
    <class>adiscope::RunSingleWidget</class>
    <extends>QWidget</extends>
    <header>gui/runsinglewidget.h</header>
    <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>adiscope::LinkedButton</class>
-   <extends>QPushButton</extends>
-   <header>gui/linked_button.hpp</header>
   </customwidget>
   <customwidget>
    <class>scopy::gui::SettingsPairWidget</class>

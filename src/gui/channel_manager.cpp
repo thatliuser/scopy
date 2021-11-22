@@ -11,17 +11,27 @@ ChannelManager::ChannelManager(ChannelsPositionEnum position, QWidget* parent)
 	: QWidget(parent)
 	, m_scrollArea(new QScrollArea(parent))
 	, m_channelsWidget(new QWidget(m_scrollArea))
-	, m_switchBtn(new QPushButton(m_scrollArea))
 	, m_hasAddBtn(false)
-	, m_addChannelBtn(new CustomPushButton(m_scrollArea))
+	, m_addChannelBtn(new CustomPushButton()) //check if parent removed
     , m_position(position)
-    , m_channelIdVisible(true)
+	, m_channelIdVisible(true)
 {
 	if (m_position == ChannelsPositionEnum::VERTICAL) {
 		m_channelsWidget->setLayout(new QVBoxLayout(m_channelsWidget));
 
 		m_scrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
 		m_scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+
+
+		channelMnagerToggled = false;
+		toggleChannels = new QPushButton(this);
+		toggleChannels->setFixedWidth(20);
+		toggleChannels->setCheckable(true);
+		toggleChannels->setChecked(true);
+
+		connect(toggleChannels, &QPushButton::clicked, this, &ChannelManager::toggleChannelManager);
+		m_channelsWidget->layout()->addWidget(toggleChannels);
+
 	} else {
 		m_channelsWidget->setLayout(new QHBoxLayout(m_channelsWidget));
 
@@ -31,6 +41,7 @@ ChannelManager::ChannelManager(ChannelsPositionEnum position, QWidget* parent)
 
 	m_channelsWidget->layout()->setSpacing(0);
 	m_channelsWidget->layout()->setMargin(0);
+	m_channelsWidget->layout()->setContentsMargins(QMargins(0,0,0,0));
 	m_channelsWidget->layout()->setSizeConstraint(QLayout::SetMinAndMaxSize);
 
 	m_scrollArea->setWidget(m_channelsWidget);
@@ -38,45 +49,29 @@ ChannelManager::ChannelManager(ChannelsPositionEnum position, QWidget* parent)
     //m_scrollArea->setStyleSheet("background-color:orange");
     //m_channelsWidget->setStyleSheet("background-color:red");
       //  m_scrollArea->setSizePolicy(m_channelsWidget->sizePolicy());
+
+
+
 }
 
 ChannelManager::~ChannelManager()
 {
     delete m_channelsWidget;
 	delete m_addChannelBtn;
-	delete m_switchBtn;
 	delete m_parent;
 }
 
 void ChannelManager::build(QWidget* parent)
 {
 	m_parent = parent;
-
-	// Experimental - change orientation at runtime
-    /*
-    setDynamicProperty(m_switchBtn, "blue_button", true);
-	m_switchBtn->setCheckable(true);
-	m_switchBtn->setFlat(true);
-	m_switchBtn->setText("Switch");
-	connect(m_switchBtn, &QPushButton::toggled, [=]() {
-		if (m_position == ChannelsPositionEnum::VERTICAL) {
-			m_position = ChannelsPositionEnum::HORIZONTAL;
-		} else {
-			m_position = ChannelsPositionEnum::VERTICAL;
-		}
-		Q_EMIT positionChanged(m_position);
-	});
-
-    m_parent->layout()->addWidget(m_switchBtn);
-    */
 	m_parent->layout()->addWidget(m_scrollArea);
-
 }
 
 ChannelWidget* ChannelManager::buildNewChannel(int chId, bool deletable, bool simplefied, QColor color,
                            const QString& fullName, const QString& shortName)
 {
 	ChannelWidget* ch = new ChannelWidget(chId, deletable, simplefied, color);
+	m_channelsWidget->layout()->setMargin(0);
 
     m_channelsWidget->layout()->addWidget(ch);
     if(m_channelIdVisible){
@@ -164,7 +159,6 @@ void ChannelManager::changeParent(QWidget* newParent)
 	}
 
 	m_parent = newParent;
-	m_parent->layout()->addWidget(m_switchBtn);
 	m_parent->layout()->addWidget(m_scrollArea);
 	m_parent->layout()->addWidget(m_addChannelBtn);
 }
@@ -207,4 +201,16 @@ void ChannelManager::setChannelAlignment(ChannelWidget* ch, Qt::Alignment alignm
 
 void ChannelManager::setChannelIdVisible(bool visible){
     m_channelIdVisible = visible;
+}
+
+void ChannelManager::toggleChannelManager(bool toggled){
+	channelMnagerToggled = !channelMnagerToggled;
+	Q_EMIT channelManagerToggled(toggled);
+
+	for(auto ch : m_channelsList){
+		ch->toggleChannel(channelMnagerToggled);
+		if(ch->isMainChannel()){
+			ch->setMenuButtonVisibility(toggled);
+		}
+	}
 }

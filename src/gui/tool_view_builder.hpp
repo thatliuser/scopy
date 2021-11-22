@@ -20,6 +20,8 @@ struct ToolViewRecipe
 
     bool hasChannels{false};
     ChannelsPositionEnum channelsPosition{ChannelsPositionEnum::HORIZONTAL};
+
+	bool hasHeader{true};
 };
 
 class ToolViewBuilder

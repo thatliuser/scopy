@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>398</width>
-    <height>369</height>
+    <width>422</width>
+    <height>424</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,6 +16,63 @@
   <layout class="QVBoxLayout" name="verticalLayout_2">
    <item>
     <layout class="QVBoxLayout" name="verticalLayout">
+     <item>
+      <layout class="QVBoxLayout" name="verticalLayout_4">
+       <property name="spacing">
+        <number>15</number>
+       </property>
+       <property name="topMargin">
+        <number>0</number>
+       </property>
+       <property name="bottomMargin">
+        <number>0</number>
+       </property>
+       <item>
+        <widget class="QLabel" name="menu_title">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+         <property name="general_settings_label" stdset="0">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="Line" name="line_2">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>400</width>
+           <height>2</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>0</width>
+           <height>2</height>
+          </size>
+         </property>
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="blue_line" stdset="0">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout_5">
        <property name="spacing">
@@ -222,6 +279,46 @@
       </layout>
      </item>
      <item>
+      <layout class="QHBoxLayout" name="horizontalLayout_2">
+       <item>
+        <widget class="QLabel" name="label_4">
+         <property name="text">
+          <string>History Style</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="lineStyle">
+         <item>
+          <property name="text">
+           <string>Solid Line</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Dot Line</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Dash Line</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Dash-Dot Line</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Dash-Dot-Dot Line</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
       <layout class="QHBoxLayout" name="horizontalLayout">
        <item>
         <widget class="QPushButton" name="setColorBtn">
@@ -382,6 +479,57 @@ line-height: 14px;
         </item>
        </layout>
       </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btnSetAcctive">
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>30</height>
+        </size>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QPushButton{
+height:25px;
+
+font-size: 12px;
+line-height: 14px;
+}</string>
+       </property>
+       <property name="text">
+        <string>Set acctive </string>
+       </property>
+       <property name="blue_button" stdset="0">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btnBringFront">
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>30</height>
+        </size>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QPushButton{
+height:25px;
+
+font-size: 12px;
+line-height: 14px;
+}</string>
+       </property>
+       <property name="text">
+        <string>Bring front</string>
+       </property>
+       <property name="blue_button" stdset="0">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <layout class="QVBoxLayout" name="divs"/>
      </item>
     </layout>
    </item>

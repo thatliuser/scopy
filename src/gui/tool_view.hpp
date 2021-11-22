@@ -17,6 +17,8 @@
 
 #include <libm2k/analog/dmm.hpp>
 
+#include "menu_anim.hpp"
+
 namespace Ui {
 class ToolView;
 }
@@ -81,6 +83,11 @@ public:
 
     void setWidgetVisibility(int widgetId, bool visible);
     bool isWidgetHidden(int widgetId);
+
+	void setHeaderVisibility(bool visible);
+
+	adiscope::MenuAnim* addMenuToStack();
+	void setStackedWidget(QStackedWidget* sw);
 
 private:
 	void configureLastOpenedMenu();

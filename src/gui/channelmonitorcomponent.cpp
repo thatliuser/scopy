@@ -13,13 +13,11 @@ ChannelMonitorComponent::ChannelMonitorComponent(QWidget *parent) :
     m_maxValue(-Q_INFINITY)
 {
     ui->setupUi(this);
-
-    ui->frame->setStyleSheet("QWidget#frame{border: 3px solid grey;}");
-
-
+	ui->frame->setStyleSheet("QWidget#frame{border: 3px solid grey;}");
 }
 
 void ChannelMonitorComponent::init(double value,QString nameOfUnitOfMeasure,QString symbolOfUnitOfMeasure, QString title,QColor color){
+
 
     //updateValue(value,unitOfMeasure);
     ui->scaleCh1->setOrientation(Qt::Horizontal);
@@ -35,6 +33,12 @@ void ChannelMonitorComponent::init(double value,QString nameOfUnitOfMeasure,QStr
     ui->label_minUnitOfMeasure->setText(symbolOfUnitOfMeasure);
     ui->label_maxUnitOfMeasure->setText(symbolOfUnitOfMeasure);
     ui->sismograph_ch1_2->setPlotAxisXTitle(nameOfUnitOfMeasure + "(" +symbolOfUnitOfMeasure + ")");
+
+
+	setColor(color);
+
+	//ui->sismograph_ch1_2->setSampleRate(0.2);
+	ui->sismograph_ch1_2->setNumSamples(10);
 
     ui->lcdCh1->setPrecision(3);
 
@@ -88,13 +92,17 @@ void ChannelMonitorComponent::displayPeakHold(bool checked){
     if(checked){
         ui->minCh1->show();
         ui->label_min->show();
+		ui->label_minUnitOfMeasure->show();
         ui->maxCh1->show();
         ui->label_max->show();
+		ui->label_maxUnitOfMeasure->show();
     }else{
         ui->minCh1->hide();
         ui->label_min->hide();
+		ui->label_minUnitOfMeasure->hide();
         ui->maxCh1->hide();
         ui->label_max->hide();
+		ui->label_maxUnitOfMeasure->hide();
     }
 }
 
@@ -154,10 +162,29 @@ void ChannelMonitorComponent::setMonitorColor(QString color){
     ui->maxCh1->setStyleSheet("QLCDNumber{color: "+color+" ;}");
 }
 
-void ChannelMonitorComponent::setNumSamples(int numSamples){
-    ui->sismograph_ch1_2->setNumSamples(numSamples);
+void ChannelMonitorComponent::setHistoryDuration(int duration){
+	ui->sismograph_ch1_2->setHistoryDuration(duration);
 }
 
+void ChannelMonitorComponent::setRecordingInterval(double interval){
+	ui->sismograph_ch1_2->setSampleRate(1/interval);
+}
+
+void ChannelMonitorComponent::setColor(QColor color){
+	m_color = color;
+	ui->sismograph_ch1_2->setColor(color);
+	ui->lcdCh1->setStyleSheet("QLCDNumber{color: "+color.name()+" ;}");
+	ui->minCh1->setStyleSheet("QLCDNumber{color: "+color.name()+" ;}");
+	ui->maxCh1->setStyleSheet("QLCDNumber{color: "+color.name()+" ;}");
+
+}
+
+QColor ChannelMonitorComponent::getColor(){	return m_color;}
+void ChannelMonitorComponent::setID(int id){m_id = id;}
+int ChannelMonitorComponent::getID(){return m_id;}
+void ChannelMonitorComponent::setLineStyle(Qt::PenStyle lineStyle){
+	ui->sismograph_ch1_2->setLineStyle(lineStyle);
+}
 
 ChannelMonitorComponent::~ChannelMonitorComponent()
 {

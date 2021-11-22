@@ -700,20 +700,9 @@ QPushButton:checked { border-image: url(:/icons/setup_btn_checked.svg); }</strin
  </widget>
  <customwidgets>
   <customwidget>
-   <class>adiscope::CustomPushButton</class>
-   <extends>QPushButton</extends>
-   <header>gui/customPushButton.hpp</header>
-  </customwidget>
-  <customwidget>
    <class>adiscope::DetachDragZone</class>
    <extends>QWidget</extends>
    <header>gui/detachdragzone.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>adiscope::MenuAnim</class>
-   <extends>QWidget</extends>
-   <header>gui/menu_anim.hpp</header>
    <container>1</container>
   </customwidget>
   <customwidget>
@@ -723,18 +712,30 @@ QPushButton:checked { border-image: url(:/icons/setup_btn_checked.svg); }</strin
    <container>1</container>
   </customwidget>
   <customwidget>
+   <class>adiscope::LinkedButton</class>
+   <extends>QPushButton</extends>
+   <header>gui/linked_button.hpp</header>
+  </customwidget>
+  <customwidget>
+   <class>adiscope::CustomPushButton</class>
+   <extends>QPushButton</extends>
+   <header>gui/customPushButton.hpp</header>
+  </customwidget>
+  <customwidget>
+   <class>adiscope::MenuAnim</class>
+   <extends>QWidget</extends>
+   <header>gui/menu_anim.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
    <class>adiscope::RunSingleWidget</class>
    <extends>QWidget</extends>
    <header>gui/runsinglewidget.h</header>
    <container>1</container>
   </customwidget>
-  <customwidget>
-   <class>adiscope::LinkedButton</class>
-   <extends>QPushButton</extends>
-   <header>gui/linked_button.hpp</header>
-  </customwidget>
  </customwidgets>
  <resources>
+  <include location="../resources/resources.qrc"/>
   <include location="../resources/resources.qrc"/>
   <include location="../resources/resources.qrc"/>
  </resources>

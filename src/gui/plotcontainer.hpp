@@ -26,36 +26,52 @@ namespace adiscope {
 
 class PlotContainer : public QWidget
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
-    explicit PlotContainer(libm2k::context::M2k *ctx, QWidget *parent = nullptr);
-    ~PlotContainer();
+	explicit PlotContainer(libm2k::context::M2k *ctx, QWidget *parent = nullptr);
+	~PlotContainer();
 
-    CapturePlot *m_plot;
 
-    void setPlotData(double data, QString plotCurveId);
+	void updatePlot(QMap<int,QPair<double,QColor>> updateValues);
 
-    void updatePlot(QMap<QString,double> updateValues);
+	void setXAxisScale(double min, double max);
+	void setYAxisScale(double min, double max);
 
-    void setXAxisUnit(QString unit);
-    void setYAxisUnit(QString unit);
-    void setXAxisScale(double min, double max);
-    void setYAxisScale(double min, double max);
+	void autoscaleY(double val, QString key);
 
-    void autoscaleY(double val);
+	void setHistoryDuration(double duration);
+	int getNumSamples() const;
+	void setNumSamples(int num);
+	double getSampleRate() const;
+	void setSampleRate(double rate);
+
+	void bringCurveToFront(int curveKey);
+	void setAxisActive(int curveKey);
+
+
+	CapturePlot* getPlot();
+
 
 private:
-    Ui::PlotContainer *ui;
-    libm2k::context::M2k* m_m2k_context;
+	Ui::PlotContainer *ui;
+	libm2k::context::M2k* m_m2k_context;
 
-    libm2k::analog::M2kAnalogOut* m_m2k_analogout;
-    adiscope::FftDisplayPlot* plot;
+	libm2k::analog::M2kAnalogOut* m_m2k_analogout;
+	CapturePlot* m_plot;
+	QVector<double> m_plotPoints;
+	QMap<int, QVector<double>> m_curves;
+	QMap<int, QwtPlotCurve*> plotManager;
 
-    QVector<double> m_plotPoints;
-    QMap<QString, QVector<double>> m_curves;
+	void updatePlotCurve(int key, QVector<double> xdata, QVector<double> ydata, QColor color);
+	void removeCurveFromPlot(int key);
+	bool checkEmptyCurve(int key);
 
-    double m_currentScale;
+	QVector<double> xdata;
+
+	double m_currentScale;
+	int numSamples;
+	double sampleRate;
 };
 }
 #endif // PLOTCONTAINER_HPP

@@ -301,29 +301,25 @@ QTextBrowser#aboutTextBrowser{
 	color: white;
 }
 
-/* Label, line and arrow button dividers between sections */
-
-QLabel[subsection_label=true]{
-	font-size: 12px;
-	color: rgba(255, 255, 255, 70);
-}
-
-QFrame[subsection_line=true]{ border: 1px solid rgba(255, 255, 255, 70); }
-
-QPushButton[subsection_arrow_button=true]{
-	max-height: 6px;
-	max-width: 10px;
-	border-image: url(:/icons/sba_cmb_box_arrow.svg);
-}
-
-QPushButton[subsection_arrow_button=true]:checked{
-	max-height: 10px;
-	max-width:  6px;
-	border-image: url(:/icons/sba_cmb_box_arrow_right.svg);
-}
-
 
 /* Label associated with settings menu, right above a blue line divider */
+
+/*********************************** SubsectionSeparator ***************************************/
+QLabel#lblSubsectionSeparator{
+        font-size: 12px;
+	color: rgba(255, 255, 255, 70);
+}
+QFrame#lineSubsectionSeparator{ border: 1px solid rgba(255, 255, 255, 70); }
+QPushButton#btnSubsectionSeparator, Channel#toggleChannels:checked{
+        max-height: 6px;
+	max-width: 10px;
+	border-image: url(:/icons/sba_cmb_box_arrow_right.svg);
+}
+QPushButton#btnSubsectionSeparator:checked, Channel#toggleChannels{
+        max-height: 10px;
+	max-width:  6px;
+	border-image: url(:/icons/sba_cmb_box_arrow.svg);
+}
 
 QLabel[general_settings_label=true]{
 	color: white;

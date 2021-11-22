@@ -23,6 +23,7 @@
 
 #include <QVector>
 #include <QWidget>
+#include <QMap>
 
 #include <qwt_plot.h>
 #include <qwt_plot_curve.h>
@@ -54,7 +55,6 @@ namespace adiscope {
 
 		int getNumSamples() const;
 		void setNumSamples(int num);
-
 		double getSampleRate() const;
 		void setSampleRate(double rate);
 
@@ -66,9 +66,12 @@ namespace adiscope {
 		void reset();
 		void setColor(const QColor& color);
 		void updateScale(const QwtScaleDiv);
-                void setLineWidth(qreal width);
+		void updateYScale(double max, double min);
+		void setLineWidth(qreal width);
+		void setLineStyle(Qt::PenStyle lineStyle);
+		void setHistoryDuration(double time);
 
-        private:
+	private:
 		QwtPlotCurve curve;
 		unsigned int numSamples;
 		double sampleRate;
@@ -78,13 +81,18 @@ namespace adiscope {
         QString m_unitOfMeasureSymbol;
 
 		QVector<double> ydata;
-		CustomFifo<double> xdata;
+		QVector<double> xdata;
+
+		void updateScale();
+		double findMaxInFifo();
 
      Q_SIGNALS:
         void dataChanged(std::vector<double> data);
 
     private:
          CustomQwtScaleDraw* scaleLabel;
+		 double m_currentMaxValue;
+
 	};
 }
 

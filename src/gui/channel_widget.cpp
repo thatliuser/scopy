@@ -43,7 +43,8 @@ ChannelWidget::ChannelWidget(int id, bool deletable, bool simplified,
 	m_color(color),
 	m_math(false),
 	m_function(""),
-	m_ref(false)
+	m_ref(false),
+	m_isMainChannel(false)
 {
 	init();
 	nameButton()->installEventFilter(this);
@@ -61,6 +62,7 @@ ChannelWidget::~ChannelWidget()
 void ChannelWidget::init()
 {
 	m_ui->setupUi(this);
+	m_ui->toggleChannels->hide();
 	setId(m_id);
 	m_ui->delBtn->setVisible(m_deletable);
 	setColor(m_color);
@@ -68,8 +70,8 @@ void ChannelWidget::init()
 	if (m_simplified) {
 		m_ui->name->hide();
 		m_ui->line->hide();
-		m_ui->verticalSpacer->changeSize(0, 0, QSizePolicy::Fixed,
-			QSizePolicy::Fixed);
+//		m_ui->verticalSpacer->changeSize(0, 0, QSizePolicy::Fixed,
+//			QSizePolicy::Fixed);
 		QString stylesheet = styleSheet();
 		stylesheet += QString("QCheckBox#box { spacing: 12px; }");
 		setStyleSheet(stylesheet);
@@ -279,6 +281,11 @@ void ChannelWidget::on_delBtn_clicked()
 	Q_EMIT deleteClicked();
 }
 
+bool ChannelWidget::isMainChannel() const
+{
+	return m_isMainChannel;
+}
+
 void ChannelWidget::setButtonNoGroup(QAbstractButton *btn)
 {
 	QButtonGroup *group = btn->group();
@@ -289,8 +296,37 @@ void ChannelWidget::setButtonNoGroup(QAbstractButton *btn)
 
 void ChannelWidget::setMenuButtonVisibility(bool visible){
     if(visible){
-        m_ui->btn->hide();
+		m_ui->btn->show();
     }else{
-        m_ui->btn->hide();
+		m_ui->btn->hide();
     }
+}
+
+void ChannelWidget::setBottomLineVIsibility(bool visible){
+    if(visible){
+        m_ui->line->show();
+    }else{
+        m_ui->line->hide();
+    }
+}
+
+void ChannelWidget::toggleChannel(bool toggled){
+	if(toggled){
+		m_ui->name->hide();
+	}else{
+		m_ui->name->show();
+	}
+}
+
+void ChannelWidget::setIsMainChannel(bool mainChannel)
+{
+	if(mainChannel){
+		m_isMainChannel = true;
+		m_ui->box->hide();
+		m_ui->toggleChannels->show();
+		connect(m_ui->toggleChannels, &QPushButton::clicked, this, [=](bool toggled){
+			m_ui->box->click();
+		});
+
+	}
 }
