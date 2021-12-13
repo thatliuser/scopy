@@ -45,25 +45,25 @@ void IIOMonitorGenericMenu::init(QString title, QColor* color, bool showAll){
 	scaleSection->setContent(scaleWidget);
 
 	//change color
-	QWidget *changeColorWidget = new QWidget(this);
-	auto *changeColorLayout = new QHBoxLayout(changeColorWidget);
-	auto *changeColorBtn = new QPushButton("Set color",changeColorWidget);
-	auto *colorValue = new QLineEdit(changeColorWidget);
-	changeColorBtn->setStyleSheet("QPushButton{"
-										"height:25px;"
-										"background-color: #4A64FF;"
-										"border-radius: 4px;"
-										"font-size: 12px;"
-										"line-height: 14px;"
-										"color: #FFFFFF;}"
-										"QPushButton:hover{"
-										"background-color: #4a34ff;"
-										"}");
+//	QWidget *changeColorWidget = new QWidget(this);
+//	auto *changeColorLayout = new QHBoxLayout(changeColorWidget);
+//	auto *changeColorBtn = new QPushButton("Set color",changeColorWidget);
+//	auto *colorValue = new QLineEdit(changeColorWidget);
+//	changeColorBtn->setStyleSheet("QPushButton{"
+//										"height:25px;"
+//										"background-color: #4A64FF;"
+//										"border-radius: 4px;"
+//										"font-size: 12px;"
+//										"line-height: 14px;"
+//										"color: #FFFFFF;}"
+//										"QPushButton:hover{"
+//										"background-color: #4a34ff;"
+//										"}");
 
-	changeColorLayout->addWidget(changeColorBtn);
-	changeColorLayout->addWidget(colorValue);
+//	changeColorLayout->addWidget(changeColorBtn);
+//	changeColorLayout->addWidget(colorValue);
 
-	scaleSection->setContent(changeColorWidget);
+//	scaleSection->setContent(changeColorWidget);
 
 	////history
 	auto *historyWidget = new QWidget(this);
@@ -145,9 +145,9 @@ void IIOMonitorGenericMenu::init(QString title, QColor* color, bool showAll){
 	connect(scaleSWitch, &CustomSwitch::toggled, this, [=](bool toggled){
 		Q_EMIT IIOMonitorGenericMenu::toggleScale(toggled);
 	});
-	connect(changeColorBtn, &QPushButton::clicked,this, [=](){
-	   Q_EMIT monitorColorChanged(colorValue->text());
-	});
+//	connect(changeColorBtn, &QPushButton::clicked,this, [=](){
+//	   Q_EMIT monitorColorChanged(colorValue->text());
+//	});
 	connect(historySwitch,  &CustomSwitch::toggled, this, [=](bool toggled){
 		Q_EMIT IIOMonitorGenericMenu::toggleHistory(toggled);
 	});

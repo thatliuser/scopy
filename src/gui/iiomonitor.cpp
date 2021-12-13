@@ -21,6 +21,10 @@ IIOMonitor::IIOMonitor(struct iio_context *ctx, Filter *filt,
 	ui->setupUi(this);
 	run_button = nullptr;
 
+	m_colors = {QColor("#ff7200"),QColor("#9013fe"), QColor(Qt::green),QColor(Qt::cyan), QColor(Qt::magenta),
+				QColor(Qt::yellow), QColor(Qt::gray), QColor(Qt::darkRed), QColor(Qt::darkGreen),
+				QColor(Qt::darkBlue), QColor(Qt::darkGray),QColor(Qt::black)};
+
 	scopy::gui::ToolViewRecipe recepie;
 	recepie.helpBtnUrl = "";
 	recepie.hasRunBtn = true;
@@ -85,13 +89,14 @@ IIOMonitor::IIOMonitor(struct iio_context *ctx, Filter *filt,
 	//m_toolView->addFixedTabbedWidget(generatePlotToolView(),"Plot 2",0,1,0,0,0);
 
 	m_toolView->addFixedCentralWidget(m_fixedColGrid,0,0,0,0);
-	m_toolView->setGeneralSettingsMenu(m_generalSettingsMenu,false);
 
 	connect(m_timer, &QTimer::timeout , this, &IIOMonitor::readChannelValues);
 	connect(this, &IIOMonitor::RecordingIntervalChanged, this , [=](double interval){
 		VALUE_READING_TIME_INTERVAL = interval;
 		m_timer->setInterval(interval);
 	});
+
+
 }
 
 scopy::gui::ToolView* IIOMonitor::generatePlotToolView(){
@@ -466,6 +471,9 @@ void IIOMonitor::testScaleFct(){
 
 QColor IIOMonitor::generateColor(){
 
+	if(m_color.size() < m_colors.size()){
+		return m_colors.at(m_color.size());
+	}
 	int red = rand() % 256;
 	int blue = rand() % 256;
 	int green = rand() % 256;
@@ -522,6 +530,7 @@ scopy::gui::GenericMenu* IIOMonitor::generateMenu(QString title, QColor* color){
 	auto *precisionValue = new QLineEdit(precisionWidget);
 	precisionValue->setText("3");
 	precisionLayout->addWidget(precisionBtn);
+	precisionLayout->addItem(new QSpacerItem(1,1,QSizePolicy::Expanding,QSizePolicy::Fixed));
 	precisionLayout->addWidget(precisionValue);
 
 	connect(precisionBtn, &QPushButton::clicked,this, [=](){

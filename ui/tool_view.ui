@@ -277,7 +277,7 @@
              </property>
              <property name="minimumSize">
               <size>
-               <width>200</width>
+               <width>100</width>
                <height>0</height>
               </size>
              </property>
@@ -630,15 +630,15 @@ QPushButton:checked { border-image: url(:/icons/common/setup_btn_checked.svg); }
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>adiscope::LinkedButton</class>
-   <extends>QPushButton</extends>
-   <header>gui/linked_button.hpp</header>
-  </customwidget>
-  <customwidget>
    <class>adiscope::RunSingleWidget</class>
    <extends>QWidget</extends>
    <header>gui/runsinglewidget.h</header>
    <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>adiscope::LinkedButton</class>
+   <extends>QPushButton</extends>
+   <header>gui/linked_button.hpp</header>
   </customwidget>
   <customwidget>
    <class>scopy::gui::SettingsPairWidget</class>
