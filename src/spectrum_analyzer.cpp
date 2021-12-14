@@ -2258,8 +2258,6 @@ void SpectrumAnalyzer::onScalePerDivValueChanged(double perDiv)
 
 	fft_plot->replot();
 	auto div = fft_plot->axisScaleDiv(QwtPlot::yLeft);
-	fft_plot->setYaxisMajorTicksPos(div.ticks(2));
-	fft_plot->leftHandlesArea()->repaint();
 }
 
 void SpectrumAnalyzer::onBottomValueChanged(double bottom_value)

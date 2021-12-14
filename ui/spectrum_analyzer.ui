@@ -1007,7 +1007,7 @@ min-width: 64px;
                     <x>0</x>
                     <y>0</y>
                     <width>298</width>
-                    <height>523</height>
+                    <height>356</height>
                    </rect>
                   </property>
                   <property name="sizePolicy">
@@ -1513,7 +1513,7 @@ color: rgba(255,255,255,51);
                    <rect>
                     <x>0</x>
                     <y>0</y>
-                    <width>284</width>
+                    <width>268</width>
                     <height>547</height>
                    </rect>
                   </property>
@@ -2362,9 +2362,9 @@ QPushButton:checked { border-image: url(:/icons/setup_btn_checked.svg); }</strin
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>adiscope::InstrumentNotes</class>
+   <class>adiscope::MenuAnim</class>
    <extends>QWidget</extends>
-   <header>gui/menu_anim.hpp</header>
+   <header location="global">gui/menu_anim.hpp</header>
    <container>1</container>
   </customwidget>
   <customwidget>
