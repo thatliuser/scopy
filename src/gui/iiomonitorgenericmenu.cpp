@@ -31,6 +31,9 @@ void IIOMonitorGenericMenu::init(QString title, QColor* color, bool showAll){
 		showAllLayout->addWidget(showAllSWitch);
 
 		scaleSection->setContent(showAllWidget);
+		connect(showAllSWitch, &CustomSwitch::toggled, this, [=](bool toggled){
+			Q_EMIT IIOMonitorGenericMenu::toggleAll(toggled);
+		});
 	}
 
 	//scale
@@ -43,27 +46,6 @@ void IIOMonitorGenericMenu::init(QString title, QColor* color, bool showAll){
 	scaleLayout->addWidget(scaleSWitch);
 
 	scaleSection->setContent(scaleWidget);
-
-	//change color
-//	QWidget *changeColorWidget = new QWidget(this);
-//	auto *changeColorLayout = new QHBoxLayout(changeColorWidget);
-//	auto *changeColorBtn = new QPushButton("Set color",changeColorWidget);
-//	auto *colorValue = new QLineEdit(changeColorWidget);
-//	changeColorBtn->setStyleSheet("QPushButton{"
-//										"height:25px;"
-//										"background-color: #4A64FF;"
-//										"border-radius: 4px;"
-//										"font-size: 12px;"
-//										"line-height: 14px;"
-//										"color: #FFFFFF;}"
-//										"QPushButton:hover{"
-//										"background-color: #4a34ff;"
-//										"}");
-
-//	changeColorLayout->addWidget(changeColorBtn);
-//	changeColorLayout->addWidget(colorValue);
-
-//	scaleSection->setContent(changeColorWidget);
 
 	////history
 	auto *historyWidget = new QWidget(this);
@@ -145,13 +127,13 @@ void IIOMonitorGenericMenu::init(QString title, QColor* color, bool showAll){
 	connect(scaleSWitch, &CustomSwitch::toggled, this, [=](bool toggled){
 		Q_EMIT IIOMonitorGenericMenu::toggleScale(toggled);
 	});
-//	connect(changeColorBtn, &QPushButton::clicked,this, [=](){
-//	   Q_EMIT monitorColorChanged(colorValue->text());
-//	});
+
 	connect(historySwitch,  &CustomSwitch::toggled, this, [=](bool toggled){
 		Q_EMIT IIOMonitorGenericMenu::toggleHistory(toggled);
 	});
-	connect(historySize, SIGNAL(currentIndexChanged(int)), this, SLOT(setHistorySize(int)));
+	connect(historySize, QOverload<int>::of(&QComboBox::currentIndexChanged), this,[=](int index){
+				setHistorySize(index);
+			});
 	connect(historyStyle, QOverload<int>::of(&QComboBox::currentIndexChanged), this, [=](int index){
 		Q_EMIT lineStyleChanged(lineStyleFromIdx(index));
 	});

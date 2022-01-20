@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include <QVBoxLayout>
+#include <QResizeEvent>
 
 namespace Ui {
 class MonitorContainer;
@@ -13,7 +14,7 @@ class MonitorContainer : public QWidget
 	Q_OBJECT
 
 public:
-	explicit MonitorContainer(QWidget *parent = nullptr);
+	explicit MonitorContainer(int maxCols, QWidget *parent = nullptr);
 	~MonitorContainer();
 
 	void toggleAll(bool toggled);
@@ -26,10 +27,10 @@ public:
 	void setMaxColumnNumber(int maxColumns);
 	int getMaxColumnNumber();
 
-
 private:
 
 	int m_maxCols;
+	int currentNumberOfCols;
 	int col;
 	int row;
 	std::vector<QWidget*> m_widgetList;
@@ -42,6 +43,8 @@ private:
 	Ui::MonitorContainer *ui;
 
 	void repositionWidgets(int index, int row, int col);
+	void redrawWidgets();
+	void resizeEvent(QResizeEvent *event);
 };
 
 #endif // MONITORCONTAINER_HPP

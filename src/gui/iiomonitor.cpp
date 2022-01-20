@@ -5,7 +5,8 @@
 #include "gui/verticalcontrol.hpp"
 #include "gui/customSwitch.hpp"
 #include "dynamicWidget.hpp"
-
+#include <QtConcurrent>
+#include <QFuture>
 
 using namespace adiscope;
 
@@ -36,6 +37,7 @@ IIOMonitor::IIOMonitor(struct iio_context *ctx, Filter *filt,
 
 	m_monitorChannelManager = new scopy::gui::ChannelManager(recepie.channelsPosition);
 	m_monitorChannelManager->setChannelIdVisible(false);
+	m_monitorChannelManager->setToolStatus("Stopped");
 
 	m_toolView = scopy::gui::ToolViewBuilder(recepie,m_monitorChannelManager).build();
 
@@ -44,10 +46,31 @@ IIOMonitor::IIOMonitor(struct iio_context *ctx, Filter *filt,
 
 	m_dmmList=getDmmList(m_m2k_context);
 
-	connect(m_toolView->getRunBtn(), SIGNAL(toggled(bool)), this, SLOT(toggleTimer(bool)));
+
+	connect(m_toolView->getRunBtn(), &QPushButton::toggled, this, [=](bool toggled){
+		toggleTimer(toggled);
+
+		//update status and if needed start data logging
+		if(!m_toolView->getRunBtn()->isChecked()){
+			m_monitorChannelManager->setToolStatus("Stopped");
+		}else {
+			if(dataLogger->isDataLoggerOn()){
+				m_monitorChannelManager->setToolStatus("Data Logging");
+				if(!activeChannels.empty()){
+					for(auto ch : activeChannels.keys()){
+						QString name = QString::fromStdString(activeChannels[ch].dmm->getName() + ":" + activeChannels[ch].dmmId);
+						dataLogger->createChannel(name, adiscope::Type::DOUBLE);
+					}
+				}
+				dataLogger->startLogger();
+			}else{
+				m_monitorChannelManager->setToolStatus("Running");
+			}
+		}
+	});
+
 	connect(m_toolView->getRunBtn(), SIGNAL(toggled(bool)),runButton(), SLOT(setChecked(bool)));
 	connect(runButton(), SIGNAL(toggled(bool)), m_toolView->getRunBtn(),SLOT(setChecked(bool)));
-	//	connect(m_toolView->getRunBtn(), SIGNAL(toggled(bool)),this, SLOT(startDataLogging(bool)));
 
 	// //////////////////////////////// TO BE REMOVED ////
 	testScale.push_back(0.00000000005);
@@ -68,7 +91,7 @@ IIOMonitor::IIOMonitor(struct iio_context *ctx, Filter *filt,
 
 	// ////////////////////////////////////////////
 	connect(m_toolView->getSingleBtn(), &QPushButton::toggled,this, [=](){
-		testScaleFct();
+		readChannelValues();
 	});
 
 	connect(m_toolView->getSingleBtn(), &QPushButton::clicked,this, [=](bool checked){
@@ -78,218 +101,23 @@ IIOMonitor::IIOMonitor(struct iio_context *ctx, Filter *filt,
 
 
 
-
-//	scopy::gui::ToolView *monitorsToolView =
-			initMonitorToolView();
-
-	//scopy::gui::ToolView *plotToolView = generatePlotToolView();
-
-//	m_toolView->addFixedTabbedWidget(monitorsToolView,"Monitors",0,0,0,0,0);
-//	m_toolView->addFixedTabbedWidget(plotToolView,"Plot",0,0,0,0,0);
-	//m_toolView->addFixedTabbedWidget(generatePlotToolView(),"Plot 2",0,1,0,0,0);
-
+	initMonitorToolView();
 	m_toolView->addFixedCentralWidget(m_fixedColGrid,0,0,0,0);
 
-	connect(m_timer, &QTimer::timeout , this, &IIOMonitor::readChannelValues);
+	connect(m_timer, &QTimer::timeout , this,&IIOMonitor::readChannelValues);// [=](){
+		//QtConcurrent::run(this, &IIOMonitor::readChannelValues); //starts a thread where the values are read
+	//});
+
 	connect(this, &IIOMonitor::RecordingIntervalChanged, this , [=](double interval){
 		VALUE_READING_TIME_INTERVAL = interval;
 		m_timer->setInterval(interval);
 	});
-
-
-}
-
-scopy::gui::ToolView* IIOMonitor::generatePlotToolView(){
-
-	scopy::gui::ChannelManager* channelManager;
-	scopy::gui::ToolView* toolView;
-	PlotContainer* plotContainer = new PlotContainer(m_m2k_context,this);;
-
-	scopy::gui::ToolViewRecipe plotRecepie;
-	plotRecepie.hasHeader = false;
-	plotRecepie.hasChannels = true;
-	plotRecepie.channelsPosition = scopy::gui::ChannelsPositionEnum::VERTICAL;
-
-	channelManager = new scopy::gui::ChannelManager(plotRecepie.channelsPosition);
-	channelManager->setChannelIdVisible(false);
-	toolView = scopy::gui::ToolViewBuilder(plotRecepie,channelManager).build();
-
-	toolView->addFixedCentralWidget(plotContainer,0,0,0,0);
-
-	int chId = 0;
-
-	for(libm2k::analog::DMM* dmm : m_dmmList){
-		std::vector<ChannelWidget*> channelList;
-		scopy::gui::IIOMonitorMenu* menu = new scopy::gui::IIOMonitorMenu(this);
-		menu->showAllMenu(true);
-		menu->showChangeColor(false);
-		menu->setTitle(QString::fromStdString(dmm->getName()),QColor("green"));
-
-		ChannelWidget *ch_widget =
-			toolView->buildNewChannel(channelManager, menu, true, chId, false, false, QColor("green"), QString::fromStdString(dmm->getName()), QString::fromStdString(dmm->getName()) );
-		ch_widget->enableButton()->setChecked(false);
-
-		 //////////////////
-		 std::vector<VerticalControl*> m_verticalCtrls;
-		 ///
-
-		for(auto channel : dmm->readAll()){
-		 QColor channelColor = getChannelColor(chId);
-		  //scopy::gui::IIOMonitorMenu* m = new scopy::gui::IIOMonitorMenu(this);
-		  //m->setTitle(QString::fromStdString(dmm->getName() + ": " + channel.id));
-
-		 scopy::gui::GenericMenu* m = new scopy::gui::GenericMenu(this);
-
-		  ///////////////// plot units/div and position controls
-		  m->initInteractiveMenu();
-		  m->setMenuHeader(QString::fromStdString(dmm->getName() + ": " + channel.id),new QColor(channelColor),false);
-		  m_verticalCtrls.push_back(new VerticalControl({static_cast<int>(chId)}));
-		  auto *verticalSection = new scopy::gui::SubsectionSeparator("", false,m);
-
-		  auto *unitsPerDiv = new ScaleSpinButton({
-													{"μUnits", 1E-6},
-													{"mUnits", 1E-3},
-													{"Units", 1E0},
-													{"kUnits", 1E3}
-											 }, tr("Units/Div"), 1e-4, 1e4,
-											 true, false, this);
-		  auto *verticalPosition  = new PositionSpinButton({
-														  {"μUnits", 1E-6},
-														  {"mUnits", 1E-3},
-														  {"Units", 1E0}
-												   }, tr("Position"),
-												   -5*1e4, 5*1e4, true, false, this);
-		  unitsPerDiv->setValue(1);
-		  verticalPosition->setValue(0);
-
-		  auto *autoWidget = new QWidget(this);
-		  auto *layout = new QVBoxLayout(autoWidget);
-		  layout->addWidget(new QLabel("Auto scale", this));
-		  auto *autoSwitch = new CustomSwitch(this);
-		  layout->addWidget(autoSwitch);
-
-		  auto *setCurveActiveButton = new QPushButton(this);
-		  setCurveActiveButton->setText("Set active");
-		  setCurveActiveButton->setStyleSheet("QPushButton{"
-											  "height:25px;"
-											  "background-color: #4A64FF;"
-											  "border-radius: 4px;"
-											  "font-size: 12px;"
-											  "line-height: 14px;"
-											  "color: #FFFFFF;}"
-											  "QPushButton:hover{"
-											  "background-color: #4a34ff;"
-											  "}");
-
-		  layout->addWidget(setCurveActiveButton);
-
-		  //verticalSection->setContent(menuTitle);
-		  verticalSection->setContent(unitsPerDiv);
-		  verticalSection->setContent(verticalPosition);
-		  verticalSection->setContent(autoWidget);
-		  verticalSection->getButton()->click();
-
-		  m->insertSection(verticalSection);
-		  m_verticalCtrls.back()->registerUnitsPerDivWidget(unitsPerDiv);
-		  m_verticalCtrls.back()->registerPositionWidget(verticalPosition);
-		  m_verticalCtrls.back()->registerAutoscaleBtn(autoSwitch);
-		  m_verticalCtrls.back()->registerPlot(plotContainer->getPlot());
-
-		  //////////////////
-
-		  connect(setCurveActiveButton, &QPushButton::clicked, this, [=](){
-			  plotContainer->setAxisActive(chId);
-		  });
-
-		  //TODO check why buttons are not added
-		  /*
-		  auto *buttonsSeparator = new scopy::gui::SubsectionSeparator("", false,m);
-		  auto *setCurveActiveButton = new QPushButton(this);
-		  setCurveActiveButton->setText("Set active");
-
-		  buttonsSeparator->setContent(setCurveActiveButton);
-
-		  auto *bringCurteFront = new QPushButton(this);
-		  bringCurteFront->setText("Bring curve front");
-
-		  buttonsSeparator->setContent(bringCurteFront);
-
-
-		  connect(setCurveActiveButton, &QPushButton::clicked, this, [=](){
-			  plotContainer->setAxisActive(chId);
-		  });
-
-		  connect(bringCurteFront, &QPushButton::clicked, this, [=](){
-			  plotContainer->bringCurveToFront(chId);
-		  });
-
-		  m->insertSection(buttonsSeparator);
-
-		  */
-
-		  //endof TODO
-
-		  ChannelWidget *ch_widget =
-				 toolView->buildNewChannel(channelManager, m, true, chId, false, false, channelColor, QString::fromStdString(channel.id), QString::fromStdString(channel.id) );
-
-		channelList.push_back(ch_widget);
-
-		ch_widget->enableButton()->setChecked(false);
-		ch_widget->hide();
-
-
-		//connect widget to group settings (main menu)
-		connect(menu, &scopy::gui::IIOMonitorMenu::toggleAll, this, [=](bool toggled){
-			if(ch_widget->enableButton()->isChecked() != toggled){
-			 ch_widget->enableButton()->click();
-			}
-		});
-
-		// logic for enable/disable channels (curves)
-		connect(ch_widget, &ChannelWidget::enabled,this, [=](bool enabled){
-			if(enabled){
-				activeChannels[chId].dmmId = channel.id;
-				activeChannels[chId].dmm = dmm;
-				activeChannels[chId].numberOfTabsUsing++; //increment number of tabs using this channel
-
-				activeChannels[chId].chColor = channelColor;
-
-				m_activePlots[plotContainer].push_back(chId);
-
-			}else{
-				//decrese number of tabs using this channel if no channel left remove from active list
-				activeChannels[chId].numberOfTabsUsing--;
-				if(activeChannels[chId].numberOfTabsUsing == 0){
-					activeChannels.erase(activeChannels.find(chId));
-				}
-
-				for(int i = 0 ; i < m_activePlots[plotContainer].size() ; i++){
-					if(m_activePlots[plotContainer].at(i) == chId){
-						m_activePlots[plotContainer].remove(i);
-					}
-				}
-			}
-		});
-
-		//TODO ?plot recording interval update
-//		connect(m_generalSettingsMenu, &scopy::gui::IIOMonitorGeneralSettingsMenu::recordingTimeChanged,this, [=](double value){
-//			monitor->setRecordingInterval(value/1000);
-//		});
-
-		   chId++;
-		  }
-		chId++;
-		toolView->buildChannelGroup(channelManager, ch_widget,channelList);
-	  }
-
-	return toolView;
 }
 
 void IIOMonitor::initMonitorToolView(){
 
 	int chId = 1;
-	m_fixedColGrid = new MonitorContainer(this);
-	m_fixedColGrid->setMaxColumnNumber(2);
+	m_fixedColGrid = new MonitorContainer(2,this);
 
 	for(libm2k::analog::DMM* dmm : m_dmmList){
 		std::vector<ChannelWidget*> channelList;
@@ -325,12 +153,12 @@ void IIOMonitor::initMonitorToolView(){
 			monitor->setHistoryDuration(10);
 
 			//connect widget to group settings (main menu)
-//			createConnections(menu,monitor);
-//			connect(menu, &scopy::gui::IIOMonitorMenu::toggleAll, this, [=](bool toggled){
-//				if(ch_widget->enableButton()->isChecked() != toggled){
-//					ch_widget->enableButton()->click();
-//				}
-//			});
+			createConnections(menu,monitor);
+			connect(menu, &scopy::gui::IIOMonitorGenericMenu::toggleAll, this, [=](bool toggled){
+				if(ch_widget->enableButton()->isChecked() != toggled){
+					ch_widget->enableButton()->click();
+				}
+			});
 
 			//connect menu switches to widget
 			createConnections(channelMenu,monitor);
@@ -340,8 +168,10 @@ void IIOMonitor::initMonitorToolView(){
 				monitor->updateLcdNumberPrecision(precision);
 			});
 
-			connect(this, &IIOMonitor::RecordingIntervalChanged,this, [=](double value){
-				monitor->setRecordingInterval(value/1000);
+			connect(m_toolView->getRunBtn(), &QPushButton::toggled,this, [=](bool toggled){
+				if(dataLogger->isDataLoggerOn()){
+					ch_widget->enableButton()->setDisabled(toggled);
+				}
 			});
 
 			int widgetId =m_fixedColGrid->addQWidgetToList(monitor);
@@ -357,7 +187,6 @@ void IIOMonitor::initMonitorToolView(){
 					m_activeMonitors[chId] = monitor;
 
 				}else{
-
 					//decrese number of tabs using this channel if no channel left remove from active list
 					activeChannels[chId].numberOfTabsUsing--;
 					if(activeChannels[chId].numberOfTabsUsing == 0){
@@ -388,34 +217,33 @@ void IIOMonitor::readChannelValues(){
 
 	if(!activeChannels.empty()){
 		for(auto ch : activeChannels.keys()){
-			auto updatedRead = activeChannels[ch].dmm->readChannel(activeChannels[ch].dmmId);
+
+			QFuture<libm2k::analog::DMM_READING> updatedRead = QtConcurrent::run(this,&IIOMonitor::readChVal,ch);
+			//auto updatedRead = activeChannels[ch].dmm->readChannel(activeChannels[ch].dmmId);
 
 			//handle monitors value update
 			if(m_activeMonitors.contains(ch)){
-				m_activeMonitors[ch]->updateValue(updatedRead.value,QString::fromStdString(updatedRead.unit_name), QString::fromStdString(updatedRead.unit_symbol));
+				m_activeMonitors[ch]->updateValue(updatedRead.result().value,QString::fromStdString(updatedRead.result().unit_name), QString::fromStdString(updatedRead.result().unit_symbol));
 			}
+			channelUpdatedValue[ch] = updatedRead.result().value;
 
-			channelUpdatedValue[ch] = updatedRead.value;
-		}
-
-		//EMIT plot updated values for each plot tab
-
-		for(auto plot : m_activePlots.keys()){
-			QMap<int,QPair<double,QColor>> updateVal;
-			for(auto ch : m_activePlots[plot]){
-				updateVal[ch] = qMakePair(channelUpdatedValue[ch],activeChannels[ch].chColor);
+			///emit data logging ch val update
+			if(dataLogger->isDataLoggerOn()){
+				Q_EMIT updateValue(QString::fromStdString(activeChannels[ch].dmm->getName() + ":" + activeChannels[ch].dmmId),QString::number(updatedRead.result().value));
 			}
-			plot->updatePlot(updateVal);
 		}
 	}
+}
+
+libm2k::analog::DMM_READING IIOMonitor::readChVal(int ch){
+	return  activeChannels[ch].dmm->readChannel(activeChannels[ch].dmmId);
 }
 
 void IIOMonitor::toggleTimer(bool enabled){
 
     // set timer for 5s
     if(enabled){
-        readChannelValues();
-        m_timer->start(VALUE_READING_TIME_INTERVAL);
+		m_timer->start(VALUE_READING_TIME_INTERVAL);
     }else{
         m_timer->stop();
     }
@@ -457,11 +285,6 @@ void IIOMonitor::testScaleFct(){
 	if(m_activeMonitors.contains(0)){
 		m_activeMonitors[0]->updateValue(testScale.at(i),QString::fromStdString("Volt"), QString::fromStdString("V"));
 	}
-	//QMap<QString, double> val;
-	QMap<int,QPair<double,QColor>> val;
-	val[100] = qMakePair(testScale.at(i), QColor("red"));
-//	plotContainer->updatePlot(val);
-
     if ( i < testScale.size() - 1 ){
         i++;
     }else{
@@ -515,7 +338,9 @@ scopy::gui::GenericMenu* IIOMonitor::generateMenu(QString title, QColor* color){
 
 	QWidget *precisionWidget = new QWidget(this);
 	auto *precisionLayout = new QHBoxLayout(precisionWidget);
-	auto *precisionBtn = new QPushButton("Set Precision",precisionWidget);
+	precisionLayout->setAlignment(precisionWidget,Qt::AlignLeft);
+	auto *precisionBtn = new QPushButton("Set",precisionWidget);
+	precisionBtn->setMinimumWidth(50);
 	precisionBtn->setStyleSheet("QPushButton{"
 										"height:25px;"
 										"background-color: #4A64FF;"
@@ -537,12 +362,9 @@ scopy::gui::GenericMenu* IIOMonitor::generateMenu(QString title, QColor* color){
 		Q_EMIT PrecisionChanged(precisionValue->text().toInt());
 	});
 
-
 	precisionSection->setContent(precisionWidget);
 
-
 	auto *recordingIntervalSection = new scopy::gui::SubsectionSeparator("Recording interval", false, this);
-
 	auto recordingIntervalWidget = new QWidget(this);
 	auto *recordingIntevlaLayout = new QVBoxLayout(recordingIntervalWidget);
 
@@ -554,21 +376,29 @@ scopy::gui::GenericMenu* IIOMonitor::generateMenu(QString title, QColor* color){
 	true, false, this);
 
 	recording_timer->setValue(1);
-
 	recordingIntevlaLayout->addWidget(recording_timer);
-
 	connect(recording_timer, &PositionSpinButton::valueChanged, this, [=](){
 		Q_EMIT RecordingIntervalChanged(recording_timer->value() * 1000);
 	});
 
 	recordingIntervalSection->setContent(recordingIntervalWidget);
 
+	auto dataLoggingSection = new scopy::gui::SubsectionSeparator("Data Logging",true,this);
+
+	dataLogger = new DataLogger(true,true,false);
+	dataLoggingSection->setContent(dataLogger->getWidget());
+
+	connect(this, &IIOMonitor::updateValue, this , [=](QString name, QString value){
+		dataLogger->receiveValue(name,value);
+	});
+
 	precisionSection->getButton()->click();
 	recordingIntervalSection->getButton()->click();
+	dataLoggingSection->getButton()->click();
 
 	menu->insertSection(precisionSection);
 	menu->insertSection(recordingIntervalSection);
-
+	menu->insertSection(dataLoggingSection);
 
 	return menu;
 }

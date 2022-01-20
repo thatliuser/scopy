@@ -4,6 +4,7 @@
 #include <QScrollArea>
 #include <QStackedWidget>
 #include <QWidget>
+#include <QLabel>
 
 #include "channel_widget.hpp"
 #include "customPushButton.hpp"
@@ -45,6 +46,11 @@ public:
     void setChannelIdVisible(bool visible);
 
 
+
+
+	const QString &getToolStatus() const;
+	void setToolStatus(const QString &newToolStatus);
+
 public Q_SLOTS:
 	void changeParent(QWidget* newParent);
 	void toggleChannelManager(bool toggled);
@@ -70,6 +76,7 @@ private:
 
 	QPushButton *toggleChannels;
 	bool channelMnagerToggled;
+	QLabel *toolStatus;
 };
 } // namespace gui
 } // namespace scopy
