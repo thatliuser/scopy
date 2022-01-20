@@ -4,9 +4,10 @@
 #include <QSpacerItem>
 #include <QtDebug>
 
-MonitorContainer::MonitorContainer(QWidget *parent) :
+MonitorContainer::MonitorContainer(int maxCols,QWidget *parent) :
 	QWidget(parent),
-	m_maxCols(Q_INFINITY),
+	m_maxCols(maxCols-1),
+	currentNumberOfCols(m_maxCols),
 	col(0),
 	row(0),
 	ui(new Ui::MonitorContainer)
@@ -29,6 +30,9 @@ MonitorContainer::MonitorContainer(QWidget *parent) :
 
 	m_gridLayout->addItem(m_hspacer,0, 1);
 	m_gridLayout->addItem(m_vspacer,1, 0);
+
+
+
 }
 
 // adds widget to internal widget list and return the index of the added widget
@@ -51,8 +55,8 @@ void MonitorContainer::addWidget(int index){
 	{
 		m_gridLayout->removeItem(m_vspacer);
 	}
-	//logic for n columns grid layout
-	if(col == m_maxCols){
+	//logic for resizable n columns grid layout
+	if(col == currentNumberOfCols){
 		col = 0;
 		row++;
 	}else{
@@ -86,7 +90,7 @@ void MonitorContainer::removeWidget(int index){
 	while(i < m_activeWidgetList.size()){
 		repositionWidgets(m_activeWidgetList.at(i),r,c);
 		i++;
-		if(c == m_maxCols){
+		if(c == currentNumberOfCols){
 			c = 0;
 			r++;
 		}else{
@@ -105,7 +109,7 @@ void MonitorContainer::removeWidget(int index){
 		col--;
 	}else{
 		row--;
-		col = m_maxCols;
+		col = currentNumberOfCols;
 	}
 }
 
@@ -114,6 +118,7 @@ void MonitorContainer::removeWidget(int index){
 void MonitorContainer::repositionWidgets(int index, int row, int col){
 	m_gridLayout->addWidget(m_widgetList.at(index),row,col);
 }
+
 
 // returns widget at index
 QWidget* MonitorContainer::getWidget(int index){
@@ -144,6 +149,60 @@ void MonitorContainer::setMaxColumnNumber(int maxColumns){
 	m_maxCols = maxColumns - 1;
 }
 int MonitorContainer::getMaxColumnNumber(){return  m_maxCols;}
+
+
+void MonitorContainer::resizeEvent(QResizeEvent *event)
+{
+	auto widgetWidth = m_widgetList.at(0)->minimumWidth();
+	auto newWidth = event->size().width();
+
+	auto colCount = 0;
+
+	if(widgetWidth != 0){
+	 colCount = newWidth/widgetWidth - 1;
+	}
+
+	if(colCount > m_maxCols){
+		colCount = m_maxCols;
+	}
+
+	if(colCount != currentNumberOfCols){
+
+		currentNumberOfCols = colCount;
+	}
+
+	if(m_activeWidgetList.size() > 1){
+		redrawWidgets();
+	}
+
+	QWidget::resizeEvent(event);
+}
+
+void MonitorContainer::redrawWidgets()
+{
+	row = 0;
+	col = 0;
+	if(m_activeWidgetList.size() > 0){
+		for(int i = 0; i < m_activeWidgetList.size(); i++){
+			m_gridLayout->removeWidget(m_widgetList.at(i));
+			m_widgetList.at(i)->hide();
+		}
+		for(int i = 0; i < m_activeWidgetList.size(); i++){
+			m_gridLayout->addWidget(m_widgetList.at(i),row,col);
+			m_widgetList.at(i)->show();
+
+			//logic for resizable n columns grid layout
+			if(col == currentNumberOfCols){
+				col = 0;
+				row++;
+			}else{
+				col ++;
+			}
+		}
+
+	}
+
+}
 
 MonitorContainer::~MonitorContainer()
 {

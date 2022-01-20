@@ -22,15 +22,36 @@ ChannelManager::ChannelManager(ChannelsPositionEnum position, QWidget* parent)
 		m_scrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
 		m_scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
+		auto header = new QWidget();
+		auto headerLayout = new QHBoxLayout(header);
+		header->setFixedSize(QSize(100, 50));
+		headerLayout->setMargin(0);
 
+		toolStatus = new QLabel("");
 		channelMnagerToggled = false;
+
+		QStringList icons = QStringList() << ":/icons/sba_cmb_box_arrow.svg"
+										  << ":/icons/sba_cmb_box_arrow_right.svg";
+
+		QIcon my_icon;
+		my_icon.addFile(icons[0],QSize(), QIcon::Normal, QIcon::On);
+		my_icon.addFile(icons[1],QSize(), QIcon::Normal, QIcon::Off);
+
 		toggleChannels = new QPushButton(this);
+		toggleChannels->setStyleSheet("   font-size: 12px; color: rgba(255, 255, 255, 70);");
+		toggleChannels->setIcon(my_icon);
+		toggleChannels->setIconSize(QSize(10,10));
+		toggleChannels->setCheckable(true);
+
 		toggleChannels->setFixedWidth(20);
 		toggleChannels->setCheckable(true);
 		toggleChannels->setChecked(true);
 
 		connect(toggleChannels, &QPushButton::clicked, this, &ChannelManager::toggleChannelManager);
-		m_channelsWidget->layout()->addWidget(toggleChannels);
+
+		headerLayout->addWidget(toggleChannels);
+		headerLayout->addWidget(toolStatus);
+		m_channelsWidget->layout()->addWidget(header);
 
 	} else {
 		m_channelsWidget->setLayout(new QHBoxLayout(m_channelsWidget));
@@ -43,6 +64,7 @@ ChannelManager::ChannelManager(ChannelsPositionEnum position, QWidget* parent)
 	m_channelsWidget->layout()->setMargin(0);
 	m_channelsWidget->layout()->setContentsMargins(QMargins(0,0,0,0));
 	m_channelsWidget->layout()->setSizeConstraint(QLayout::SetMinAndMaxSize);
+	m_channelsWidget->setStyleSheet("border: 0px;");
 
 	m_scrollArea->setWidget(m_channelsWidget);
 
@@ -214,3 +236,15 @@ void ChannelManager::toggleChannelManager(bool toggled){
 		}
 	}
 }
+
+const QString &ChannelManager::getToolStatus() const
+{
+	return toolStatus->text();
+}
+
+void ChannelManager::setToolStatus(const QString &newToolStatus)
+{
+	toolStatus->setText(newToolStatus);
+}
+
+
