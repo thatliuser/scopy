@@ -1,5 +1,4 @@
 #include "dataloggerui.hpp"
-#include "ui_dataloggerui.h"
 
 using namespace adiscope;
 
