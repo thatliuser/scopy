@@ -38,17 +38,17 @@ struct activeChannel{
 
 };
 
-class IIOMonitor : public Tool
+class DataLoggerTool : public Tool
 {
     Q_OBJECT
 
     Ui::IIOMonitor *ui;
 
 public:
-    explicit IIOMonitor(struct iio_context *ctx, Filter *filt,
+	explicit DataLoggerTool(struct iio_context *ctx, Filter *filt,
                         ToolMenuItem *toolMenuItem,
                         QJSEngine *engine, ToolLauncher *parent);
-    ~IIOMonitor();
+	~DataLoggerTool();
 
     scopy::gui::ToolView* getToolView();
 
@@ -60,8 +60,8 @@ private:
 	QList<QColor> m_colors;
 	QMap<int,QColor> m_color;
 	scopy::gui::ToolView* m_toolView;
-	MonitorContainer* m_fixedColGrid;
-	libm2k::context::M2k* m_m2k_context;
+	CustomColQGridLayout* m_customColGrid;
+	libm2k::context::Context* m_context;
 	QMap<int,activeChannel> activeChannels;
 	scopy::gui::ToolView* m_monitorToolView;
 	std::vector<ChannelWidget*> m_channelList;
@@ -76,25 +76,18 @@ private:
 	QColor getChannelColor(int chId);
 	libm2k::analog::DMM_READING readChVal(int ch);
 	scopy::gui::GenericMenu* generateMenu(QString title, QColor* color);
-	std::vector<libm2k::analog::DMM*> getDmmList(libm2k::context::M2k* m2k_context);
-	void createConnections(scopy::gui::IIOMonitorGenericMenu* menu,adiscope::ChannelMonitorComponent* monitor);
-
-    // /////TO BE REOMVED/////
-	std::vector<double> testScale;
-    int i;
-    // ///////////////////
+	std::vector<libm2k::analog::DMM*> getDmmList(libm2k::context::Context* m2k_context);
+	void createConnections(scopy::gui::DataLoggerToolGenericMenu* menu,adiscope::ChannelMonitorComponent* monitor);
 
 Q_SIGNALS:
 	void PrecisionChanged(int precision);
 	void updateValue(QString name, QString value);
 	void RecordingIntervalChanged(double recordingInterval);
+	void toggleAll(bool showAll);
 
 public Q_SLOTS:
     void readChannelValues();
     void toggleTimer(bool enabled);
-
-    // /////TO BE REOMVED/////
-    void testScaleFct();
 };
 }
 #endif // IIOMONITOR_HPP

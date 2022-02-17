@@ -43,8 +43,6 @@ void ChannelMonitorComponent::init(double value,QString nameOfUnitOfMeasure,QStr
     ui->lcdCh1->setPrecision(3);
 
     setMonitorColor(color.name());
-
-    ui->currentGainCh1Label_2->hide();
 }
 
 void ChannelMonitorComponent::updateValue(double value,QString nameOfUnitOfMeasure,QString symbolOfUnitOfMeasure){

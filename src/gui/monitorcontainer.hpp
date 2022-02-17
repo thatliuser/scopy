@@ -9,13 +9,13 @@ namespace Ui {
 class MonitorContainer;
 }
 
-class MonitorContainer : public QWidget
+class CustomColQGridLayout : public QWidget
 {
 	Q_OBJECT
 
 public:
-	explicit MonitorContainer(int maxCols, QWidget *parent = nullptr);
-	~MonitorContainer();
+	explicit CustomColQGridLayout(int maxCols, QWidget *parent = nullptr);
+	~CustomColQGridLayout();
 
 	void toggleAll(bool toggled);
 	void addWidget(int index);

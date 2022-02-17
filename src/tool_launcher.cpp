@@ -1728,7 +1728,7 @@ bool adiscope::ToolLauncher::switchContext(const QString& uri)
 		}
 
         if (filter->compatible(TOOL_IIOMONITOR)) {
-             iio_monitor = new IIOMonitor(ctx, filter, menu->getToolMenuItemFor(TOOL_IIOMONITOR),&js_engine, this);
+			 iio_monitor = new DataLoggerTool(ctx, filter, menu->getToolMenuItemFor(TOOL_IIOMONITOR),&js_engine, this);
              toolList.push_back(iio_monitor);
              connect(menu->getToolMenuItemFor(TOOL_IIOMONITOR)->getToolBtn(), &QPushButton::clicked, [=](){
                  swapMenu(iio_monitor->getToolView());

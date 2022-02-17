@@ -11,12 +11,12 @@
 
 namespace scopy {
 namespace gui {
-class IIOMonitorGenericMenu : public GenericMenu
+class DataLoggerToolGenericMenu : public GenericMenu
 {
 	Q_OBJECT
 public:
-	explicit IIOMonitorGenericMenu(QWidget *parent = nullptr);
-	~IIOMonitorGenericMenu();
+	explicit DataLoggerToolGenericMenu(QWidget *parent = nullptr);
+	~DataLoggerToolGenericMenu();
 
 	void init(QString title, QColor* color,bool showAll);
 

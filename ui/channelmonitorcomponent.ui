@@ -11,15 +11,15 @@
    </rect>
   </property>
   <property name="sizePolicy">
-   <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+   <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
     <horstretch>0</horstretch>
     <verstretch>0</verstretch>
    </sizepolicy>
   </property>
   <property name="minimumSize">
    <size>
-    <width>400</width>
-    <height>300</height>
+    <width>200</width>
+    <height>0</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -47,6 +47,19 @@
    <item row="0" column="0">
     <widget class="QWidget" name="frame" native="true">
      <layout class="QGridLayout" name="gridLayout_2">
+      <item row="0" column="1">
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
       <item row="0" column="0">
        <layout class="QVBoxLayout" name="verticalLayout_9">
         <property name="leftMargin">
@@ -76,7 +89,14 @@
         </item>
        </layout>
       </item>
-      <item row="0" column="1">
+      <item row="1" column="0">
+       <layout class="QHBoxLayout" name="horizontalLayout_18">
+        <property name="topMargin">
+         <number>0</number>
+        </property>
+       </layout>
+      </item>
+      <item row="0" column="2">
        <layout class="QVBoxLayout" name="verticalLayout_2">
         <property name="spacing">
          <number>0</number>
@@ -105,6 +125,71 @@
            <property name="verticalSpacing">
             <number>0</number>
            </property>
+           <item row="7" column="1">
+            <widget class="QLabel" name="labelCh1">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>20</width>
+               <height>50</height>
+              </size>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">QLabel[ac=false] { qproperty-text: &quot;VDC&quot;; }
+QLabel[ac=true] { qproperty-text: &quot;VRMS&quot;; }</string>
+             </property>
+             <property name="text">
+              <string>VDC</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="0">
+            <spacer name="verticalSpacer_4">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>20</width>
+               <height>40</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item row="5" column="1">
+            <widget class="QLabel" name="label_minUnitOfMeasure">
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
+           </item>
+           <item row="5" column="2">
+            <widget class="QLabel" name="label_min">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>20</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>MIN</string>
+             </property>
+            </widget>
+           </item>
            <item row="5" column="0" alignment="Qt::AlignRight">
             <widget class="adiscope::LcdNumber" name="minCh1">
              <property name="sizePolicy">
@@ -130,6 +215,38 @@
              </property>
              <property name="segmentStyle">
               <enum>QLCDNumber::Flat</enum>
+             </property>
+            </widget>
+           </item>
+           <item row="6" column="2">
+            <widget class="QLabel" name="label_max">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>20</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>MAX   </string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="0" colspan="3">
+            <widget class="QLabel" name="monitorTitle">
+             <property name="text">
+              <string>test</string>
+             </property>
+             <property name="textFormat">
+              <enum>Qt::AutoText</enum>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
              </property>
             </widget>
            </item>
@@ -189,90 +306,6 @@
              </property>
             </widget>
            </item>
-           <item row="7" column="1">
-            <widget class="QLabel" name="labelCh1">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="minimumSize">
-              <size>
-               <width>20</width>
-               <height>50</height>
-              </size>
-             </property>
-             <property name="styleSheet">
-              <string notr="true">QLabel[ac=false] { qproperty-text: &quot;VDC&quot;; }
-QLabel[ac=true] { qproperty-text: &quot;VRMS&quot;; }</string>
-             </property>
-             <property name="text">
-              <string>VDC</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-             </property>
-            </widget>
-           </item>
-           <item row="5" column="1">
-            <widget class="QLabel" name="label_minUnitOfMeasure">
-             <property name="text">
-              <string/>
-             </property>
-            </widget>
-           </item>
-           <item row="6" column="2">
-            <widget class="QLabel" name="label_max">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="minimumSize">
-              <size>
-               <width>20</width>
-               <height>0</height>
-              </size>
-             </property>
-             <property name="text">
-              <string>MAX</string>
-             </property>
-            </widget>
-           </item>
-           <item row="5" column="2">
-            <widget class="QLabel" name="label_min">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="minimumSize">
-              <size>
-               <width>20</width>
-               <height>0</height>
-              </size>
-             </property>
-             <property name="text">
-              <string>MIN</string>
-             </property>
-            </widget>
-           </item>
-           <item row="4" column="0">
-            <spacer name="verticalSpacer_4">
-             <property name="orientation">
-              <enum>Qt::Vertical</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>20</width>
-               <height>40</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
            <item row="6" column="1">
             <widget class="QLabel" name="label_maxUnitOfMeasure">
              <property name="text">
@@ -322,64 +355,31 @@ QLabel[ac=true] { qproperty-text: &quot;VRMS&quot;; }</string>
         </item>
        </layout>
       </item>
-      <item row="1" column="0">
-       <layout class="QHBoxLayout" name="horizontalLayout_18">
-        <property name="topMargin">
-         <number>0</number>
+      <item row="1" column="2">
+       <spacer name="verticalSpacer">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
         </property>
-        <item>
-         <spacer name="horizontalSpacer_7">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item>
-         <widget class="QLabel" name="ch1ErrorLabel_2">
-          <property name="styleSheet">
-           <string notr="true">font-size: 13px;
-color: red;
-text-align:right;</string>
-          </property>
-          <property name="text">
-           <string/>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignBottom|Qt::AlignLeading|Qt::AlignLeft</set>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLabel" name="currentGainCh1Label_2">
-          <property name="styleSheet">
-           <string notr="true">font-size: 13px;
-text-align:center;</string>
-          </property>
-          <property name="text">
-           <string>±25V</string>
-          </property>
-         </widget>
-        </item>
-       </layout>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>20</width>
+          <height>40</height>
+         </size>
+        </property>
+       </spacer>
       </item>
-      <item row="1" column="1">
-       <widget class="QLabel" name="monitorTitle">
-        <property name="text">
-         <string>test</string>
+      <item row="0" column="3">
+       <spacer name="horizontalSpacer_2">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
         </property>
-        <property name="textFormat">
-         <enum>Qt::AutoText</enum>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
         </property>
-        <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-        </property>
-       </widget>
+       </spacer>
       </item>
      </layout>
     </widget>

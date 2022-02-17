@@ -113,6 +113,7 @@ void Sismograph::updateScale(){
 	/// compute scale
 	int digits = 0;
 	double num = sample;
+	if(num != 0){
 	if(int(num) == 0) {
 		while((int)num*10 == 0){
 			num *= 10;
@@ -125,6 +126,7 @@ void Sismograph::updateScale(){
 			num /= 10;
 			digits++;
 		}
+	}
 	}
 	double scale = pow(10 , digits);
 

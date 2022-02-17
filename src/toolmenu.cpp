@@ -40,7 +40,7 @@ ToolMenu::ToolMenu(Preferences *preferences, QWidget *parent):
                                      << tr("Voltmeter")
                                      << tr("Power Supply")
                                      << tr("Debugger") << tr("Calibration")
-                                     << tr("IIO-Monitor");
+									 << tr("Data Logger");
 
 	d_availableIcons = QStringList() << "oscilloscope"
 								     << "spectrum_analyzer"
