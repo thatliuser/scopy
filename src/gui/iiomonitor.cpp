@@ -10,13 +10,13 @@
 
 using namespace adiscope;
 
-IIOMonitor::IIOMonitor(struct iio_context *ctx, Filter *filt,
+DataLoggerTool::DataLoggerTool(struct iio_context *ctx, Filter *filt,
     ToolMenuItem *toolMenuItem,
     QJSEngine *engine, ToolLauncher *parent):
-    Tool(ctx, toolMenuItem, nullptr, "IIOMonitor",
+	Tool(ctx, toolMenuItem, nullptr, "DataLogger",
          parent),
     ui(new Ui::IIOMonitor),
-    m_m2k_context(m2kOpen(ctx, "")),
+	m_context(contextOpen(ctx, "")),
 	m_timer(new QTimer(this))
 {
 	ui->setupUi(this);
@@ -44,7 +44,7 @@ IIOMonitor::IIOMonitor(struct iio_context *ctx, Filter *filt,
 	m_generalSettingsMenu = generateMenu("General settings", new QColor("blue"));
 	m_toolView->setGeneralSettingsMenu(m_generalSettingsMenu,false);
 
-	m_dmmList=getDmmList(m_m2k_context);
+	m_dmmList=getDmmList(m_context);
 
 
 	connect(m_toolView->getRunBtn(), &QPushButton::toggled, this, [=](bool toggled){
@@ -72,24 +72,6 @@ IIOMonitor::IIOMonitor(struct iio_context *ctx, Filter *filt,
 	connect(m_toolView->getRunBtn(), SIGNAL(toggled(bool)),runButton(), SLOT(setChecked(bool)));
 	connect(runButton(), SIGNAL(toggled(bool)), m_toolView->getRunBtn(),SLOT(setChecked(bool)));
 
-	// //////////////////////////////// TO BE REMOVED ////
-	testScale.push_back(0.00000000005);
-	testScale.push_back(0.000000005);
-	testScale.push_back(0.000005);
-	testScale.push_back(0.005);
-	testScale.push_back(0.05);
-	testScale.push_back(0.5);
-	testScale.push_back(5);
-	testScale.push_back(50);
-	testScale.push_back(500);
-	testScale.push_back(5000);
-	testScale.push_back(5000000);
-	testScale.push_back(5000000000);
-	i = 0;
-
-	//  m_toolView->buildNewInstrumentMenu(new scopy::gui::GenericMenu,true,"Ioana",false,false);
-
-	// ////////////////////////////////////////////
 	connect(m_toolView->getSingleBtn(), &QPushButton::toggled,this, [=](){
 		readChannelValues();
 	});
@@ -99,42 +81,38 @@ IIOMonitor::IIOMonitor(struct iio_context *ctx, Filter *filt,
 		m_toolView->getRunBtn()->toggled(false);
 	});
 
-
-
 	initMonitorToolView();
-	m_toolView->addFixedCentralWidget(m_fixedColGrid,0,0,0,0);
+	m_toolView->addFixedCentralWidget(m_customColGrid,0,0,0,0);
 
-	connect(m_timer, &QTimer::timeout , this,&IIOMonitor::readChannelValues);// [=](){
-		//QtConcurrent::run(this, &IIOMonitor::readChannelValues); //starts a thread where the values are read
-	//});
+	connect(m_timer, &QTimer::timeout , this,&DataLoggerTool::readChannelValues);
 
-	connect(this, &IIOMonitor::RecordingIntervalChanged, this , [=](double interval){
+	connect(this, &DataLoggerTool::RecordingIntervalChanged, this , [=](double interval){
 		VALUE_READING_TIME_INTERVAL = interval;
 		m_timer->setInterval(interval);
 	});
 }
 
-void IIOMonitor::initMonitorToolView(){
+void DataLoggerTool::initMonitorToolView(){
 
 	int chId = 1;
-	m_fixedColGrid = new MonitorContainer(2,this);
+	m_customColGrid = new CustomColQGridLayout(100,this);
 
 	for(libm2k::analog::DMM* dmm : m_dmmList){
 		std::vector<ChannelWidget*> channelList;
 
-		scopy::gui::IIOMonitorGenericMenu *menu = new scopy::gui::IIOMonitorGenericMenu(this);
-		menu->init(QString::fromStdString(dmm->getName()),new QColor("green"),true);
+		scopy::gui::DataLoggerToolGenericMenu *menu = new scopy::gui::DataLoggerToolGenericMenu(this);
+		menu->init(QString::fromStdString(dmm->getName()),new QColor("green"),false);
 
 		ChannelWidget *mainCh_widget =
 				m_toolView->buildNewChannel(m_monitorChannelManager, menu, true, chId, false, false, QColor("green"), QString::fromStdString(dmm->getName()), QString::fromStdString(dmm->getName()) );
 
-		mainCh_widget->enableButton()->setChecked(false);
+//		mainCh_widget->enableButton()->setChecked(false);
 		chId++;
 		for(auto channel : dmm->readAll()){
 
 			QColor channelColor = getChannelColor(chId);
 
-			scopy::gui::IIOMonitorGenericMenu *channelMenu = new scopy::gui::IIOMonitorGenericMenu(this);
+			scopy::gui::DataLoggerToolGenericMenu *channelMenu = new scopy::gui::DataLoggerToolGenericMenu(this);
 			channelMenu->init(QString::fromStdString(dmm->getName() + ": " + channel.id),new QColor(channelColor),false);
 
 			ChannelWidget *ch_widget =
@@ -143,7 +121,8 @@ void IIOMonitor::initMonitorToolView(){
 			channelList.push_back(ch_widget);
 
 			ch_widget->enableButton()->setChecked(false);
-			ch_widget->hide();
+//			ch_widget->hide();
+
 
 			adiscope::ChannelMonitorComponent* monitor = new adiscope::ChannelMonitorComponent();
 			monitor->setID(chId);
@@ -154,7 +133,7 @@ void IIOMonitor::initMonitorToolView(){
 
 			//connect widget to group settings (main menu)
 			createConnections(menu,monitor);
-			connect(menu, &scopy::gui::IIOMonitorGenericMenu::toggleAll, this, [=](bool toggled){
+			connect(this, &DataLoggerTool::toggleAll, this, [=](bool toggled){
 				if(ch_widget->enableButton()->isChecked() != toggled){
 					ch_widget->enableButton()->click();
 				}
@@ -164,7 +143,7 @@ void IIOMonitor::initMonitorToolView(){
 			createConnections(channelMenu,monitor);
 
 			//add connections from general settings
-			connect(this, &IIOMonitor::PrecisionChanged, this, [=](int precision){
+			connect(this, &DataLoggerTool::PrecisionChanged, this, [=](int precision){
 				monitor->updateLcdNumberPrecision(precision);
 			});
 
@@ -174,59 +153,56 @@ void IIOMonitor::initMonitorToolView(){
 				}
 			});
 
-			int widgetId =m_fixedColGrid->addQWidgetToList(monitor);
+			int widgetId =m_customColGrid->addQWidgetToList(monitor);
 
 			// logic for enable/disable channels (monitors)
 			connect(ch_widget, &ChannelWidget::enabled,this, [=](bool enabled){
-				if(enabled){
-					m_fixedColGrid->addWidget(widgetId);
+				if (enabled) {
+					m_customColGrid->addWidget(widgetId);
 					activeChannels[chId].dmmId = channel.id;
 					activeChannels[chId].dmm = dmm;
 					activeChannels[chId].numberOfTabsUsing++; //increment number of tabs using this channel
-
 					m_activeMonitors[chId] = monitor;
 
-				}else{
+				} else {
 					//decrese number of tabs using this channel if no channel left remove from active list
 					activeChannels[chId].numberOfTabsUsing--;
-					if(activeChannels[chId].numberOfTabsUsing == 0){
+					if (activeChannels[chId].numberOfTabsUsing == 0) {
 						activeChannels.erase(activeChannels.find(chId));
 					}
 					m_activeMonitors.erase(m_activeMonitors.find(chId));
-					m_fixedColGrid->removeWidget(widgetId);
+					m_customColGrid->removeWidget(widgetId);
 				}
 			});
+			ch_widget->enableButton()->click();
 			chId++;
 		}
-
 		m_toolView->buildChannelGroup(m_monitorChannelManager, mainCh_widget,channelList);
 	}
 }
 
-scopy::gui::ToolView* IIOMonitor::getToolView(){
+scopy::gui::ToolView* DataLoggerTool::getToolView(){
     return m_toolView;
 }
 
-std::vector<libm2k::analog::DMM*> IIOMonitor::getDmmList(libm2k::context::M2k* m2k_context){
-    return m2k_context->getAllDmm() ;
+std::vector<libm2k::analog::DMM*> DataLoggerTool::getDmmList(libm2k::context::Context* context){
+	return context->getAllDmm() ;
 }
 
-void IIOMonitor::readChannelValues(){
+void DataLoggerTool::readChannelValues(){
 
 	QMap<int,double> channelUpdatedValue;
 
 	if(!activeChannels.empty()){
 		for(auto ch : activeChannels.keys()){
-
-			QFuture<libm2k::analog::DMM_READING> updatedRead = QtConcurrent::run(this,&IIOMonitor::readChVal,ch);
-			//auto updatedRead = activeChannels[ch].dmm->readChannel(activeChannels[ch].dmmId);
-
+			QFuture<libm2k::analog::DMM_READING> updatedRead = QtConcurrent::run(this,&DataLoggerTool::readChVal,ch);
 			//handle monitors value update
+			auto test = updatedRead.result();
+			std::cout << test.id;
 			if(m_activeMonitors.contains(ch)){
 				m_activeMonitors[ch]->updateValue(updatedRead.result().value,QString::fromStdString(updatedRead.result().unit_name), QString::fromStdString(updatedRead.result().unit_symbol));
 			}
 			channelUpdatedValue[ch] = updatedRead.result().value;
-
 			///emit data logging ch val update
 			if(dataLogger->isDataLoggerOn()){
 				Q_EMIT updateValue(QString::fromStdString(activeChannels[ch].dmm->getName() + ":" + activeChannels[ch].dmmId),QString::number(updatedRead.result().value));
@@ -235,13 +211,11 @@ void IIOMonitor::readChannelValues(){
 	}
 }
 
-libm2k::analog::DMM_READING IIOMonitor::readChVal(int ch){
+libm2k::analog::DMM_READING DataLoggerTool::readChVal(int ch){
 	return  activeChannels[ch].dmm->readChannel(activeChannels[ch].dmmId);
 }
 
-void IIOMonitor::toggleTimer(bool enabled){
-
-    // set timer for 5s
+void DataLoggerTool::toggleTimer(bool enabled){
     if(enabled){
 		m_timer->start(VALUE_READING_TIME_INTERVAL);
     }else{
@@ -249,50 +223,37 @@ void IIOMonitor::toggleTimer(bool enabled){
     }
 }
 
-void IIOMonitor::createConnections(scopy::gui::IIOMonitorGenericMenu* menu,adiscope::ChannelMonitorComponent* monitor){
-	connect(menu,&scopy::gui::IIOMonitorGenericMenu::togglePeakHolder,this,[=](bool toggled){
+void DataLoggerTool::createConnections(scopy::gui::DataLoggerToolGenericMenu* menu,adiscope::ChannelMonitorComponent* monitor){
+	connect(menu,&scopy::gui::DataLoggerToolGenericMenu::togglePeakHolder,this,[=](bool toggled){
 	   monitor->displayPeakHold(toggled);
 	});
 
-	connect(menu, &scopy::gui::IIOMonitorGenericMenu::toggleHistory,this,[=](bool toggled){
+	connect(menu, &scopy::gui::DataLoggerToolGenericMenu::toggleHistory,this,[=](bool toggled){
 		monitor->displayHistory(toggled);
 	});
 
-	connect(menu, &scopy::gui::IIOMonitorGenericMenu::toggleScale,this, [=](bool toggled){
+	connect(menu, &scopy::gui::DataLoggerToolGenericMenu::toggleScale,this, [=](bool toggled){
 	   monitor->displayScale(toggled);
 	});
 
-	connect(menu, &scopy::gui::IIOMonitorGenericMenu::resetPeakHolder, this, [=](){
+	connect(menu, &scopy::gui::DataLoggerToolGenericMenu::resetPeakHolder, this, [=](){
 	   monitor->resetPeakHolder();
 	});
 
-	connect(menu, &scopy::gui::IIOMonitorGenericMenu::monitorColorChanged,this, [=](QString color){
+	connect(menu, &scopy::gui::DataLoggerToolGenericMenu::monitorColorChanged,this, [=](QString color){
 		monitor->setMonitorColor(color);
 	});
 
-	connect(menu, &scopy::gui::IIOMonitorGenericMenu::changeHistorySize, this, [=](double duration){
+	connect(menu, &scopy::gui::DataLoggerToolGenericMenu::changeHistorySize, this, [=](double duration){
 		monitor->setHistoryDuration(duration);
 	});
 
-	connect(menu, &scopy::gui::IIOMonitorGenericMenu::lineStyleChanged, this, [=](Qt::PenStyle style){
+	connect(menu, &scopy::gui::DataLoggerToolGenericMenu::lineStyleChanged, this, [=](Qt::PenStyle style){
 		monitor->setLineStyle(style);
 	});
-
 }
 
-void IIOMonitor::testScaleFct(){
-	//handle monitors value update
-	if(m_activeMonitors.contains(0)){
-		m_activeMonitors[0]->updateValue(testScale.at(i),QString::fromStdString("Volt"), QString::fromStdString("V"));
-	}
-    if ( i < testScale.size() - 1 ){
-        i++;
-    }else{
-        i = 0;
-    }
-}
-
-QColor IIOMonitor::generateColor(){
+QColor DataLoggerTool::generateColor(){
 
 	if(m_color.size() < m_colors.size()){
 		return m_colors.at(m_color.size());
@@ -303,7 +264,7 @@ QColor IIOMonitor::generateColor(){
 	return QColor(red,green,blue);
 }
 
-QColor IIOMonitor::getChannelColor(int chId){
+QColor DataLoggerTool::getChannelColor(int chId){
 	if(m_color.contains(chId)){
 		return m_color[chId];
 	}else{
@@ -311,9 +272,9 @@ QColor IIOMonitor::getChannelColor(int chId){
 			m_color[chId]= generateColor();
 			return m_color[chId];
 		}
-		QColor color; //= generateColor();
+		QColor color;
 		bool colorExists = true;
-		while(colorExists){//m_color.contains(color)){
+		while(colorExists){
 			color = generateColor();
 			for(auto it = m_color.begin(); it != m_color.end(); it++){
 				if(it.value() != color){
@@ -323,16 +284,31 @@ QColor IIOMonitor::getChannelColor(int chId){
 			}
 		}
 		m_color[chId]=color;
-		//m_colors.push_back(color);
 		return color;
 	}
 }
 
 
-scopy::gui::GenericMenu* IIOMonitor::generateMenu(QString title, QColor* color){
+scopy::gui::GenericMenu* DataLoggerTool::generateMenu(QString title, QColor* color){
 	scopy::gui::GenericMenu *menu = new scopy::gui::GenericMenu(this);
 	menu->initInteractiveMenu();
 	menu->setMenuHeader(title,color,false);
+
+	auto *showAllSection = new scopy::gui::SubsectionSeparator("Show all", false, this);
+
+	QWidget *showAllWidget = new QWidget(this);
+	auto *showAllLayout = new QHBoxLayout(showAllWidget);
+	auto *showAllSWitch = new CustomSwitch(showAllWidget);
+	showAllSWitch->setChecked(true);
+
+	showAllLayout->addWidget(new QLabel("Show all",showAllWidget));
+	showAllLayout->addWidget(showAllSWitch);
+
+	showAllSection->setContent(showAllWidget);
+
+	connect(showAllSWitch, &CustomSwitch::toggled, this, [=](bool toggled){
+		Q_EMIT DataLoggerTool::toggleAll(toggled);
+	});
 
 	auto *precisionSection = new scopy::gui::SubsectionSeparator("Precision", false,this);
 
@@ -388,14 +364,16 @@ scopy::gui::GenericMenu* IIOMonitor::generateMenu(QString title, QColor* color){
 	dataLogger = new DataLogger(true,true,false);
 	dataLoggingSection->setContent(dataLogger->getWidget());
 
-	connect(this, &IIOMonitor::updateValue, this , [=](QString name, QString value){
+	connect(this, &DataLoggerTool::updateValue, this , [=](QString name, QString value){
 		dataLogger->receiveValue(name,value);
 	});
 
+	showAllSection->getButton()->click();
 	precisionSection->getButton()->click();
 	recordingIntervalSection->getButton()->click();
 	dataLoggingSection->getButton()->click();
 
+	menu->insertSection(showAllSection);
 	menu->insertSection(precisionSection);
 	menu->insertSection(recordingIntervalSection);
 	menu->insertSection(dataLoggingSection);
@@ -403,26 +381,11 @@ scopy::gui::GenericMenu* IIOMonitor::generateMenu(QString title, QColor* color){
 	return menu;
 }
 
-IIOMonitor::~IIOMonitor()
+DataLoggerTool::~DataLoggerTool()
 {
-    if(m_m2k_context){ delete m_m2k_context; }
-	if(m_toolView){ delete m_toolView; }
-    if(m_generalSettingsMenu){delete m_generalSettingsMenu;}
-
-    for(auto dmm : m_dmmList){
-        delete dmm;
-    }
-    m_dmmList.clear();
-
-    for(auto channel : m_channelList){
-        delete channel;
-    }
-    m_channelList.clear();
-
-    for(auto activeCh : m_activeChannels){
-        delete activeCh.first;
-        delete activeCh.second;
-    }
+	if (m_timer) { delete m_timer; }
+	if (m_toolView) { delete m_toolView; }
+	if (m_monitorToolView) { delete m_monitorToolView; }
 
     delete ui;
 }

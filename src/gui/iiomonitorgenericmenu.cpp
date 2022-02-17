@@ -4,18 +4,18 @@
 
 using namespace scopy::gui;
 
-IIOMonitorGenericMenu::IIOMonitorGenericMenu(QWidget *parent):
+DataLoggerToolGenericMenu::DataLoggerToolGenericMenu(QWidget *parent):
 	GenericMenu(parent)
 {
 
 }
 
-IIOMonitorGenericMenu::~IIOMonitorGenericMenu()
+DataLoggerToolGenericMenu::~DataLoggerToolGenericMenu()
 {
 
 }
 
-void IIOMonitorGenericMenu::init(QString title, QColor* color, bool showAll){
+void DataLoggerToolGenericMenu::init(QString title, QColor* color, bool showAll){
 	this->initInteractiveMenu();
 	this->setMenuHeader(title,color,false);
 
@@ -32,7 +32,7 @@ void IIOMonitorGenericMenu::init(QString title, QColor* color, bool showAll){
 
 		scaleSection->setContent(showAllWidget);
 		connect(showAllSWitch, &CustomSwitch::toggled, this, [=](bool toggled){
-			Q_EMIT IIOMonitorGenericMenu::toggleAll(toggled);
+			Q_EMIT DataLoggerToolGenericMenu::toggleAll(toggled);
 		});
 	}
 
@@ -125,11 +125,11 @@ void IIOMonitorGenericMenu::init(QString title, QColor* color, bool showAll){
 
 	this->layout()->addItem( new QSpacerItem(10,10, QSizePolicy::Fixed, QSizePolicy::Expanding));
 	connect(scaleSWitch, &CustomSwitch::toggled, this, [=](bool toggled){
-		Q_EMIT IIOMonitorGenericMenu::toggleScale(toggled);
+		Q_EMIT DataLoggerToolGenericMenu::toggleScale(toggled);
 	});
 
 	connect(historySwitch,  &CustomSwitch::toggled, this, [=](bool toggled){
-		Q_EMIT IIOMonitorGenericMenu::toggleHistory(toggled);
+		Q_EMIT DataLoggerToolGenericMenu::toggleHistory(toggled);
 	});
 	connect(historySize, QOverload<int>::of(&QComboBox::currentIndexChanged), this,[=](int index){
 				setHistorySize(index);
@@ -138,19 +138,19 @@ void IIOMonitorGenericMenu::init(QString title, QColor* color, bool showAll){
 		Q_EMIT lineStyleChanged(lineStyleFromIdx(index));
 	});
 	connect(peakHolderReset, &QPushButton::clicked,this, [=](){
-		Q_EMIT IIOMonitorGenericMenu::resetPeakHolder();
+		Q_EMIT DataLoggerToolGenericMenu::resetPeakHolder();
 	});
 	connect(peakHolderSwitch, &CustomSwitch::toggled, this, [=](bool toggled){
-		Q_EMIT IIOMonitorGenericMenu::togglePeakHolder(toggled);
+		Q_EMIT DataLoggerToolGenericMenu::togglePeakHolder(toggled);
 	});
 }
 
-void IIOMonitorGenericMenu::setHistorySize(int idx)
+void DataLoggerToolGenericMenu::setHistorySize(int idx)
 {
 	Q_EMIT changeHistorySize(numSamplesFromIdx(idx));
 }
 
-double IIOMonitorGenericMenu::numSamplesFromIdx(int idx)
+double DataLoggerToolGenericMenu::numSamplesFromIdx(int idx)
 {
 	switch(idx) {
 	case 0:	return 1.0;
@@ -160,7 +160,7 @@ double IIOMonitorGenericMenu::numSamplesFromIdx(int idx)
 	}
 }
 
-Qt::PenStyle IIOMonitorGenericMenu::lineStyleFromIdx(int idx)
+Qt::PenStyle DataLoggerToolGenericMenu::lineStyleFromIdx(int idx)
 {
 	switch (idx) {
 	case 0:	return Qt::PenStyle::SolidLine;

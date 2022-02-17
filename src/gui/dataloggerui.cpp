@@ -26,12 +26,18 @@ void DataLoggerUI::init()
 	dataLoggingLayout->addWidget(dataLoggingSwitch);
 	dataLoggingLayout->setAlignment(dataLoggingSwitch,Qt::AlignRight);
 
-	dataLoggingLayout->addWidget(new QLabel("Chose file"));
+	dataLoggingLayout->addWidget(new QLabel("Choose file"));
 	dataLoggingFilePath = new QLineEdit(dataLoggingWidget);
 	dataLoggingFilePath->setDisabled(true);
 
 	connect(dataLoggingFilePath, &QLineEdit::textChanged, this, [=](QString path){
-		Q_EMIT pathChanged(path);
+		if(filename.isEmpty() && dataLoggingFilePath->isEnabled()) {
+			dataLoggingFilePath->setText(tr("No file selected"));
+			dataLoggingFilePath->setStyleSheet("color:red");
+		}else{
+			dataLoggingFilePath->setStyleSheet("color:white");
+			Q_EMIT pathChanged(path);
+		}
 	});
 
 	dataLoggingLayout->addWidget(dataLoggingFilePath);
@@ -99,6 +105,11 @@ void DataLoggerUI::init()
 		data_logging_timer->setDisabled(!toggled);
 		dataLoggerFilter->setDisabled(!toggled);
 		Q_EMIT toggleDataLogger(toggled);
+
+		if(filename.isEmpty() && dataLoggingFilePath->isEnabled()) {
+			dataLoggingFilePath->setText(tr("No file selected"));
+			dataLoggingFilePath->setStyleSheet("color:red");
+		}
 	});
 
 }

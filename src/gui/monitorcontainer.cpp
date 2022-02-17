@@ -4,7 +4,7 @@
 #include <QSpacerItem>
 #include <QtDebug>
 
-MonitorContainer::MonitorContainer(int maxCols,QWidget *parent) :
+CustomColQGridLayout::CustomColQGridLayout(int maxCols,QWidget *parent) :
 	QWidget(parent),
 	m_maxCols(maxCols-1),
 	currentNumberOfCols(m_maxCols),
@@ -31,43 +31,40 @@ MonitorContainer::MonitorContainer(int maxCols,QWidget *parent) :
 	m_gridLayout->addItem(m_hspacer,0, 1);
 	m_gridLayout->addItem(m_vspacer,1, 0);
 
-
-
 }
 
 // adds widget to internal widget list and return the index of the added widget
-int MonitorContainer::addQWidgetToList(QWidget *widget){
+int CustomColQGridLayout::addQWidgetToList(QWidget *widget){
 	m_widgetList.push_back(widget);
 	return  m_widgetList.size() -1;
 }
 
 // adds a widget at index to the layout and it's index to the active widget list
-void MonitorContainer::addWidget(int index){
+void CustomColQGridLayout::addWidget(int index){
 	m_gridLayout->addWidget(m_widgetList.at(index),row,col);
 	m_widgetList.at(index)->show();
 	m_activeWidgetList.push_back(index);
 
-	if(m_activeWidgetList.size() == 2)
-	{
-		m_gridLayout->removeItem(m_hspacer);
-	}
-	if(m_activeWidgetList.size() == 3)
-	{
-		m_gridLayout->removeItem(m_vspacer);
-	}
+//	if (m_activeWidgetList.size() == 2) {
+//		m_gridLayout->removeItem(m_hspacer);
+//	}
+//	if (m_activeWidgetList.size() == 3) {
+//		m_gridLayout->removeItem(m_vspacer);
+//	}
+
+
 	//logic for resizable n columns grid layout
-	if(col == currentNumberOfCols){
+	if (col == currentNumberOfCols) {
 		col = 0;
 		row++;
-	}else{
+	} else {
 		col ++;
 	}
-
 }
 
 
 // remove widget at index from layout
-void MonitorContainer::removeWidget(int index){
+void CustomColQGridLayout::removeWidget(int index){
 	//get index, row and column of item that will be removed
 	int indexOfGrid = m_gridLayout->indexOf(m_widgetList.at(index));
 	int r = 0, c=0, rs = 0, cs =0;
@@ -87,10 +84,10 @@ void MonitorContainer::removeWidget(int index){
 	}
 
 	//shift all remaing active widgets to fill the empty space
-	while(i < m_activeWidgetList.size()){
+	while (i < m_activeWidgetList.size()) {
 		repositionWidgets(m_activeWidgetList.at(i),r,c);
 		i++;
-		if(c == currentNumberOfCols){
+		if (c == currentNumberOfCols) {
 			c = 0;
 			r++;
 		}else{
@@ -98,12 +95,12 @@ void MonitorContainer::removeWidget(int index){
 		}
 	}
 
-	if(m_activeWidgetList.size() == 1){
-		m_gridLayout->addItem(m_hspacer,0, 1);
-	}
-	if(m_activeWidgetList.size() == 2){
-		m_gridLayout->addItem(m_vspacer,1, 0);
-	}
+//	if(m_activeWidgetList.size() == 1){
+//		m_gridLayout->addItem(m_hspacer,0, 1);
+//	}
+//	if(m_activeWidgetList.size() == 2){
+//		m_gridLayout->addItem(m_vspacer,1, 0);
+//	}
 	//logic for n columns grid layout
 	if(col != 0){
 		col--;
@@ -115,18 +112,18 @@ void MonitorContainer::removeWidget(int index){
 
 // move a widget to specified row and column
 // moving the widget will replace the current widget at that position
-void MonitorContainer::repositionWidgets(int index, int row, int col){
+void CustomColQGridLayout::repositionWidgets(int index, int row, int col){
 	m_gridLayout->addWidget(m_widgetList.at(index),row,col);
 }
 
 
 // returns widget at index
-QWidget* MonitorContainer::getWidget(int index){
+QWidget* CustomColQGridLayout::getWidget(int index){
 	return m_widgetList.at(index);
 }
 
 // check if widget is active on layout
-bool MonitorContainer::isWidgetActive(int index){
+bool CustomColQGridLayout::isWidgetActive(int index){
 	for(int i = 0 ; i < m_activeWidgetList.size(); i++){
 		if(m_activeWidgetList.at(i) == index){
 			return true;
@@ -135,7 +132,7 @@ bool MonitorContainer::isWidgetActive(int index){
 	return false;
 }
 
-void MonitorContainer::toggleAll(bool toggled){
+void CustomColQGridLayout::toggleAll(bool toggled){
 	for(int i=0; i< m_widgetList.size(); i++){
 		if(toggled){
 			addWidget(i);
@@ -145,13 +142,13 @@ void MonitorContainer::toggleAll(bool toggled){
 	}
 }
 
-void MonitorContainer::setMaxColumnNumber(int maxColumns){
+void CustomColQGridLayout::setMaxColumnNumber(int maxColumns){
 	m_maxCols = maxColumns - 1;
 }
-int MonitorContainer::getMaxColumnNumber(){return  m_maxCols;}
+int CustomColQGridLayout::getMaxColumnNumber(){return  m_maxCols;}
 
 
-void MonitorContainer::resizeEvent(QResizeEvent *event)
+void CustomColQGridLayout::resizeEvent(QResizeEvent *event)
 {
 	auto widgetWidth = m_widgetList.at(0)->minimumWidth();
 	auto newWidth = event->size().width();
@@ -178,18 +175,18 @@ void MonitorContainer::resizeEvent(QResizeEvent *event)
 	QWidget::resizeEvent(event);
 }
 
-void MonitorContainer::redrawWidgets()
+void CustomColQGridLayout::redrawWidgets()
 {
 	row = 0;
 	col = 0;
 	if(m_activeWidgetList.size() > 0){
 		for(int i = 0; i < m_activeWidgetList.size(); i++){
-			m_gridLayout->removeWidget(m_widgetList.at(i));
-			m_widgetList.at(i)->hide();
+			m_gridLayout->removeWidget(m_widgetList.at(m_activeWidgetList.at(i)));
+			m_widgetList.at(m_activeWidgetList.at(i))->hide();
 		}
 		for(int i = 0; i < m_activeWidgetList.size(); i++){
-			m_gridLayout->addWidget(m_widgetList.at(i),row,col);
-			m_widgetList.at(i)->show();
+			m_gridLayout->addWidget(m_widgetList.at(m_activeWidgetList.at(i)),row,col);
+			m_widgetList.at(m_activeWidgetList.at(i))->show();
 
 			//logic for resizable n columns grid layout
 			if(col == currentNumberOfCols){
@@ -204,7 +201,7 @@ void MonitorContainer::redrawWidgets()
 
 }
 
-MonitorContainer::~MonitorContainer()
+CustomColQGridLayout::~CustomColQGridLayout()
 {
 	for(auto widget: m_widgetList){
 		delete widget;

@@ -1,6 +1,6 @@
 {
 	"generic": {
-		"compatible": [ "siggen", "dmm" ]
+	        "compatible": [ "siggen", "dmm", "iiomonitor" ]
 	},
 
         "FMComms2-4": {
