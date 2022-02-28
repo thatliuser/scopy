@@ -43,7 +43,7 @@ static const std::string tool_names[] = {
 	"power",
 	"debugger",
 	"calibration",
-    "iiomonitor",
+	"dataloggertool",
 	"launcher"
 };
 

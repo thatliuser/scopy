@@ -413,7 +413,7 @@ void ToolLauncher::_toolSelected(enum tool tool)
 	case TOOL_CALIBRATION:
 		selectedTool = manual_calibration;
 		break;
-    case TOOL_IIOMONITOR:
+    case TOOL_DATALOGGERTOOL:
         selectedTool = iio_monitor;
         break;
 	case TOOL_LAUNCHER:
@@ -1571,7 +1571,7 @@ void adiscope::ToolLauncher::enableAdcBasedTools()
 
 		if (filter->compatible(TOOL_DMM)) {
 			dmm = new DMM(ctx, filter, menu->getToolMenuItemFor(TOOL_DMM),
-				      &js_engine, this);
+					  &js_engine, this);
 			adc_users_group.addButton(menu->getToolMenuItemFor(TOOL_DMM)->getToolStopBtn());
 			toolList.push_back(dmm);
 			connect(dmm, &DMM::showTool, [=]() {
@@ -1630,7 +1630,7 @@ void adiscope::ToolLauncher::enableDacBasedTools()
 	try {
 		if (filter->compatible(TOOL_SIGNAL_GENERATOR)) {
 			signal_generator = new SignalGenerator(ctx, filter,
-							       menu->getToolMenuItemFor(TOOL_SIGNAL_GENERATOR), &js_engine, this);
+								   menu->getToolMenuItemFor(TOOL_SIGNAL_GENERATOR), &js_engine, this);
 			toolList.push_back(signal_generator);
 			connect(signal_generator, &SignalGenerator::showTool, [=]() {
 				menu->getToolMenuItemFor(TOOL_SIGNAL_GENERATOR)->getToolBtn()->click();
@@ -1708,11 +1708,11 @@ bool adiscope::ToolLauncher::switchContext(const QString& uri)
 						bool success = loadDecoders("decoders");
 
 						if (!success) {
-						    search_timer->stop();
+							search_timer->stop();
 
-						    QMessageBox error(this);
-						    error.setText(tr("There was a problem initializing libsigrokdecode. Some features may be missing"));
-						    error.exec();
+							QMessageBox error(this);
+							error.setText(tr("There was a problem initializing libsigrokdecode. Some features may be missing"));
+							error.exec();
 						}
 #endif
 			}
@@ -1720,17 +1720,17 @@ bool adiscope::ToolLauncher::switchContext(const QString& uri)
 
 		if (filter->compatible(TOOL_DIGITALIO)) {
 			dio = new DigitalIO(nullptr, filter, menu->getToolMenuItemFor(TOOL_DIGITALIO),
-					    dioManager, &js_engine, this);
+						dioManager, &js_engine, this);
 			toolList.push_back(dio);
 			connect(dio, &DigitalIO::showTool, [=]() {
 				menu->getToolMenuItemFor(TOOL_DIGITALIO)->getToolBtn()->click();
 			});
 		}
 
-        if (filter->compatible(TOOL_IIOMONITOR)) {
-			 iio_monitor = new DataLoggerTool(ctx, filter, menu->getToolMenuItemFor(TOOL_IIOMONITOR),&js_engine, this);
+        if (filter->compatible(TOOL_DATALOGGERTOOL)) {
+			 iio_monitor = new DataLoggerTool(ctx, filter, menu->getToolMenuItemFor(TOOL_DATALOGGERTOOL),&js_engine, this);
              toolList.push_back(iio_monitor);
-             connect(menu->getToolMenuItemFor(TOOL_IIOMONITOR)->getToolBtn(), &QPushButton::clicked, [=](){
+             connect(menu->getToolMenuItemFor(TOOL_DATALOGGERTOOL)->getToolBtn(), &QPushButton::clicked, [=](){
                  swapMenu(iio_monitor->getToolView());
              });
         }
@@ -1739,7 +1739,7 @@ bool adiscope::ToolLauncher::switchContext(const QString& uri)
 
 		if (filter->compatible(TOOL_POWER_CONTROLLER)) {
 			power_control = new PowerController(ctx, menu->getToolMenuItemFor(TOOL_POWER_CONTROLLER),
-							    &js_engine, this);
+								&js_engine, this);
 			toolList.push_back(power_control);
 			connect(power_control, &PowerController::showTool, [=]() {
 				menu->getToolMenuItemFor(TOOL_POWER_CONTROLLER)->getToolBtn()->click();

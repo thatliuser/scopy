@@ -1,24 +1,24 @@
-#ifndef IIOMONITOR_HPP
-#define IIOMONITOR_HPP
+#ifndef DATALOGGERTOOL_HPP
+#define DATALOGGERTOOL_HPP
 
 #include <QWidget>
 #include <filter.hpp>
 #include <tool_launcher.hpp>
-#include "ui_iiomonitor.h"
+#include "ui_dataloggertool.h"
 #include <tool.hpp>
 #include "gui/tool_view_builder.hpp"
 #include <QPair>
 #include <QTimer>
 #include <QRadioButton>
-#include "gui/channelmonitorcomponent.hpp"
-#include "gui/iiomonitormenu.hpp"
-#include "gui/monitorcontainer.hpp"
-#include "iiomonitorgeneralsettingsmenu.hpp"
+#include "gui/customcolqgidlayout.hpp"
+#include "dataloggertoolgeneralsettingsmenu.hpp"
 
-#include "gui/iiomonitorgenericmenu.hpp"
+#include "gui/dataloggertoolgenericmenu.hpp"
 #include <QFileDialog>
 
+#include "channelmonitorcomponent.hpp"
 #include "datalogger.hpp"
+#include "dataloggettool_api.h"
 
 /* libm2k includes */
 #include <libm2k/analog/m2kanalogin.hpp>
@@ -29,6 +29,7 @@
 #include <libm2k/m2kexceptions.hpp>
 
 namespace adiscope {
+class DataLoggetTool_api;
 
 struct activeChannel{
 	std::string dmmId;
@@ -40,6 +41,7 @@ struct activeChannel{
 
 class DataLoggerTool : public Tool
 {
+	friend class DataLoggetTool_api;
     Q_OBJECT
 
     Ui::IIOMonitor *ui;
@@ -52,8 +54,16 @@ public:
 
     scopy::gui::ToolView* getToolView();
 
+	CustomSwitch* showAllSWitch;
+	int getPrecision();
+	void setPrecision(int precision);
+	int getValueReadingTimeInterval();
+
 private:
 	int VALUE_READING_TIME_INTERVAL = 1000;
+
+	QLineEdit *precisionValue;
+	PositionSpinButton *recording_timer;
 
 	QTimer* m_timer;
 	DataLogger *dataLogger;
@@ -77,7 +87,7 @@ private:
 	libm2k::analog::DMM_READING readChVal(int ch);
 	scopy::gui::GenericMenu* generateMenu(QString title, QColor* color);
 	std::vector<libm2k::analog::DMM*> getDmmList(libm2k::context::Context* m2k_context);
-	void createConnections(scopy::gui::DataLoggerToolGenericMenu* menu,adiscope::ChannelMonitorComponent* monitor);
+	void createConnections(scopy::gui::DataLoggerToolGenericMenu* mainMenu,scopy::gui::DataLoggerToolGenericMenu* menu,adiscope::ChannelMonitorComponent* monitor);
 
 Q_SIGNALS:
 	void PrecisionChanged(int precision);
@@ -90,4 +100,4 @@ public Q_SLOTS:
     void toggleTimer(bool enabled);
 };
 }
-#endif // IIOMONITOR_HPP
+#endif // DATALOGGERTOOL_HPP

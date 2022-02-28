@@ -25,6 +25,12 @@ public Q_SLOTS:
 	void stopLogger();
 	void startLogger();
 	void dataLoggerToggled(bool toggled);
+	void setPath(QString path);
+	QString getPath();
+	bool isOverwrite();
+	void setOverwrite(bool en);
+	int getRecordingTimeInterval();
+	void setRecodingTimeInterval(int interval);
 
 Q_SIGNALS:
 	void toggleDataLogger(bool toggled);

@@ -19,6 +19,7 @@ public:
 	explicit DataLoggerUI(bool lastValue, bool average, bool all, QWidget *parent = nullptr);
 	~DataLoggerUI();
 	//UI
+	PositionSpinButton *data_logging_timer;
 	QWidget *dataLoggingWidget;
 	QVBoxLayout *dataLoggingLayout;
 	QLineEdit *dataLoggingFilePath;

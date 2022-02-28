@@ -1,11 +1,11 @@
-#include "iiomonitorgeneralsettingsmenu.hpp"
-#include "ui_iiomonitorgeneralsettingsmenu.h"
+#include "dataloggertoolgeneralsettingsmenu.hpp"
+#include "ui_dataloggertoolgeneralsettingsmenu.h"
 
 using namespace scopy::gui;
 
-IIOMonitorGeneralSettingsMenu::IIOMonitorGeneralSettingsMenu(QWidget *parent) :
+DataLoggerToolGeneralSettingsMenu::DataLoggerToolGeneralSettingsMenu(QWidget *parent) :
     GenericMenu(parent),
-    ui(new Ui::IIOMonitorGeneralSettingsMenu)
+	ui(new Ui::DataLoggerToolGeneralSettingsMenu)
 {
     ui->setupUi(this);
 
@@ -31,14 +31,14 @@ IIOMonitorGeneralSettingsMenu::IIOMonitorGeneralSettingsMenu(QWidget *parent) :
     });
 }
 
-void IIOMonitorGeneralSettingsMenu::setPrecision(int precision){
+void DataLoggerToolGeneralSettingsMenu::setPrecision(int precision){
     m_precision = precision;
     Q_EMIT precisionChanged(precision);
 }
 
-int IIOMonitorGeneralSettingsMenu::getPrecision(){return m_precision;}
+int DataLoggerToolGeneralSettingsMenu::getPrecision(){return m_precision;}
 
-IIOMonitorGeneralSettingsMenu::~IIOMonitorGeneralSettingsMenu()
+DataLoggerToolGeneralSettingsMenu::~DataLoggerToolGeneralSettingsMenu()
 {
     delete ui;
 }

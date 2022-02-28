@@ -1,5 +1,5 @@
-#include "monitorcontainer.hpp"
-#include "ui_monitorcontainer.h"
+#include "customcolqgidlayout.hpp"
+#include "ui_customcolqgidlayout.h"
 #include "QScrollArea"
 #include <QSpacerItem>
 #include <QtDebug>
@@ -10,7 +10,8 @@ CustomColQGridLayout::CustomColQGridLayout(int maxCols,QWidget *parent) :
 	currentNumberOfCols(m_maxCols),
 	col(0),
 	row(0),
-	ui(new Ui::MonitorContainer)
+	ui(new Ui::CustomColQGridLayout),
+	updatePending(false)
 {
 	ui->setupUi(this);
 
@@ -28,9 +29,10 @@ CustomColQGridLayout::CustomColQGridLayout(int maxCols,QWidget *parent) :
 	m_hspacer = new QSpacerItem(1,1, QSizePolicy::Expanding, QSizePolicy::Fixed);
 	m_vspacer = new QSpacerItem(1,1, QSizePolicy::Fixed, QSizePolicy::Expanding);
 
-	m_gridLayout->addItem(m_hspacer,0, 1);
+	m_gridLayout->addItem(m_hspacer,0, m_maxCols + 1);
 	m_gridLayout->addItem(m_vspacer,1, 0);
 
+	connect(this, &CustomColQGridLayout::reqestLayoutUpdate, this, &CustomColQGridLayout::updateLayout, Qt::QueuedConnection);
 }
 
 // adds widget to internal widget list and return the index of the added widget
@@ -45,14 +47,6 @@ void CustomColQGridLayout::addWidget(int index){
 	m_widgetList.at(index)->show();
 	m_activeWidgetList.push_back(index);
 
-//	if (m_activeWidgetList.size() == 2) {
-//		m_gridLayout->removeItem(m_hspacer);
-//	}
-//	if (m_activeWidgetList.size() == 3) {
-//		m_gridLayout->removeItem(m_vspacer);
-//	}
-
-
 	//logic for resizable n columns grid layout
 	if (col == currentNumberOfCols) {
 		col = 0;
@@ -61,7 +55,6 @@ void CustomColQGridLayout::addWidget(int index){
 		col ++;
 	}
 }
-
 
 // remove widget at index from layout
 void CustomColQGridLayout::removeWidget(int index){
@@ -75,8 +68,8 @@ void CustomColQGridLayout::removeWidget(int index){
 	m_widgetList.at(index)->hide();
 
 	int i = 0;
-	for(int idx = 0; idx < m_activeWidgetList.size(); idx++){
-		if(m_activeWidgetList.at(idx) == index){
+	for (int idx = 0; idx < m_activeWidgetList.size(); idx++) {
+		if (m_activeWidgetList.at(idx) == index) {
 			i = idx;
 			m_activeWidgetList.remove(idx);
 			break;
@@ -90,21 +83,15 @@ void CustomColQGridLayout::removeWidget(int index){
 		if (c == currentNumberOfCols) {
 			c = 0;
 			r++;
-		}else{
+		} else {
 			c ++;
 		}
 	}
 
-//	if(m_activeWidgetList.size() == 1){
-//		m_gridLayout->addItem(m_hspacer,0, 1);
-//	}
-//	if(m_activeWidgetList.size() == 2){
-//		m_gridLayout->addItem(m_vspacer,1, 0);
-//	}
 	//logic for n columns grid layout
-	if(col != 0){
+	if (col != 0) {
 		col--;
-	}else{
+	} else {
 		row--;
 		col = currentNumberOfCols;
 	}
@@ -116,7 +103,6 @@ void CustomColQGridLayout::repositionWidgets(int index, int row, int col){
 	m_gridLayout->addWidget(m_widgetList.at(index),row,col);
 }
 
-
 // returns widget at index
 QWidget* CustomColQGridLayout::getWidget(int index){
 	return m_widgetList.at(index);
@@ -124,89 +110,127 @@ QWidget* CustomColQGridLayout::getWidget(int index){
 
 // check if widget is active on layout
 bool CustomColQGridLayout::isWidgetActive(int index){
-	for(int i = 0 ; i < m_activeWidgetList.size(); i++){
-		if(m_activeWidgetList.at(i) == index){
+	for (int i = 0 ; i < m_activeWidgetList.size(); i++) {
+		if (m_activeWidgetList.at(i) == index) {
 			return true;
 		}
 	}
 	return false;
 }
 
+//toggle all widgets
 void CustomColQGridLayout::toggleAll(bool toggled){
-	for(int i=0; i< m_widgetList.size(); i++){
-		if(toggled){
+	for (int i=0; i< m_widgetList.size(); i++) {
+		if (toggled) {
 			addWidget(i);
-		}else{
+		} else {
 			removeWidget(i);
 		}
 	}
 }
 
+//set the maximum number of columns
 void CustomColQGridLayout::setMaxColumnNumber(int maxColumns){
 	m_maxCols = maxColumns - 1;
 }
-int CustomColQGridLayout::getMaxColumnNumber(){return  m_maxCols;}
 
+//returns the maximum number of columns
+int CustomColQGridLayout::getMaxColumnNumber(){return  m_maxCols;}
 
 void CustomColQGridLayout::resizeEvent(QResizeEvent *event)
 {
-	auto widgetWidth = m_widgetList.at(0)->minimumWidth();
-	auto newWidth = event->size().width();
+	if (!updatePending) {
+		updatePending = true;
+		Q_EMIT reqestLayoutUpdate();
+	}
+}
 
-	auto colCount = 0;
+void CustomColQGridLayout::itemSizeChanged()
+{
+	if (!updatePending) {
+		updatePending = true;
+		Q_EMIT reqestLayoutUpdate();
+	}
+}
 
-	if(widgetWidth != 0){
-	 colCount = newWidth/widgetWidth - 1;
+void CustomColQGridLayout::updateLayout()
+{
+	recomputeColCount();
+	updatePending = false;
+}
+
+void CustomColQGridLayout::recomputeColCount()
+{
+	if(m_activeWidgetList.size() > 0){
+		auto maxWidth = m_widgetList.at(m_activeWidgetList.at(0))->frameSize().width();
+		for (int i = 1; i < m_activeWidgetList.size(); i++ ) {
+			if (m_widgetList.at(m_activeWidgetList.at(i))->frameSize().width() > maxWidth){
+				maxWidth = m_widgetList.at(m_activeWidgetList.at(i))->frameSize().width();
+			}
+		}
+		if (colWidth != maxWidth) {
+			computeCols(maxWidth);
+		}
+	}else{
+		computeCols(0);
+	}
+}
+
+void CustomColQGridLayout::computeCols(double width)
+{
+	int colCount = currentNumberOfCols;
+	auto availableWidth = this->width();
+
+	if (width != 0) {
+		colCount = availableWidth / width - 1;
+		colWidth = width;
+	}else{
+		if(m_widgetList.size() > 0){
+			colCount = availableWidth / m_widgetList.at(0)->width() - 1;
+			colWidth = m_widgetList.at(0)->width();
+		}
 	}
 
-	if(colCount > m_maxCols){
-		colCount = m_maxCols;
-	}
-
-	if(colCount != currentNumberOfCols){
-
+	if (colCount != currentNumberOfCols) {
 		currentNumberOfCols = colCount;
 	}
 
-	if(m_activeWidgetList.size() > 1){
+	if (m_activeWidgetList.size() > 1) {
 		redrawWidgets();
 	}
-
-	QWidget::resizeEvent(event);
 }
 
+// redraw all active widgets
 void CustomColQGridLayout::redrawWidgets()
 {
 	row = 0;
 	col = 0;
-	if(m_activeWidgetList.size() > 0){
-		for(int i = 0; i < m_activeWidgetList.size(); i++){
+	if (m_activeWidgetList.size() > 0) {
+		for (int i = 0; i < m_activeWidgetList.size(); i++) {
+
 			m_gridLayout->removeWidget(m_widgetList.at(m_activeWidgetList.at(i)));
 			m_widgetList.at(m_activeWidgetList.at(i))->hide();
-		}
-		for(int i = 0; i < m_activeWidgetList.size(); i++){
+
 			m_gridLayout->addWidget(m_widgetList.at(m_activeWidgetList.at(i)),row,col);
 			m_widgetList.at(m_activeWidgetList.at(i))->show();
 
 			//logic for resizable n columns grid layout
-			if(col == currentNumberOfCols){
+			if (col == currentNumberOfCols) {
 				col = 0;
 				row++;
-			}else{
+			} else {
 				col ++;
 			}
 		}
-
 	}
-
 }
 
 CustomColQGridLayout::~CustomColQGridLayout()
 {
-	for(auto widget: m_widgetList){
+	for (auto widget: m_widgetList) {
 		delete widget;
 	}
-	if(m_gridLayout){
+	if (m_gridLayout) {
 		m_gridLayout->removeItem(m_vspacer);
 		m_gridLayout->removeItem(m_hspacer);
 		delete m_gridLayout;

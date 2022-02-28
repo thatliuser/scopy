@@ -67,7 +67,43 @@ bool DataLogger::isDataLoggerOn()
 
 void DataLogger::dataLoggerToggled(bool toggled)
 {
+	dataLoggerUI->dataLoggingSwitch->setChecked(toggled);
 	Q_EMIT toggleDataLogger(toggled);
+}
+
+void DataLogger::setPath(QString path){
+	dataLoggerUI->filename = path;
+	dataLoggerUI->dataLoggingFilePath->setText(path);
+	dataLoggerAPI->setPath(path);
+}
+
+QString DataLogger::getPath(){
+	return dataLoggerUI->dataLoggingFilePath->text();
+}
+
+bool DataLogger::isOverwrite()
+{
+	return dataLoggerUI->isOverwrite();
+}
+
+void DataLogger::setOverwrite(bool en)
+{
+	if(en){
+		dataLoggerUI->overwriteRadio->setChecked(true);
+	}else{
+		dataLoggerUI->appendRadio->setChecked(true);
+	}
+}
+
+int DataLogger::getRecordingTimeInterval()
+{
+	return dataLoggerUI->data_logging_timer->value();
+}
+
+void DataLogger::setRecodingTimeInterval(int interval)
+{
+	dataLoggerUI->data_logging_timer->setValue(interval);
+	dataLoggerAPI->setTimerInterval(interval * 1000);
 }
 
 DataLogger::~DataLogger()
