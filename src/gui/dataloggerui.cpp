@@ -79,7 +79,7 @@ void DataLoggerUI::init()
 		overwriteRadio->setChecked(!en);
 	});
 
-	PositionSpinButton *data_logging_timer = new PositionSpinButton({
+	data_logging_timer = new PositionSpinButton({
 																		{"s", 1},
 																		{"min", 60},
 																		{"h", 3600}

@@ -1,12 +1,13 @@
-#ifndef MONITORCONTAINER_HPP
-#define MONITORCONTAINER_HPP
+#ifndef CUSOTMCOLQGRIDLAYOUT_HPP
+#define CUSOTMCOLQGRIDLAYOUT_HPP
 
 #include <QWidget>
 #include <QVBoxLayout>
 #include <QResizeEvent>
+#include <QTimer>
 
 namespace Ui {
-class MonitorContainer;
+class CustomColQGridLayout;
 }
 
 class CustomColQGridLayout : public QWidget
@@ -27,12 +28,19 @@ public:
 	void setMaxColumnNumber(int maxColumns);
 	int getMaxColumnNumber();
 
-private:
+Q_SIGNALS:
+	void reqestLayoutUpdate();
 
+public Q_SLOTS:
+	void updateLayout();
+	void itemSizeChanged();
+
+private:
 	int m_maxCols;
 	int currentNumberOfCols;
 	int col;
 	int row;
+	double colWidth;
 	std::vector<QWidget*> m_widgetList;
 	QVector<int> m_activeWidgetList;
 	QGridLayout *m_gridLayout;
@@ -40,11 +48,15 @@ private:
 	QSpacerItem *m_hspacer;
 	QSpacerItem *m_vspacer;
 
-	Ui::MonitorContainer *ui;
-
-	void repositionWidgets(int index, int row, int col);
+	//resize related
+	bool updatePending;
 	void redrawWidgets();
+	void recomputeColCount();
+	void computeCols(double width);
 	void resizeEvent(QResizeEvent *event);
+	void repositionWidgets(int index, int row, int col);
+
+	Ui::CustomColQGridLayout *ui;
 };
 
-#endif // MONITORCONTAINER_HPP
+#endif // CUSOTMCOLQGRIDLAYOUT_HPP

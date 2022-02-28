@@ -1,5 +1,5 @@
-#ifndef IIOMONITORGENERICMENU_HPP
-#define IIOMONITORGENERICMENU_HPP
+#ifndef DATALOGGERTOOLGENERICMENU_HPP
+#define DATALOGGERTOOLGENERICMENU_HPP
 
 #include <QWidget>
 #include "gui/generic_menu.hpp"
@@ -20,6 +20,12 @@ public:
 
 	void init(QString title, QColor* color,bool showAll);
 
+public Q_SLOTS:
+	void scaleToggle(bool toggled);
+	void peakHolderToggle(bool toggled);
+	void historyToggle(bool toggled);
+	void peakHolderResetClicked();
+
 Q_SIGNALS:
 	void toggleScale(bool toggle);
 	void monitorColorChanged(QString color);
@@ -34,8 +40,12 @@ private:
 	double numSamplesFromIdx(int idx);
 	Qt::PenStyle lineStyleFromIdx(int idx);
 	void setHistorySize(int idx);
+	CustomSwitch *peakHolderSwitch;
+	CustomSwitch *scaleSWitch;
+	CustomSwitch *historySwitch;
+	QPushButton *peakHolderReset;
 };
 }
 }
 
-#endif // IIOMONITORGENERICMENU_HPP
+#endif // DATALOGGERTOOLGENERICMENU_HPP

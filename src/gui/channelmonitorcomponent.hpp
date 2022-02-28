@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include "customFifo.hpp"
+#include <QResizeEvent>
 
 namespace Ui {
 class ChannelMonitorComponent;
@@ -32,6 +33,10 @@ public:
 	void setID(int id);
 	int getID();
 
+Q_SIGNALS:
+	void contentChanged();
+
+
 public Q_SLOTS:
     void displayPeakHold(bool checked);
     void resetPeakHolder();
@@ -42,9 +47,7 @@ public Q_SLOTS:
 	void setHistoryDuration(int duration);
 	void setRecordingInterval(double interval);
 	void setLineStyle(Qt::PenStyle lineStyle);
-
-public Q_SIGNAL:
-    void updateValue(double value, QString nameOfUnitOfMeasure,QString symbolOfUnitOfMeasure);
+	void updateValue(double value, QString nameOfUnitOfMeasure,QString symbolOfUnitOfMeasure);
 
 private:
     Ui::ChannelMonitorComponent *ui;
@@ -53,10 +56,8 @@ private:
     double m_maxValue;
     QString m_unitOfMeasure;
 	QColor m_color;
-
 	int m_id;
+	void resizeEvent(QResizeEvent *event);
 };
-
 }
-
 #endif // CHANNELMONITORCOMPONENT_H

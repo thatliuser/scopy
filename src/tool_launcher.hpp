@@ -41,7 +41,7 @@
 
 #include "apiObject.hpp"
 #include "dmm.hpp"
-#include "gui/iiomonitor.hpp"
+#include "gui/dataloggertool.hpp"
 #include "filter.hpp"
 #include "calibration.hpp"
 #include "oscilloscope.hpp"

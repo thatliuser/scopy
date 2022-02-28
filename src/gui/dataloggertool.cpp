@@ -1,6 +1,4 @@
-#include "iiomonitor.hpp"
-#include "iiomonitorgeneralsettingsmenu.hpp"
-
+#include "dataloggertool.hpp"
 #include "gui/generic_menu.hpp"
 #include "gui/verticalcontrol.hpp"
 #include "gui/customSwitch.hpp"
@@ -13,7 +11,7 @@ using namespace adiscope;
 DataLoggerTool::DataLoggerTool(struct iio_context *ctx, Filter *filt,
     ToolMenuItem *toolMenuItem,
     QJSEngine *engine, ToolLauncher *parent):
-	Tool(ctx, toolMenuItem, nullptr, "DataLogger",
+	Tool(ctx, toolMenuItem, new DataLoggetTool_api(this), "DataLogger",
          parent),
     ui(new Ui::IIOMonitor),
 	m_context(contextOpen(ctx, "")),
@@ -43,9 +41,9 @@ DataLoggerTool::DataLoggerTool(struct iio_context *ctx, Filter *filt,
 
 	m_generalSettingsMenu = generateMenu("General settings", new QColor("blue"));
 	m_toolView->setGeneralSettingsMenu(m_generalSettingsMenu,false);
+	m_toolView->getGeneralSettingsBtn()->click();
 
 	m_dmmList=getDmmList(m_context);
-
 
 	connect(m_toolView->getRunBtn(), &QPushButton::toggled, this, [=](bool toggled){
 		toggleTimer(toggled);
@@ -89,7 +87,12 @@ DataLoggerTool::DataLoggerTool(struct iio_context *ctx, Filter *filt,
 	connect(this, &DataLoggerTool::RecordingIntervalChanged, this , [=](double interval){
 		VALUE_READING_TIME_INTERVAL = interval;
 		m_timer->setInterval(interval);
+		recording_timer->setValue(interval/1000);
 	});
+
+	api->setObjectName(QString::fromStdString(Filter::tool_name(TOOL_DATALOGGERTOOL)));
+	api->load(*settings);
+	api->js_register(engine);
 }
 
 void DataLoggerTool::initMonitorToolView(){
@@ -97,7 +100,7 @@ void DataLoggerTool::initMonitorToolView(){
 	int chId = 1;
 	m_customColGrid = new CustomColQGridLayout(100,this);
 
-	for(libm2k::analog::DMM* dmm : m_dmmList){
+	for (libm2k::analog::DMM* dmm : m_dmmList) {
 		std::vector<ChannelWidget*> channelList;
 
 		scopy::gui::DataLoggerToolGenericMenu *menu = new scopy::gui::DataLoggerToolGenericMenu(this);
@@ -105,10 +108,8 @@ void DataLoggerTool::initMonitorToolView(){
 
 		ChannelWidget *mainCh_widget =
 				m_toolView->buildNewChannel(m_monitorChannelManager, menu, true, chId, false, false, QColor("green"), QString::fromStdString(dmm->getName()), QString::fromStdString(dmm->getName()) );
-
-//		mainCh_widget->enableButton()->setChecked(false);
 		chId++;
-		for(auto channel : dmm->readAll()){
+		for (auto channel : dmm->readAll()) {
 
 			QColor channelColor = getChannelColor(chId);
 
@@ -119,10 +120,7 @@ void DataLoggerTool::initMonitorToolView(){
 					m_toolView->buildNewChannel(m_monitorChannelManager, channelMenu , true, chId, false, false, channelColor, QString::fromStdString(channel.id), QString::fromStdString(channel.id) );
 
 			channelList.push_back(ch_widget);
-
 			ch_widget->enableButton()->setChecked(false);
-//			ch_widget->hide();
-
 
 			adiscope::ChannelMonitorComponent* monitor = new adiscope::ChannelMonitorComponent();
 			monitor->setID(chId);
@@ -131,16 +129,19 @@ void DataLoggerTool::initMonitorToolView(){
 			monitor->setRecordingInterval(VALUE_READING_TIME_INTERVAL/1000);
 			monitor->setHistoryDuration(10);
 
-			//connect widget to group settings (main menu)
-			createConnections(menu,monitor);
+
+			connect(monitor, &adiscope::ChannelMonitorComponent::contentChanged, m_customColGrid, [=](){
+				m_customColGrid->itemSizeChanged();
+			}, Qt::QueuedConnection);
+
+			//connect menu switches to widget
+			createConnections(menu,channelMenu,monitor);
+
 			connect(this, &DataLoggerTool::toggleAll, this, [=](bool toggled){
 				if(ch_widget->enableButton()->isChecked() != toggled){
 					ch_widget->enableButton()->click();
 				}
 			});
-
-			//connect menu switches to widget
-			createConnections(channelMenu,monitor);
 
 			//add connections from general settings
 			connect(this, &DataLoggerTool::PrecisionChanged, this, [=](int precision){
@@ -182,7 +183,22 @@ void DataLoggerTool::initMonitorToolView(){
 }
 
 scopy::gui::ToolView* DataLoggerTool::getToolView(){
-    return m_toolView;
+	return m_toolView;
+}
+
+int DataLoggerTool::getPrecision()
+{
+	return precisionValue->text().toInt();
+}
+
+void DataLoggerTool::setPrecision(int precision)
+{
+	precisionValue->setText(QString::number(precision));
+}
+
+int DataLoggerTool::getValueReadingTimeInterval()
+{
+	return VALUE_READING_TIME_INTERVAL;
 }
 
 std::vector<libm2k::analog::DMM*> DataLoggerTool::getDmmList(libm2k::context::Context* context){
@@ -223,22 +239,30 @@ void DataLoggerTool::toggleTimer(bool enabled){
     }
 }
 
-void DataLoggerTool::createConnections(scopy::gui::DataLoggerToolGenericMenu* menu,adiscope::ChannelMonitorComponent* monitor){
+void DataLoggerTool::createConnections(scopy::gui::DataLoggerToolGenericMenu* mainMenu,scopy::gui::DataLoggerToolGenericMenu* menu,adiscope::ChannelMonitorComponent* monitor){
 	connect(menu,&scopy::gui::DataLoggerToolGenericMenu::togglePeakHolder,this,[=](bool toggled){
 	   monitor->displayPeakHold(toggled);
 	});
+
+	connect(mainMenu,&scopy::gui::DataLoggerToolGenericMenu::togglePeakHolder,menu, &scopy::gui::DataLoggerToolGenericMenu::peakHolderToggle);
 
 	connect(menu, &scopy::gui::DataLoggerToolGenericMenu::toggleHistory,this,[=](bool toggled){
 		monitor->displayHistory(toggled);
 	});
 
+	connect(mainMenu,&scopy::gui::DataLoggerToolGenericMenu::toggleHistory,menu, &scopy::gui::DataLoggerToolGenericMenu::historyToggle);
+
 	connect(menu, &scopy::gui::DataLoggerToolGenericMenu::toggleScale,this, [=](bool toggled){
 	   monitor->displayScale(toggled);
 	});
 
+	connect(mainMenu,&scopy::gui::DataLoggerToolGenericMenu::toggleScale,menu, &scopy::gui::DataLoggerToolGenericMenu::scaleToggle);
+
 	connect(menu, &scopy::gui::DataLoggerToolGenericMenu::resetPeakHolder, this, [=](){
 	   monitor->resetPeakHolder();
 	});
+
+	connect(mainMenu,&scopy::gui::DataLoggerToolGenericMenu::resetPeakHolder,menu, &scopy::gui::DataLoggerToolGenericMenu::peakHolderResetClicked);
 
 	connect(menu, &scopy::gui::DataLoggerToolGenericMenu::monitorColorChanged,this, [=](QString color){
 		monitor->setMonitorColor(color);
@@ -298,7 +322,7 @@ scopy::gui::GenericMenu* DataLoggerTool::generateMenu(QString title, QColor* col
 
 	QWidget *showAllWidget = new QWidget(this);
 	auto *showAllLayout = new QHBoxLayout(showAllWidget);
-	auto *showAllSWitch = new CustomSwitch(showAllWidget);
+	showAllSWitch = new CustomSwitch(showAllWidget);
 	showAllSWitch->setChecked(true);
 
 	showAllLayout->addWidget(new QLabel("Show all",showAllWidget));
@@ -328,7 +352,7 @@ scopy::gui::GenericMenu* DataLoggerTool::generateMenu(QString title, QColor* col
 										"background-color: #4a34ff;"
 										"}");
 
-	auto *precisionValue = new QLineEdit(precisionWidget);
+	precisionValue = new QLineEdit(precisionWidget);
 	precisionValue->setText("3");
 	precisionLayout->addWidget(precisionBtn);
 	precisionLayout->addItem(new QSpacerItem(1,1,QSizePolicy::Expanding,QSizePolicy::Fixed));
@@ -344,7 +368,7 @@ scopy::gui::GenericMenu* DataLoggerTool::generateMenu(QString title, QColor* col
 	auto recordingIntervalWidget = new QWidget(this);
 	auto *recordingIntevlaLayout = new QVBoxLayout(recordingIntervalWidget);
 
-	PositionSpinButton *recording_timer = new PositionSpinButton({
+	 recording_timer = new PositionSpinButton({
 		{"s", 1},
 		{"min", 60},
 		{"h", 3600}
@@ -383,9 +407,18 @@ scopy::gui::GenericMenu* DataLoggerTool::generateMenu(QString title, QColor* col
 
 DataLoggerTool::~DataLoggerTool()
 {
+
+	if (saveOnExit) {
+		api->save(*settings);
+	}
+
 	if (m_timer) { delete m_timer; }
 	if (m_toolView) { delete m_toolView; }
-	if (m_monitorToolView) { delete m_monitorToolView; }
+//	if (m_monitorToolView) { delete m_monitorToolView; }
+
+
+
+	delete api;
 
     delete ui;
 }

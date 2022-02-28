@@ -10,10 +10,11 @@ ChannelMonitorComponent::ChannelMonitorComponent(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::ChannelMonitorComponent),
     m_minValue(Q_INFINITY),
-    m_maxValue(-Q_INFINITY)
+	m_maxValue(-Q_INFINITY)
 {
     ui->setupUi(this);
 	ui->frame->setStyleSheet("QWidget#frame{border: 3px solid grey;}");
+
 }
 
 void ChannelMonitorComponent::init(double value,QString nameOfUnitOfMeasure,QString symbolOfUnitOfMeasure, QString title,QColor color){
@@ -24,7 +25,7 @@ void ChannelMonitorComponent::init(double value,QString nameOfUnitOfMeasure,QStr
     ui->scaleCh1->setScalePosition(QwtThermo::LeadingScale);
     ui->scaleCh1->setOriginMode(QwtThermo::OriginCustom);
     ui->scaleCh1->setStyleSheet("font-size:16px;");
-    ui->scaleCh1->setObjectName("IIOMonitor");
+	ui->scaleCh1->setObjectName("DataLogger");
 
     ui->monitorTitle->setText(title);
 
@@ -58,7 +59,12 @@ void ChannelMonitorComponent::updateValue(double value,QString nameOfUnitOfMeasu
 
     ui->sismograph_ch1_2->setUnitOfMeasure(nameOfUnitOfMeasure, symbolOfUnitOfMeasure);
     ui->sismograph_ch1_2->plot(value);
-    checkPeakValues(value, symbolOfUnitOfMeasure);
+	checkPeakValues(value, symbolOfUnitOfMeasure);
+}
+
+void ChannelMonitorComponent::resizeEvent(QResizeEvent *event)
+{
+	Q_EMIT contentChanged();
 }
 
 
@@ -101,7 +107,7 @@ void ChannelMonitorComponent::displayPeakHold(bool checked){
         ui->maxCh1->hide();
         ui->label_max->hide();
 		ui->label_maxUnitOfMeasure->hide();
-    }
+	}
 }
 
 void ChannelMonitorComponent::displayHistory(bool checked){
@@ -109,7 +115,7 @@ void ChannelMonitorComponent::displayHistory(bool checked){
         ui->sismograph_ch1_2->show();
     }else{
         ui->sismograph_ch1_2->hide();
-    }
+	}
 }
 
 void ChannelMonitorComponent::displayScale(bool checked){
@@ -117,7 +123,7 @@ void ChannelMonitorComponent::displayScale(bool checked){
         ui->scaleCh1->show();
     }else {
         ui->scaleCh1->hide();
-    }
+	}
 }
 std::string ChannelMonitorComponent::getChannelId(){ return m_channelId;}
 
@@ -183,6 +189,7 @@ int ChannelMonitorComponent::getID(){return m_id;}
 void ChannelMonitorComponent::setLineStyle(Qt::PenStyle lineStyle){
 	ui->sismograph_ch1_2->setLineStyle(lineStyle);
 }
+
 
 ChannelMonitorComponent::~ChannelMonitorComponent()
 {

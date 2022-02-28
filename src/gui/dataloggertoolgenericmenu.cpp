@@ -1,4 +1,4 @@
-#include "iiomonitorgenericmenu.hpp"
+#include "dataloggertoolgenericmenu.hpp"
 
 #include <QLineEdit>
 
@@ -39,7 +39,7 @@ void DataLoggerToolGenericMenu::init(QString title, QColor* color, bool showAll)
 	//scale
 	QWidget *scaleWidget = new QWidget(this);
 	auto scaleLayout = new QHBoxLayout(scaleWidget);
-	auto scaleSWitch = new CustomSwitch(scaleWidget);
+	scaleSWitch = new CustomSwitch(scaleWidget);
 	scaleSWitch->setChecked(true);
 
 	scaleLayout->addWidget(new QLabel("Scale",scaleWidget));
@@ -52,7 +52,7 @@ void DataLoggerToolGenericMenu::init(QString title, QColor* color, bool showAll)
 	auto *historyLayout = new QVBoxLayout(historyWidget);
 	auto *h1layout = new QHBoxLayout(historyWidget);
 
-	auto *historySwitch = new CustomSwitch(historyWidget);
+	historySwitch = new CustomSwitch(historyWidget);
 	historySwitch->setChecked(true);
 	historyLayout->addWidget(historySwitch);
 	historyLayout->setAlignment(historySwitch,Qt::AlignRight);
@@ -91,9 +91,9 @@ void DataLoggerToolGenericMenu::init(QString title, QColor* color, bool showAll)
 	////Peak holder
 	auto *peakHolderWidget = new QWidget(this);
 	auto *peakHolderLayout = new QHBoxLayout(peakHolderWidget);
-	auto *peakHolderSwitch = new CustomSwitch(peakHolderWidget);
+	peakHolderSwitch = new CustomSwitch(peakHolderWidget);
 	peakHolderSwitch->setChecked(true);
-	auto *peakHolderReset = new QPushButton("Reset",peakHolderWidget);
+	peakHolderReset = new QPushButton("Reset",peakHolderWidget);
 	peakHolderReset->setStyleSheet("QPushButton{"
 										"height:25px;"
 										"background-color: #4A64FF;"
@@ -143,6 +143,26 @@ void DataLoggerToolGenericMenu::init(QString title, QColor* color, bool showAll)
 	connect(peakHolderSwitch, &CustomSwitch::toggled, this, [=](bool toggled){
 		Q_EMIT DataLoggerToolGenericMenu::togglePeakHolder(toggled);
 	});
+}
+
+void DataLoggerToolGenericMenu::scaleToggle(bool toggled)
+{
+	scaleSWitch->setChecked(toggled);
+}
+
+void DataLoggerToolGenericMenu::peakHolderToggle(bool toggled)
+{
+	peakHolderSwitch->setChecked(toggled);
+}
+
+void DataLoggerToolGenericMenu::historyToggle(bool toggled)
+{
+	historySwitch->setChecked(toggled);
+}
+
+void DataLoggerToolGenericMenu::peakHolderResetClicked()
+{
+	peakHolderReset->click();
 }
 
 void DataLoggerToolGenericMenu::setHistorySize(int idx)
