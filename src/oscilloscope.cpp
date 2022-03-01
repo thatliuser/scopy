@@ -929,6 +929,10 @@ Oscilloscope::Oscilloscope(struct iio_context *ctx, Filter *filt,
 
 	ui->btnHelp->setUrl("https://wiki.analog.com/university/tools/m2k/scopy/oscilloscope");
 
+#ifdef __ANDROID__
+	ui->btnAddMath->setIconSize(QSize(24, 24));
+#endif
+
 }
 
 int Oscilloscope::binSearchPointOnXaxis(double time)
@@ -4296,7 +4300,8 @@ void Oscilloscope::measureUpdateValues()
 
 void Oscilloscope::measure_settings_init()
 {
-	measure_settings = new MeasureSettings(&plot, this);
+	QList<Measure *>* measure_obj = plot.getMeasurements();
+	measure_settings = new MeasureSettings(measure_obj, this);
 
 	int measure_panel = ui->stackedWidget->insertWidget(-1, measure_settings);
 
