@@ -114,8 +114,8 @@
           </property>
           <property name="icon">
            <iconset resource="../resources/resources.qrc">
-            <normaloff>:/icons/sba_cmb_box_arrow_right.svg</normaloff>
-            <normalon>:/icons/sba_cmb_box_arrow.svg</normalon>:/icons/sba_cmb_box_arrow_right.svg</iconset>
+            <normaloff>:/icons/sba_cmb_box_arrow.svg</normaloff>
+            <normalon>:/icons/sba_cmb_box_arrow_right.svg</normalon>:/icons/sba_cmb_box_arrow.svg</iconset>
           </property>
           <property name="iconSize">
            <size>
@@ -162,6 +162,9 @@
         </item>
         <item>
          <widget class="QPushButton" name="delBtn">
+          <property name="layoutDirection">
+           <enum>Qt::LeftToRight</enum>
+          </property>
           <property name="text">
            <string/>
           </property>

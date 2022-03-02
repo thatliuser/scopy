@@ -31,8 +31,8 @@ ChannelManager::ChannelManager(ChannelsPositionEnum position, QWidget* parent)
 		toolStatus = new QLabel("");
 		channelMnagerToggled = false;
 
-		QStringList icons = QStringList() << ":/icons/sba_cmb_box_arrow.svg"
-										  << ":/icons/sba_cmb_box_arrow_right.svg";
+		QStringList icons = QStringList() << ":/icons/ic arrow left.svg"
+										  << ":/icons/ic arrow right.svg";
 
 		QIcon my_icon;
 		my_icon.addFile(icons[0],QSize(), QIcon::Normal, QIcon::On);

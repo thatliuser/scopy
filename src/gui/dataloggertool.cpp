@@ -51,8 +51,10 @@ DataLoggerTool::DataLoggerTool(struct iio_context *ctx, Filter *filt,
 		//update status and if needed start data logging
 		if(!m_toolView->getRunBtn()->isChecked()){
 			m_monitorChannelManager->setToolStatus("Stopped");
+			showAllSWitch->setEnabled(true);
 		}else {
 			if(dataLogger->isDataLoggerOn()){
+				showAllSWitch->setEnabled(false);
 				m_monitorChannelManager->setToolStatus("Data Logging");
 				if(!m_activeChannels.empty()){
 					for(auto ch : m_activeChannels.keys()){
@@ -208,10 +210,13 @@ void DataLoggerTool::readChannelValues(){
 }
 
 void DataLoggerTool::updateChannelWidget(int ch){
-	auto updatedRead = m_activeChannels[ch].first.dmm->readChannel(m_activeChannels[ch].first.dmmId);
-	m_activeChannels[ch].second->updateValue(updatedRead.value,QString::fromStdString(updatedRead.unit_name), QString::fromStdString(updatedRead.unit_symbol));
-	if(dataLogger->isDataLoggerOn()){
-		Q_EMIT updateValue(QString::fromStdString(m_activeChannels[ch].first.dmm->getName() + ":" + m_activeChannels[ch].first.dmmId),QString::number(updatedRead.value));
+	//check if channel was closed before reading
+	if(m_activeChannels.contains(ch)){
+		auto updatedRead = m_activeChannels[ch].first.dmm->readChannel(m_activeChannels[ch].first.dmmId);
+		m_activeChannels[ch].second->updateValue(updatedRead.value,QString::fromStdString(updatedRead.unit_name), QString::fromStdString(updatedRead.unit_symbol));
+		if(dataLogger->isDataLoggerOn()){
+			Q_EMIT updateValue(QString::fromStdString(m_activeChannels[ch].first.dmm->getName() + ":" + m_activeChannels[ch].first.dmmId),QString::number(updatedRead.value));
+		}
 	}
 }
 
