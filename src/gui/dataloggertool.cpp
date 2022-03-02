@@ -202,7 +202,7 @@ std::vector<libm2k::analog::DMM*> DataLoggerTool::getDmmList(libm2k::context::Co
 void DataLoggerTool::readChannelValues(){
 	if(!m_activeChannels.empty()){
 		for(auto ch : m_activeChannels.keys()){
-			QtConcurrent::rumonitorsn(this,&DataLoggerTool::updateChannelWidget,ch);
+			QtConcurrent::run(this,&DataLoggerTool::updateChannelWidget,ch);
 		}
 	}
 }
