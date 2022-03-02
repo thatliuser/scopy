@@ -69,9 +69,7 @@ void ChannelWidget::init()
 
 	if (m_simplified) {
 		m_ui->name->hide();
-		m_ui->line->hide();
-//		m_ui->verticalSpacer->changeSize(0, 0, QSizePolicy::Fixed,
-//			QSizePolicy::Fixed);
+		m_ui->line->hide();;
 		QString stylesheet = styleSheet();
 		stylesheet += QString("QCheckBox#box { spacing: 12px; }");
 		setStyleSheet(stylesheet);

@@ -34,7 +34,6 @@ class DataLoggetTool_api;
 struct activeChannel{
 	std::string dmmId;
 	libm2k::analog::DMM* dmm;
-	int numberOfTabsUsing = 0;
 	QColor chColor;
 
 };
@@ -72,14 +71,12 @@ private:
 	scopy::gui::ToolView* m_toolView;
 	CustomColQGridLayout* m_customColGrid;
 	libm2k::context::Context* m_context;
-	QMap<int,activeChannel> activeChannels;
 	scopy::gui::ToolView* m_monitorToolView;
 	std::vector<ChannelWidget*> m_channelList;
 	std::vector<libm2k::analog::DMM*> m_dmmList;
 	scopy::gui::GenericMenu* m_generalSettingsMenu;
 	scopy::gui::ChannelManager* m_monitorChannelManager;
-	QMap<int,ChannelMonitorComponent*> m_activeMonitors;
-    std::vector<QPair<ChannelMonitorComponent*, libm2k::analog::DMM*>> m_activeChannels;
+	QMap<int,QPair<activeChannel,ChannelMonitorComponent*>> m_activeChannels;
 
 	QColor generateColor();
 	void initMonitorToolView();

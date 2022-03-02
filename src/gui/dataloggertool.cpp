@@ -54,9 +54,9 @@ DataLoggerTool::DataLoggerTool(struct iio_context *ctx, Filter *filt,
 		}else {
 			if(dataLogger->isDataLoggerOn()){
 				m_monitorChannelManager->setToolStatus("Data Logging");
-				if(!activeChannels.empty()){
-					for(auto ch : activeChannels.keys()){
-						QString name = QString::fromStdString(activeChannels[ch].dmm->getName() + ":" + activeChannels[ch].dmmId);
+				if(!m_activeChannels.empty()){
+					for(auto ch : m_activeChannels.keys()){
+						QString name = QString::fromStdString(m_activeChannels[ch].first.dmm->getName() + ":" + m_activeChannels[ch].first.dmmId);
 						dataLogger->createChannel(name, adiscope::Type::DOUBLE);
 					}
 				}
@@ -156,22 +156,16 @@ void DataLoggerTool::initMonitorToolView(){
 
 			int widgetId =m_customColGrid->addQWidgetToList(monitor);
 
-			// logic for enable/disable channels (monitors)
+			// logic for enable/disable channels
 			connect(ch_widget, &ChannelWidget::enabled,this, [=](bool enabled){
 				if (enabled) {
 					m_customColGrid->addWidget(widgetId);
-					activeChannels[chId].dmmId = channel.id;
-					activeChannels[chId].dmm = dmm;
-					activeChannels[chId].numberOfTabsUsing++; //increment number of tabs using this channel
-					m_activeMonitors[chId] = monitor;
+					m_activeChannels[chId].first.dmmId = channel.id;
+					m_activeChannels[chId].first.dmm = dmm;
+					m_activeChannels[chId].second = monitor;
 
 				} else {
-					//decrese number of tabs using this channel if no channel left remove from active list
-					activeChannels[chId].numberOfTabsUsing--;
-					if (activeChannels[chId].numberOfTabsUsing == 0) {
-						activeChannels.erase(activeChannels.find(chId));
-					}
-					m_activeMonitors.erase(m_activeMonitors.find(chId));
+					m_activeChannels.erase(m_activeChannels.find(chId));
 					m_customColGrid->removeWidget(widgetId);
 				}
 			});
@@ -206,18 +200,18 @@ std::vector<libm2k::analog::DMM*> DataLoggerTool::getDmmList(libm2k::context::Co
 }
 
 void DataLoggerTool::readChannelValues(){
-	if(!activeChannels.empty()){
-		for(auto ch : activeChannels.keys()){
-			QtConcurrent::run(this,&DataLoggerTool::updateChannelWidget,ch);
+	if(!m_activeChannels.empty()){
+		for(auto ch : m_activeChannels.keys()){
+			QtConcurrent::rumonitorsn(this,&DataLoggerTool::updateChannelWidget,ch);
 		}
 	}
 }
 
 void DataLoggerTool::updateChannelWidget(int ch){
-	auto updatedRead = activeChannels[ch].dmm->readChannel(activeChannels[ch].dmmId);
-	m_activeMonitors[ch]->updateValue(updatedRead.value,QString::fromStdString(updatedRead.unit_name), QString::fromStdString(updatedRead.unit_symbol));
+	auto updatedRead = m_activeChannels[ch].first.dmm->readChannel(m_activeChannels[ch].first.dmmId);
+	m_activeChannels[ch].second->updateValue(updatedRead.value,QString::fromStdString(updatedRead.unit_name), QString::fromStdString(updatedRead.unit_symbol));
 	if(dataLogger->isDataLoggerOn()){
-		Q_EMIT updateValue(QString::fromStdString(activeChannels[ch].dmm->getName() + ":" + activeChannels[ch].dmmId),QString::number(updatedRead.value));
+		Q_EMIT updateValue(QString::fromStdString(m_activeChannels[ch].first.dmm->getName() + ":" + m_activeChannels[ch].first.dmmId),QString::number(updatedRead.value));
 	}
 }
 
