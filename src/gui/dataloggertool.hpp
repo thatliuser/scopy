@@ -84,7 +84,7 @@ private:
 	QColor generateColor();
 	void initMonitorToolView();
 	QColor getChannelColor(int chId);
-	libm2k::analog::DMM_READING readChVal(int ch);
+	void updateChannelWidget(int ch);
 	scopy::gui::GenericMenu* generateMenu(QString title, QColor* color);
 	std::vector<libm2k::analog::DMM*> getDmmList(libm2k::context::Context* m2k_context);
 	void createConnections(scopy::gui::DataLoggerToolGenericMenu* mainMenu,scopy::gui::DataLoggerToolGenericMenu* menu,adiscope::ChannelMonitorComponent* monitor);

@@ -93,6 +93,7 @@ DataLoggerTool::DataLoggerTool(struct iio_context *ctx, Filter *filt,
 	api->setObjectName(QString::fromStdString(Filter::tool_name(TOOL_DATALOGGERTOOL)));
 	api->load(*settings);
 	api->js_register(engine);
+
 }
 
 void DataLoggerTool::initMonitorToolView(){
@@ -128,7 +129,6 @@ void DataLoggerTool::initMonitorToolView(){
 			monitor->setChannelId(channel.id);
 			monitor->setRecordingInterval(VALUE_READING_TIME_INTERVAL/1000);
 			monitor->setHistoryDuration(10);
-
 
 			connect(monitor, &adiscope::ChannelMonitorComponent::contentChanged, m_customColGrid, [=](){
 				m_customColGrid->itemSizeChanged();
@@ -206,29 +206,19 @@ std::vector<libm2k::analog::DMM*> DataLoggerTool::getDmmList(libm2k::context::Co
 }
 
 void DataLoggerTool::readChannelValues(){
-
-	QMap<int,double> channelUpdatedValue;
-
 	if(!activeChannels.empty()){
 		for(auto ch : activeChannels.keys()){
-			QFuture<libm2k::analog::DMM_READING> updatedRead = QtConcurrent::run(this,&DataLoggerTool::readChVal,ch);
-			//handle monitors value update
-			auto test = updatedRead.result();
-			std::cout << test.id;
-			if(m_activeMonitors.contains(ch)){
-				m_activeMonitors[ch]->updateValue(updatedRead.result().value,QString::fromStdString(updatedRead.result().unit_name), QString::fromStdString(updatedRead.result().unit_symbol));
-			}
-			channelUpdatedValue[ch] = updatedRead.result().value;
-			///emit data logging ch val update
-			if(dataLogger->isDataLoggerOn()){
-				Q_EMIT updateValue(QString::fromStdString(activeChannels[ch].dmm->getName() + ":" + activeChannels[ch].dmmId),QString::number(updatedRead.result().value));
-			}
+			QtConcurrent::run(this,&DataLoggerTool::updateChannelWidget,ch);
 		}
 	}
 }
 
-libm2k::analog::DMM_READING DataLoggerTool::readChVal(int ch){
-	return  activeChannels[ch].dmm->readChannel(activeChannels[ch].dmmId);
+void DataLoggerTool::updateChannelWidget(int ch){
+	auto updatedRead = activeChannels[ch].dmm->readChannel(activeChannels[ch].dmmId);
+	m_activeMonitors[ch]->updateValue(updatedRead.value,QString::fromStdString(updatedRead.unit_name), QString::fromStdString(updatedRead.unit_symbol));
+	if(dataLogger->isDataLoggerOn()){
+		Q_EMIT updateValue(QString::fromStdString(activeChannels[ch].dmm->getName() + ":" + activeChannels[ch].dmmId),QString::number(updatedRead.value));
+	}
 }
 
 void DataLoggerTool::toggleTimer(bool enabled){
@@ -407,18 +397,11 @@ scopy::gui::GenericMenu* DataLoggerTool::generateMenu(QString title, QColor* col
 
 DataLoggerTool::~DataLoggerTool()
 {
-
 	if (saveOnExit) {
 		api->save(*settings);
 	}
-
 	if (m_timer) { delete m_timer; }
 	if (m_toolView) { delete m_toolView; }
-//	if (m_monitorToolView) { delete m_monitorToolView; }
-
-
-
 	delete api;
-
     delete ui;
 }
