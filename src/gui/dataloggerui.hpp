@@ -9,6 +9,7 @@
 #include "spinbox_a.hpp"
 #include <QFileDialog>
 #include <qcombobox.h>
+#include <QLabel>
 
 namespace adiscope {
 class DataLoggerUI : public QWidget
@@ -18,7 +19,25 @@ class DataLoggerUI : public QWidget
 public:
 	explicit DataLoggerUI(bool lastValue, bool average, bool all, QWidget *parent = nullptr);
 	~DataLoggerUI();
-	//UI
+
+	//functions
+	void init();
+	void chooseFile();
+	QWidget* getDataLoggerUIWidget();
+	bool isDataLoggingOn();
+	bool isOverwrite();
+	QString getFilter();
+	void toggleDataLoggerSwitch(bool toggle);
+	void setDataLoggerPath(QString path);
+	QString getDataLoggerPath();
+	void setOverwrite(bool en);
+	int getTimerInterval();
+	void setTimerInterval(int interval);
+	void isDataLoggerRunning(bool en);
+
+	void setWarningMessage(QString message);
+
+private:
 	PositionSpinButton *data_logging_timer;
 	QWidget *dataLoggingWidget;
 	QVBoxLayout *dataLoggingLayout;
@@ -28,13 +47,7 @@ public:
 	CustomSwitch *dataLoggingSwitch;
 	QComboBox *dataLoggerFilter;
 	QString filename;
-	//functions
-	void init();
-	void chooseFile();
-	QWidget* getDataLoggerUIWidget();
-	bool isDataLoggingOn();
-	bool isOverwrite();
-	QString getFilter();
+	QLabel *warningMessage;
 
 Q_SIGNALS:
 	void toggleDataLogger(bool toggled);

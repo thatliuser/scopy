@@ -622,6 +622,13 @@ adiscope--ChannelWidget QWidget#widget[selected=true] {
   background-color: rbga(20, 20, 22, 153);
 }
 
+
+.adiscope--ChannelWidget QWidget#widget:hover {
+	background-color: rbga(20, 20, 22, 153);
+	font-weight: bold;
+	border-bottom: 0px solid none;
+}
+
 /* Round check box */
 adiscope--ChannelWidget QCheckBox#box{
   spacing: 0px;

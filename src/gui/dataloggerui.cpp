@@ -96,6 +96,13 @@ void DataLoggerUI::init()
 	dataLoggingLayout->addWidget(data_logging_timer);
 	dataLoggingLayout->addWidget(dataLoggerFilter);
 
+
+	warningMessage = new QLabel("");
+	warningMessage->setWordWrap(true);
+	warningMessage->setVisible(false);
+
+	dataLoggingLayout->addWidget(warningMessage);
+
 	//on data logging switch pressed enable/disable data logging section and emit data loggin toggled
 	connect(dataLoggingSwitch,  &CustomSwitch::toggled, this, [=](bool toggled){
 		dataLoggingFilePath->setDisabled(!toggled);
@@ -104,6 +111,7 @@ void DataLoggerUI::init()
 		appendRadio->setDisabled(!toggled);
 		data_logging_timer->setDisabled(!toggled);
 		dataLoggerFilter->setDisabled(!toggled);
+		warningMessage->setVisible(toggled);
 		Q_EMIT toggleDataLogger(toggled);
 
 		if(filename.isEmpty() && dataLoggingFilePath->isEnabled()) {
@@ -144,6 +152,52 @@ bool DataLoggerUI::isOverwrite()
 QString DataLoggerUI::getFilter()
 {
 	return dataLoggerFilter->currentText();
+}
+
+void DataLoggerUI::setWarningMessage(QString message)
+{
+	warningMessage->setText(message);
+}
+
+void DataLoggerUI::toggleDataLoggerSwitch(bool toggle)
+{
+	dataLoggingSwitch->setChecked(toggle);
+}
+
+void DataLoggerUI::setDataLoggerPath(QString path)
+{
+	filename = path;
+	dataLoggingFilePath->setText(path);
+}
+
+QString DataLoggerUI::getDataLoggerPath()
+{
+	return dataLoggingFilePath->text();
+}
+
+void DataLoggerUI::setOverwrite(bool en)
+{
+	if(en){
+		overwriteRadio->setChecked(true);
+	}else{
+		appendRadio->setChecked(true);
+	}
+}
+
+int DataLoggerUI::getTimerInterval()
+{
+	return data_logging_timer->value();
+}
+
+void DataLoggerUI::setTimerInterval(int interval)
+{
+	data_logging_timer->setValue(interval);
+}
+
+void DataLoggerUI::isDataLoggerRunning(bool en)
+{
+	overwriteRadio->setDisabled(en);
+	appendRadio->setDisabled(en);
 }
 
 

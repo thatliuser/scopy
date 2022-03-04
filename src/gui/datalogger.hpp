@@ -13,12 +13,14 @@ class DataLogger: public QObject
 public:
 	DataLogger(bool lastValue, bool average, bool all);
 	~DataLogger();
+
 	void createChannel(QString name, Type type);
 	void distroyChannel(QString name);
 	void resetChannel(QString name);
 	void logData();
 	QWidget *getWidget();
 	bool isDataLoggerOn();
+	void setWarningMessage(QString message);
 
 public Q_SLOTS:
 	void receiveValue(QString name, QString value);

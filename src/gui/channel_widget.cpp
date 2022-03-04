@@ -83,6 +83,7 @@ void ChannelWidget::init()
 			}
 		);
 	}
+	m_ui->horizontalLayout->setAlignment(m_ui->btn, Qt::AlignRight);
 }
 
 QAbstractButton* ChannelWidget::enableButton() const
@@ -103,6 +104,11 @@ QAbstractButton* ChannelWidget::menuButton() const
 QAbstractButton* ChannelWidget::deleteButton() const
 {
 	return m_ui->delBtn;
+}
+
+QAbstractButton* ChannelWidget::toggleChannelsButton() const
+{
+	return m_ui->toggleChannels;
 }
 
 int ChannelWidget::id() const
@@ -284,6 +290,11 @@ bool ChannelWidget::isMainChannel() const
 	return m_isMainChannel;
 }
 
+void ChannelWidget::addSpacer()
+{
+	m_ui->horizontalLayout->addItem(new QSpacerItem(10,1, QSizePolicy::Expanding, QSizePolicy::Fixed));
+}
+
 void ChannelWidget::setButtonNoGroup(QAbstractButton *btn)
 {
 	QButtonGroup *group = btn->group();
@@ -323,7 +334,7 @@ void ChannelWidget::setIsMainChannel(bool mainChannel)
 		m_ui->box->hide();
 		m_ui->toggleChannels->show();
 		connect(m_ui->toggleChannels, &QPushButton::clicked, this, [=](bool toggled){
-			m_ui->box->click();
+			Q_EMIT enabled(toggled);
 		});
 
 	}

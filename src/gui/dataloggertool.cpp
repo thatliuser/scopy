@@ -52,6 +52,9 @@ DataLoggerTool::DataLoggerTool(struct iio_context *ctx, Filter *filt,
 		if(!m_toolView->getRunBtn()->isChecked()){
 			m_monitorChannelManager->setToolStatus("Stopped");
 			showAllSWitch->setEnabled(true);
+			if(dataLogger->isDataLoggerOn()){
+				dataLogger->stopLogger();
+			}
 		}else {
 			if(dataLogger->isDataLoggerOn()){
 				showAllSWitch->setEnabled(false);
@@ -375,6 +378,7 @@ scopy::gui::GenericMenu* DataLoggerTool::generateMenu(QString title, QColor* col
 	auto dataLoggingSection = new scopy::gui::SubsectionSeparator("Data Logging",true,this);
 
 	dataLogger = new DataLogger(true,true,false);
+	dataLogger->setWarningMessage("* While data logging you won't be able to add/remove channels");
 	dataLoggingSection->setContent(dataLogger->getWidget());
 
 	connect(this, &DataLoggerTool::updateValue, this , [=](QString name, QString value){

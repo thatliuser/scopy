@@ -19,11 +19,13 @@ DataLogger::DataLogger(bool lastValue, bool average, bool all)
 void DataLogger::startLogger()
 {
   dataLoggerAPI->startLogger(dataLoggerUI->isOverwrite());
+  dataLoggerUI->isDataLoggerRunning(true);
 }
 
 void DataLogger::stopLogger()
 {
 	dataLoggerAPI->stopLogger();
+	dataLoggerUI->isDataLoggerRunning(false);
 }
 
 void DataLogger::createChannel(QString name, Type type)
@@ -65,20 +67,24 @@ bool DataLogger::isDataLoggerOn()
 	return dataLoggerUI->isDataLoggingOn();
 }
 
+void DataLogger::setWarningMessage(QString message)
+{
+	dataLoggerUI->setWarningMessage(message);
+}
+
 void DataLogger::dataLoggerToggled(bool toggled)
 {
-	dataLoggerUI->dataLoggingSwitch->setChecked(toggled);
+	dataLoggerUI->toggleDataLoggerSwitch(toggled);
 	Q_EMIT toggleDataLogger(toggled);
 }
 
 void DataLogger::setPath(QString path){
-	dataLoggerUI->filename = path;
-	dataLoggerUI->dataLoggingFilePath->setText(path);
+	dataLoggerUI->setDataLoggerPath(path);
 	dataLoggerAPI->setPath(path);
 }
 
 QString DataLogger::getPath(){
-	return dataLoggerUI->dataLoggingFilePath->text();
+	return dataLoggerUI->getDataLoggerPath();
 }
 
 bool DataLogger::isOverwrite()
@@ -88,21 +94,17 @@ bool DataLogger::isOverwrite()
 
 void DataLogger::setOverwrite(bool en)
 {
-	if(en){
-		dataLoggerUI->overwriteRadio->setChecked(true);
-	}else{
-		dataLoggerUI->appendRadio->setChecked(true);
-	}
+	dataLoggerUI->setOverwrite(en);
 }
 
 int DataLogger::getRecordingTimeInterval()
 {
-	return dataLoggerUI->data_logging_timer->value();
+	return dataLoggerUI->getTimerInterval();
 }
 
 void DataLogger::setRecodingTimeInterval(int interval)
 {
-	dataLoggerUI->data_logging_timer->setValue(interval);
+	dataLoggerUI->setTimerInterval(interval);
 	dataLoggerAPI->setTimerInterval(interval * 1000);
 }
 

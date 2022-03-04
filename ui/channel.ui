@@ -6,12 +6,12 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>151</width>
+    <width>282</width>
     <height>42</height>
    </rect>
   </property>
   <property name="sizePolicy">
-   <sizepolicy hsizetype="MinimumExpanding" vsizetype="Maximum">
+   <sizepolicy hsizetype="Minimum" vsizetype="Maximum">
     <horstretch>0</horstretch>
     <verstretch>0</verstretch>
    </sizepolicy>
@@ -39,7 +39,7 @@
     <number>0</number>
    </property>
    <property name="leftMargin">
-    <number>5</number>
+    <number>0</number>
    </property>
    <property name="topMargin">
     <number>0</number>
@@ -89,7 +89,7 @@
          <number>12</number>
         </property>
         <property name="leftMargin">
-         <number>0</number>
+         <number>12</number>
         </property>
         <property name="topMargin">
          <number>0</number>
@@ -162,9 +162,6 @@
         </item>
         <item>
          <widget class="QPushButton" name="delBtn">
-          <property name="layoutDirection">
-           <enum>Qt::LeftToRight</enum>
-          </property>
           <property name="text">
            <string/>
           </property>
@@ -175,9 +172,12 @@
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
           </property>
+          <property name="sizeType">
+           <enum>QSizePolicy::Maximum</enum>
+          </property>
           <property name="sizeHint" stdset="0">
            <size>
-            <width>40</width>
+            <width>0</width>
             <height>20</height>
            </size>
           </property>

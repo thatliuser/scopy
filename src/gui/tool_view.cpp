@@ -265,7 +265,7 @@ ChannelWidget* ToolView::buildNewChannel(ChannelManager* channelManager, Generic
     connect(ch->menuButton(), &CustomPushButton::toggled, m_ui->widgetSettingsPairBtns->getSettingsBtn(),
             &QPushButton::setChecked);
     connect(ch->enableButton(), &QAbstractButton::toggled, [=](bool toggled) {
-        if (!toggled) {
+		if (!toggled) {
             // we also remove the button from the history
             // so that the last menu opened button on top
             // won't open the menu when it is disabled
@@ -273,7 +273,7 @@ ChannelWidget* ToolView::buildNewChannel(ChannelManager* channelManager, Generic
         }
 
         // mirror menu btn
-        menu->setMenuButton(toggled);
+		menu->setMenuButton(toggled);
     });
 
     connect(menu, &GenericMenu::enableBtnToggled, [=](bool toggled) { ch->enableButton()->setChecked(toggled); });
@@ -298,20 +298,20 @@ adiscope::MenuAnim* ToolView::addMenuToStack(){
 	return m_ui->widgetMenuAnim;
 }
 
-void ToolView::buildChannelGroup(ChannelManager* channelManager, ChannelWidget* mainChannal, std::vector<ChannelWidget*> channelGroup){
+void ToolView::buildChannelGroup(ChannelManager* channelManager, ChannelWidget* mainChannel, std::vector<ChannelWidget*> channelGroup){
 
     for(ChannelWidget* ch : channelGroup){
         ch->setMenuButtonVisibility(false);
         ch->setBottomLineVIsibility(false);
-//        channelManager->setChannelAlignment(ch,Qt::AlignHCenter);
+		channelManager->setChannelAlignment(ch,Qt::AlignLeft);
     }
-	mainChannal->setIsMainChannel(true);
-	mainChannal->setBottomLineVIsibility(false);
-	channelManager->setChannelAlignment(mainChannal,Qt::AlignLeft);
+	mainChannel->setIsMainChannel(true);
+	mainChannel->setBottomLineVIsibility(false);
+	channelManager->setChannelAlignment(mainChannel,Qt::AlignLeft);
 
-    connect(mainChannal, &ChannelWidget::enabled,this, [=](){
+	connect(mainChannel, &ChannelWidget::enabled,this, [=](){
         for(ChannelWidget* ch : channelGroup){
-            if(mainChannal->menuButton()->isEnabled()){
+			if(!mainChannel->toggleChannelsButton()->isChecked()){
                 ch->show();
             }
             else{

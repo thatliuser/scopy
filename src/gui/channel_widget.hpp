@@ -43,6 +43,7 @@ public:
 	QAbstractButton* nameButton() const;
 	QAbstractButton* menuButton() const;
 	QAbstractButton* deleteButton() const;
+	QAbstractButton* toggleChannelsButton() const;
 
 	int id() const;
 	void setId(int);
@@ -73,6 +74,7 @@ public:
 	void setIsMainChannel(bool mainChannel);
 
 	bool isMainChannel() const;
+	void addSpacer();
 
 protected:
 	bool eventFilter(QObject *object, QEvent *event) override;

@@ -95,7 +95,7 @@ void DataLoggerToolGenericMenu::init(QString title, QColor* color, bool showAll)
 	peakHolderSwitch->setChecked(true);
 	peakHolderReset = new QPushButton("Reset",peakHolderWidget);
 	peakHolderReset->setStyleSheet("QPushButton{"
-										"height:25px;"
+										"height:30px;"
 										"background-color: #4A64FF;"
 										"border-radius: 4px;"
 										"font-size: 12px;"

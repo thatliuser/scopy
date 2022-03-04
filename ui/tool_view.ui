@@ -235,13 +235,13 @@
           </property>
           <property name="minimumSize">
            <size>
-            <width>45</width>
+            <width>65</width>
             <height>0</height>
            </size>
           </property>
           <property name="maximumSize">
            <size>
-            <width>155</width>
+            <width>16777215</width>
             <height>16777215</height>
            </size>
           </property>
@@ -270,7 +270,7 @@
            <item>
             <widget class="QWidget" name="widgetVerticalChannelsContainer" native="true">
              <property name="sizePolicy">
-              <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+              <sizepolicy hsizetype="Maximum" vsizetype="Expanding">
                <horstretch>0</horstretch>
                <verstretch>0</verstretch>
               </sizepolicy>
@@ -279,6 +279,12 @@
               <size>
                <width>0</width>
                <height>0</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>165</width>
+               <height>16777215</height>
               </size>
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_4">

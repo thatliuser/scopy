@@ -25,23 +25,22 @@ ChannelManager::ChannelManager(ChannelsPositionEnum position, QWidget* parent)
 
 		auto header = new QWidget();
 		auto headerLayout = new QHBoxLayout(header);
-		header->setFixedSize(QSize(100, 50));
-		headerLayout->setMargin(0);
+		header->setSizePolicy(QSizePolicy::Preferred,QSizePolicy::Fixed);
+		headerLayout->setMargin(10);
+		headerLayout->setSpacing(15);
 
 		toolStatus = new QLabel("");
 		channelMnagerToggled = false;
 
-		QStringList icons = QStringList() << ":/icons/ic arrow left.svg"
-										  << ":/icons/ic arrow right.svg";
+		QStringList icons = QStringList() << ":/menu/menu_button.png";
 
 		QIcon my_icon;
-		my_icon.addFile(icons[0],QSize(), QIcon::Normal, QIcon::On);
-		my_icon.addFile(icons[1],QSize(), QIcon::Normal, QIcon::Off);
+		my_icon.addFile(icons[0],QSize(), QIcon::Normal);
 
 		toggleChannels = new QPushButton(this);
 		toggleChannels->setStyleSheet("   font-size: 12px; color: rgba(255, 255, 255, 70);");
 		toggleChannels->setIcon(my_icon);
-		toggleChannels->setIconSize(QSize(10,10));
+		toggleChannels->setIconSize(QSize(24,24));
 		toggleChannels->setCheckable(true);
 
 		toggleChannels->setFixedWidth(20);
