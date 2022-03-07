@@ -9,7 +9,7 @@ namespace adiscope {
 
 class DataLoggerTool;
 
-class DataLoggetTool_api:public ApiObject
+class DataLoggerTool_api:public ApiObject
 {
 	friend class ToolLauncher_API;
 
@@ -52,7 +52,7 @@ public:
 	int get_data_logger_recording_interval();
 	void set_data_logger_recording_interval(int interval);
 
-	explicit DataLoggetTool_api(DataLoggerTool *dataLoggerTool) : ApiObject(), dataLoggerTool(dataLoggerTool) {};
+	explicit DataLoggerTool_api(DataLoggerTool *dataLoggerTool) : ApiObject(), dataLoggerTool(dataLoggerTool) {};
 
 private:
 	DataLoggerTool *dataLoggerTool;

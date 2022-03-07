@@ -2,6 +2,7 @@
 #include "gui/generic_menu.hpp"
 #include "gui/verticalcontrol.hpp"
 #include "gui/customSwitch.hpp"
+#include "detachedwindowsmanager.h"
 #include "dynamicWidget.hpp"
 #include <QtConcurrent>
 #include <QFuture>
@@ -10,14 +11,12 @@ using namespace adiscope;
 
 DataLoggerTool::DataLoggerTool(struct iio_context *ctx, Filter *filt,
     ToolMenuItem *toolMenuItem,
-    QJSEngine *engine, ToolLauncher *parent):
-	Tool(ctx, toolMenuItem, new DataLoggetTool_api(this), "DataLogger",
-         parent),
-    ui(new Ui::IIOMonitor),
-	m_context(contextOpen(ctx, "")),
-	m_timer(new QTimer(this))
+	QJSEngine *engine, ToolLauncher *parent):
+	Tool(ctx, toolMenuItem, new DataLoggerTool_api(this), "DataLoggerTool",
+		 parent),
+	m_timer(new QTimer(this)),
+	m_context(contextOpen(ctx, ""))
 {
-	ui->setupUi(this);
 	run_button = nullptr;
 
 	m_colors = {QColor("#ff7200"),QColor("#9013fe"), QColor(Qt::green),QColor(Qt::cyan), QColor(Qt::magenta),
@@ -40,10 +39,10 @@ DataLoggerTool::DataLoggerTool(struct iio_context *ctx, Filter *filt,
 	m_toolView = scopy::gui::ToolViewBuilder(recepie,m_monitorChannelManager).build();
 
 	m_generalSettingsMenu = generateMenu("General settings", new QColor("blue"));
-	m_toolView->setGeneralSettingsMenu(m_generalSettingsMenu,false);
+	m_toolView->setGeneralSettingsMenu(m_generalSettingsMenu,true);
 	m_toolView->getGeneralSettingsBtn()->click();
 
-	m_dmmList=getDmmList(m_context);
+	m_dmmList = getDmmList(m_context);
 
 	connect(m_toolView->getRunBtn(), &QPushButton::toggled, this, [=](bool toggled){
 		toggleTimer(toggled);
@@ -87,7 +86,7 @@ DataLoggerTool::DataLoggerTool(struct iio_context *ctx, Filter *filt,
 	initMonitorToolView();
 	m_toolView->addFixedCentralWidget(m_customColGrid,0,0,0,0);
 
-	connect(m_timer, &QTimer::timeout , this,&DataLoggerTool::readChannelValues);
+	connect(m_timer, &QTimer::timeout, this, &DataLoggerTool::readChannelValues);
 
 	connect(this, &DataLoggerTool::RecordingIntervalChanged, this , [=](double interval){
 		VALUE_READING_TIME_INTERVAL = interval;
@@ -95,10 +94,11 @@ DataLoggerTool::DataLoggerTool(struct iio_context *ctx, Filter *filt,
 		recording_timer->setValue(interval/1000);
 	});
 
+	setCentralWidget(getToolView());
+
 	api->setObjectName(QString::fromStdString(Filter::tool_name(TOOL_DATALOGGERTOOL)));
 	api->load(*settings);
 	api->js_register(engine);
-
 }
 
 void DataLoggerTool::initMonitorToolView(){
@@ -304,7 +304,6 @@ QColor DataLoggerTool::getChannelColor(int chId){
 	}
 }
 
-
 scopy::gui::GenericMenu* DataLoggerTool::generateMenu(QString title, QColor* color){
 	scopy::gui::GenericMenu *menu = new scopy::gui::GenericMenu(this);
 	menu->initInteractiveMenu();
@@ -398,6 +397,7 @@ scopy::gui::GenericMenu* DataLoggerTool::generateMenu(QString title, QColor* col
 	return menu;
 }
 
+
 DataLoggerTool::~DataLoggerTool()
 {
 	if (saveOnExit) {
@@ -406,5 +406,4 @@ DataLoggerTool::~DataLoggerTool()
 	if (m_timer) { delete m_timer; }
 	if (m_toolView) { delete m_toolView; }
 	delete api;
-    delete ui;
 }
