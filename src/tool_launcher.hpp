@@ -230,7 +230,7 @@ private:
 	QFutureWatcher<QPair<bool, bool>> calibration_thread_watcher;
 
 	DMM *dmm;
-	DataLoggerTool *iio_monitor;
+	DataLoggerTool *data_logger_tool;
 	PowerController *power_control;
 	SignalGenerator *signal_generator;
 	Oscilloscope *oscilloscope;

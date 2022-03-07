@@ -29,7 +29,7 @@
 #include <libm2k/m2kexceptions.hpp>
 
 namespace adiscope {
-class DataLoggetTool_api;
+class DataLoggerTool_api;
 
 struct activeChannel{
 	std::string dmmId;
@@ -40,10 +40,9 @@ struct activeChannel{
 
 class DataLoggerTool : public Tool
 {
-	friend class DataLoggetTool_api;
-    Q_OBJECT
+	friend class DataLoggerTool_api;
 
-    Ui::IIOMonitor *ui;
+    Q_OBJECT
 
 public:
 	explicit DataLoggerTool(struct iio_context *ctx, Filter *filt,

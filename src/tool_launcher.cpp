@@ -96,7 +96,7 @@ ToolLauncher::ToolLauncher(QString prevCrashDump, QWidget *parent) :
 	power_control(nullptr), dmm(nullptr), signal_generator(nullptr),
 	oscilloscope(nullptr), current(nullptr), filter(nullptr),
 	logic_analyzer(nullptr), pattern_generator(nullptr), dio(nullptr),
-    network_analyzer(nullptr), spectrum_analyzer(nullptr),iio_monitor(nullptr), debugger(nullptr),
+	network_analyzer(nullptr), spectrum_analyzer(nullptr),data_logger_tool(nullptr), debugger(nullptr),
 	manual_calibration(nullptr), tl_api(new ToolLauncher_API(this)),
 	dioManager(nullptr),
 	notifier(STDIN_FILENO, QSocketNotifier::Read),
@@ -429,8 +429,8 @@ void ToolLauncher::_toolSelected(enum tool tool)
 	case TOOL_CALIBRATION:
 		selectedTool = manual_calibration;
 		break;
-    case TOOL_DATALOGGERTOOL:
-        selectedTool = iio_monitor;
+	case TOOL_DATALOGGERTOOL:
+		selectedTool = data_logger_tool;
         break;
 	case TOOL_LAUNCHER:
 		break;
@@ -1313,9 +1313,9 @@ void adiscope::ToolLauncher::destroyContext()
 		dmm = nullptr;
 	}
 
-    if(iio_monitor){
-        delete iio_monitor;
-        iio_monitor = nullptr;
+	if(data_logger_tool){
+		delete data_logger_tool;
+		data_logger_tool = nullptr;
     }
 
 	if (power_control) {
@@ -1750,10 +1750,10 @@ bool adiscope::ToolLauncher::switchContext(const QString& uri)
 		}
 
         if (filter->compatible(TOOL_DATALOGGERTOOL)) {
-			 iio_monitor = new DataLoggerTool(ctx, filter, menu->getToolMenuItemFor(TOOL_DATALOGGERTOOL),&js_engine, this);
-             toolList.push_back(iio_monitor);
+			 data_logger_tool = new DataLoggerTool(ctx, filter, menu->getToolMenuItemFor(TOOL_DATALOGGERTOOL),&js_engine, this);
+			 toolList.push_back(data_logger_tool);
              connect(menu->getToolMenuItemFor(TOOL_DATALOGGERTOOL)->getToolBtn(), &QPushButton::clicked, [=](){
-                 swapMenu(iio_monitor->getToolView());
+				 swapMenu(data_logger_tool->getToolView());
              });
         }
 
