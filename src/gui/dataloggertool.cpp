@@ -36,7 +36,7 @@ DataLoggerTool::DataLoggerTool(struct iio_context *ctx, Filter *filt,
 	m_monitorChannelManager->setChannelIdVisible(false);
 	m_monitorChannelManager->setToolStatus("Stopped");
 
-	m_toolView = scopy::gui::ToolViewBuilder(recepie,m_monitorChannelManager).build();
+	m_toolView = scopy::gui::ToolViewBuilder(recepie,m_monitorChannelManager,parent).build();
 
 	m_generalSettingsMenu = generateMenu("General settings", new QColor("blue"));
 	m_toolView->setGeneralSettingsMenu(m_generalSettingsMenu,true);

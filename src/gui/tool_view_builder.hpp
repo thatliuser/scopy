@@ -2,6 +2,7 @@
 #define TOOLBUILDER_HPP
 
 #include "tool_view.hpp"
+#include "tool_launcher.hpp"
 
 namespace scopy {
 namespace gui {
@@ -27,7 +28,7 @@ struct ToolViewRecipe
 class ToolViewBuilder
 {
 public:
-	ToolViewBuilder(const ToolViewRecipe& recipe, ChannelManager* channelManager = nullptr);
+	ToolViewBuilder(const ToolViewRecipe& recipe, ChannelManager* channelManager = nullptr, adiscope::ToolLauncher* parent = nullptr);
 
 	ToolView* build();
 

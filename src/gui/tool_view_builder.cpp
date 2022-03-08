@@ -2,11 +2,13 @@
 
 #include "tool_view_builder.hpp"
 
+
+
 using namespace scopy::gui;
 
-ToolViewBuilder::ToolViewBuilder(const ToolViewRecipe& recipe, ChannelManager* channelManager)
+ToolViewBuilder::ToolViewBuilder(const ToolViewRecipe& recipe, ChannelManager* channelManager, adiscope::ToolLauncher* parent)
 {
-	m_toolView = new ToolView();
+	m_toolView = new ToolView(parent);
 
 	if(recipe.hasHeader){
 
