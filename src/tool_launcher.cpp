@@ -393,7 +393,7 @@ void ToolLauncher::_setupToolMenu()
 
 void ToolLauncher::_toolSelected(enum tool tool)
 {
-	Tool *selectedTool = nullptr;
+	QWidget *selectedTool = nullptr;
 	selectedToolId = tool;
 	switch(tool) {
 	case TOOL_OSCILLOSCOPE:
@@ -430,7 +430,11 @@ void ToolLauncher::_toolSelected(enum tool tool)
 		selectedTool = manual_calibration;
 		break;
 	case TOOL_DATALOGGERTOOL:
-		selectedTool = data_logger_tool;
+		if (data_logger_tool) {
+			selectedTool = data_logger_tool->getToolView();
+		} else {
+			selectedTool = nullptr;
+		}
         break;
 	case TOOL_LAUNCHER:
 		break;
@@ -1752,9 +1756,9 @@ bool adiscope::ToolLauncher::switchContext(const QString& uri)
         if (filter->compatible(TOOL_DATALOGGERTOOL)) {
 			 data_logger_tool = new DataLoggerTool(ctx, filter, menu->getToolMenuItemFor(TOOL_DATALOGGERTOOL),&js_engine, this);
 			 toolList.push_back(data_logger_tool);
-             connect(menu->getToolMenuItemFor(TOOL_DATALOGGERTOOL)->getToolBtn(), &QPushButton::clicked, [=](){
-				 swapMenu(data_logger_tool->getToolView());
-             });
+//             connect(menu->getToolMenuItemFor(TOOL_DATALOGGERTOOL)->getToolBtn(), &QPushButton::clicked, [=](){
+//				 swapMenu(data_logger_tool->getToolView());
+//             });
         }
 
 
@@ -1918,15 +1922,15 @@ void ToolLauncher::toolDetached(bool detached)
 
 	if (detached) {
 		/* Switch back to the home screen */
-		if (current == static_cast<QWidget *>(tool))
+		if (current == static_cast<QWidget *>(tool->getCentralWidget()))
 			ui->btnHome->click();
 
 		setDynamicProperty(tool->runButton()->parentWidget(), "selected", false);
 	}
 
-	tool->setVisible(detached);
+	tool->getCentralWidget()->setVisible(detached);
 
-	tool->setMinimumSize(910, 490);
+	tool->getCentralWidget()->setMinimumSize(910, 490);
 }
 
 enum tool ToolLauncher::getSelectedToolId() const {
