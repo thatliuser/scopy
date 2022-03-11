@@ -5,7 +5,7 @@
 #include <QVBoxLayout>
 #include "gui/customSwitch.hpp"
 
-using namespace scopy::gui;
+using namespace adiscope::gui;
 
 DataLoggerGenericMenu::DataLoggerGenericMenu(QWidget *parent):
 	GenericMenu(parent)
@@ -22,7 +22,7 @@ void DataLoggerGenericMenu::init(QString title, QColor* color)
 	this->initInteractiveMenu();
 	this->setMenuHeader(title,color,false);
 
-	auto *scaleSection = new scopy::gui::SubsectionSeparator("Settings", false,this);
+	auto *scaleSection = new adiscope::gui::SubsectionSeparator("Settings", false,this);
 
 	//scale
 	QWidget *scaleWidget = new QWidget(this);
@@ -72,7 +72,7 @@ void DataLoggerGenericMenu::init(QString title, QColor* color)
 	h2layout->addWidget(historyStyle);
 	historyLayout->addItem(h2layout);
 
-	auto *historySection = new scopy::gui::SubsectionSeparator("History", true,this);
+	auto *historySection = new adiscope::gui::SubsectionSeparator("History", true,this);
 	historySection->setContent(historyWidget);
 
 	////Peak holder
@@ -87,8 +87,7 @@ void DataLoggerGenericMenu::init(QString title, QColor* color)
 	peakHolderLayout->addWidget(peakHolderReset);
 	peakHolderLayout->addWidget(peakHolderSwitch);
 
-	auto *peakHolderSection = new scopy::gui::SubsectionSeparator("Peak Holder", true,this);
-
+	auto *peakHolderSection = new adiscope::gui::SubsectionSeparator("Peak Holder", true,this);
 	peakHolderSection->setContent(peakHolderWidget);
 
 	this->insertSection(scaleSection);
