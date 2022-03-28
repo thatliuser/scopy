@@ -59,6 +59,7 @@
 #include <QIcon>
 #include <QGridLayout>
 #include <qwt_plot_opengl_canvas.h>
+#include <QGestureEvent>
 
 using namespace adiscope;
 
@@ -516,8 +517,14 @@ DisplayPlot::DisplayPlot(int nplots, QWidget* parent,  bool isdBgraph,
 	  d_displayScale(1), d_xAxisNumDiv(1), d_trackMode(false),
 	  d_cursorsEnabled(false), d_isLogaritmicPlot(false),
 	  d_isLogaritmicYPlot(false),
-	  d_yAxisNumDiv(1)
+	  d_yAxisNumDiv(1),
+	  d_totalScaleFactor(1)
 {
+
+	setAttribute(Qt::WA_AcceptTouchEvents);
+//	setAttribute(Qt::WA_TransparentForMouseEvents);
+//	installEventFilter(this);
+	grabGesture(Qt::PinchGesture);
 
 	d_CurveColors << QColor("#ff7200") << QColor("#9013fe") << QColor(Qt::green)
 		      << QColor(Qt::cyan) << QColor(Qt::magenta)
@@ -687,6 +694,8 @@ void DisplayPlot::setupDisplayPlotDiv(bool isdBgraph) {
 
 DisplayPlot::~DisplayPlot()
 {
+//	removeEventFilter(this);
+
 	markerIntersection1->detach();
 	markerIntersection2->detach();
     // d_zoomer and d_panner deleted when parent deleted
@@ -1970,6 +1979,115 @@ void DisplayPlot::_onYleftAxisWidgetScaleDivChanged()
 		scale_draw->invalidateCache();
 		axis_widget->update();
 	}
+}
+
+bool DisplayPlot::event(QEvent *event)
+{
+//	switch (event->type()) {
+//	case QEvent::TouchBegin:
+//	case QEvent::TouchUpdate:
+//	case QEvent::TouchEnd:
+//	{
+//	    qDebug()<<"=============================";
+//	    qDebug()<<"touch DETECTED";
+
+//	    QTouchEvent *touchEvent = static_cast<QTouchEvent *>(event);
+//	    QList<QTouchEvent::TouchPoint> touchPoints = touchEvent->touchPoints();
+
+//	    if (touchPoints.count() == 2) {
+//		// determine scale factor
+//		const QTouchEvent::TouchPoint &touchPoint0 = touchPoints.first();
+//		const QTouchEvent::TouchPoint &touchPoint1 = touchPoints.last();
+//		qreal currentScaleFactor =
+//			QLineF(touchPoint0.pos(), touchPoint1.pos()).length()
+//			/ QLineF(touchPoint0.startPos(), touchPoint1.startPos()).length();
+
+//		qDebug()<<"current scale factor is"<<currentScaleFactor;
+
+//		if (touchEvent->touchPointStates() & Qt::TouchPointReleased) {
+//		    // if one of the fingers is released, remember the current scale
+//		    // factor so that adding another finger later will continue zooming
+//		    // by adding new scale factor to the existing remembered value.
+//		    d_totalScaleFactor *= currentScaleFactor;
+//		    currentScaleFactor = 1;
+
+//		    qDebug()<<"total scale factor is"<<d_totalScaleFactor;
+//		}
+
+//		for (unsigned int i = 0; i < d_zoomer.size(); ++i) {
+//			OscPlotZoomer *zoomer = static_cast<OscPlotZoomer *>(d_zoomer[i]);
+
+//			QRectF rectangle = d_zoomer[0]->zoomStack()[d_zoomer[0]->zoomRectIndex()];
+
+//			qDebug()<<"Old rect top is "<<rectangle.top();
+//			qDebug()<<"Old rect bottom is "<<rectangle.bottom();
+//			qDebug()<<"Old rect left is "<<rectangle.left();
+//			qDebug()<<"Old rect right is "<<rectangle.right();
+
+//			rectangle.setLeft(rectangle.left() * d_totalScaleFactor * currentScaleFactor);
+//			rectangle.setRight(rectangle.right() * d_totalScaleFactor * currentScaleFactor);
+//			rectangle.setTop(rectangle.top() * d_totalScaleFactor * currentScaleFactor);
+//			rectangle.setBottom(rectangle.bottom() * d_totalScaleFactor * currentScaleFactor);
+
+//			qDebug()<<"New rect top is "<<rectangle.top();
+//			qDebug()<<"New rect bottom is "<<rectangle.bottom();
+//			qDebug()<<"New rect left is "<<rectangle.left();
+//			qDebug()<<"New rect right is "<<rectangle.right();
+
+//			qDebug()<<"=============================";
+
+//			zoomer->zoom(rectangle);
+//		}
+//	    }
+//	    return true;
+//	}
+//	default:
+//	    break;
+//	}
+//	return PrintablePlot::event(event);
+
+	if (event->type() != QEvent::Gesture) {
+		return PrintablePlot::event(event);
+	    }
+	qDebug()<<"=============================";
+	qDebug()<<"GESTURE DETECTED";
+	    auto* gestEv = static_cast<QGestureEvent*>(event);
+	    if (auto* gest = gestEv->gesture(Qt::PinchGesture)) {
+		    qDebug()<<"PINCH DETECTED";
+		auto* pinchGest = static_cast<QPinchGesture*>(gest);
+		auto scaleFactor = pinchGest->totalScaleFactor();
+
+		qDebug()<<"scale factor is "<<scaleFactor;
+
+		for (unsigned int i = 0; i < d_zoomer.size(); ++i) {
+			OscPlotZoomer *zoomer = static_cast<OscPlotZoomer *>(d_zoomer[i]);
+
+			QRectF rectangle = d_zoomer[0]->zoomStack()[d_zoomer[0]->zoomRectIndex()];
+
+			qDebug()<<"Old rect top is "<<rectangle.top();
+			qDebug()<<"Old rect bottom is "<<rectangle.bottom();
+			qDebug()<<"Old rect left is "<<rectangle.left();
+			qDebug()<<"Old rect right is "<<rectangle.right();
+
+			rectangle.setLeft(rectangle.left() * scaleFactor);
+			rectangle.setRight(rectangle.right() * scaleFactor);
+			rectangle.setTop(rectangle.top() * scaleFactor);
+			rectangle.setBottom(rectangle.bottom() * scaleFactor);
+
+			qDebug()<<"New rect top is "<<rectangle.top();
+			qDebug()<<"New rect bottom is "<<rectangle.bottom();
+			qDebug()<<"New rect left is "<<rectangle.left();
+			qDebug()<<"New rect right is "<<rectangle.right();
+
+			qDebug()<<"=============================";
+
+			zoomer->zoom(rectangle);
+		}
+
+		event->accept();
+		return true;
+	    }
+	    return PrintablePlot::event(event);
 }
 
 #ifdef __ANDROID__

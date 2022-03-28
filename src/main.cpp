@@ -60,6 +60,7 @@ int main(int argc, char **argv)
 	qputenv("SCOPY_USE_OPEN_GL", "1");
 #endif
 	QApplication::setAttribute(Qt::AA_ShareOpenGLContexts,true);
+	QApplication::setAttribute(Qt::AA_SynthesizeMouseForUnhandledTouchEvents, false);
 
 	ScopyApplication app(argc, argv);
 #ifdef LIBM2K_ENABLE_LOG

@@ -594,6 +594,8 @@ protected Q_SLOTS:
   void mousePressEvent(QMouseEvent *event);
 #endif
 
+  bool event(QEvent *);
+
 protected:
 
   enum PlotMarker
@@ -701,6 +703,8 @@ private:
   QList<double> d_majorTicksY;
   bool d_cursorReadoutsVisible;
   PrefixFormatter * d_formatter;
+
+  qreal d_totalScaleFactor;
 
   void setupCursors();
   void setupReadouts();
