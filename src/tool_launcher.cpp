@@ -405,11 +405,6 @@ void ToolLauncher::_setupToolMenu()
 	menu = new ToolMenu(prefPanel, ui->menuContainer);
 	ui->menuContainerLayout->addWidget(menu);
 
-	// handle debugger tool and manual calibration
-	// TODO: move to preferences ??
-	if (!debugger_enabled) {
-		menu->getToolMenuItemFor(TOOL_DEBUGGER)->setToolDisabled(true);
-	}
 	if (!manual_calibration_enabled) {
 		menu->getToolMenuItemFor(TOOL_CALIBRATION)->setToolDisabled(true);
 	}
@@ -1196,6 +1191,13 @@ void adiscope::ToolLauncher::deviceBtn_clicked(bool pressed)
 			if (tempCtx) {
 				auto tempFilter = new Filter(tempCtx);
 				menu->loadToolsFromFilter(tempFilter);
+				if (tempFilter->hw_name().compare("M2K") != 0) {
+					menu->getToolMenuItemFor(TOOL_DEBUGGER)->setToolDisabled(false);
+				} else {
+					if (!debugger_enabled) {
+						menu->getToolMenuItemFor(TOOL_DEBUGGER)->setToolDisabled(true);
+					}
+				}
 				delete tempFilter;
 				iio_context_destroy(tempCtx);
 			}
@@ -1669,14 +1671,6 @@ void adiscope::ToolLauncher::enableAdcBasedTools()
 			});
 		}
 
-		if (filter->compatible(TOOL_DEBUGGER)) {
-			debugger = new Debugger(ctx, filter,menu->getToolMenuItemFor(TOOL_DEBUGGER),
-						&js_engine, this);
-			adc_users_group.addButton(menu->getToolMenuItemFor(TOOL_DEBUGGER)->getToolStopBtn());
-			QObject::connect(debugger, &Debugger::newDebuggerInstance, this,
-					 &ToolLauncher::addDebugWindow);
-		}
-
 		if (filter->compatible(TOOL_CALIBRATION)) {
 			manual_calibration = new ManualCalibration(ctx, filter,menu->getToolMenuItemFor(TOOL_CALIBRATION),
 								   &js_engine, this, calib);
@@ -1772,6 +1766,13 @@ bool adiscope::ToolLauncher::switchContext(const QString& uri)
 #endif
 
 	filter = new Filter(ctx);
+	if (filter->hw_name().compare("M2K") != 0) {
+		menu->getToolMenuItemFor(TOOL_DEBUGGER)->setToolDisabled(false);
+	} else {
+		if (!debugger_enabled) {
+			menu->getToolMenuItemFor(TOOL_DEBUGGER)->setToolDisabled(true);
+		}
+	}
 
 	calib = new Calibration(ctx, &js_engine);
 	calib->initialize();
@@ -1822,7 +1823,12 @@ bool adiscope::ToolLauncher::switchContext(const QString& uri)
 			 toolList.push_back(data_logger);
 		}
 
-
+		if (filter->compatible(TOOL_DEBUGGER)) {
+			debugger = new Debugger(ctx, filter,menu->getToolMenuItemFor(TOOL_DEBUGGER),
+						&js_engine, this);
+			QObject::connect(debugger, &Debugger::newDebuggerInstance, this,
+					 &ToolLauncher::addDebugWindow);
+		}
 
 		if (filter->compatible(TOOL_POWER_CONTROLLER)) {
 			power_control = new PowerController(ctx, menu->getToolMenuItemFor(TOOL_POWER_CONTROLLER),
