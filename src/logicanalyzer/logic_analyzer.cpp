@@ -506,13 +506,14 @@ std::vector<QWidget *> LogicAnalyzer::enableMixedSignalView(CapturePlot *osc, in
 		stackDecoderComboBox->setVisible(shouldBeVisible);
 	};
 
-	connect(decoderComboBox, QOverload<const QString &>::of(&QComboBox::currentIndexChanged), [=](const QString &decoder) {
+	connect(decoderComboBox, QOverload<int>::of(&QComboBox::currentIndexChanged), [=](int index) {
 		if (!decoderComboBox->currentIndex()) {
 			return;
 		}
 
 		std::shared_ptr<logic::Decoder> initialDecoder = nullptr;
 
+		QString decoder = decoderComboBox->itemText(index);
 		GSList *decoderList = g_slist_copy((GSList *)srd_decoder_list());
 		for (const GSList *sl = decoderList; sl; sl = sl->next) {
 		    srd_decoder *dec = (struct srd_decoder *)sl->data;
@@ -2031,13 +2032,13 @@ void LogicAnalyzer::setupDecoders()
 
 	g_slist_free(decoderList);
 
-	connect(ui->addDecoderComboBox, QOverload<const QString &>::of(&QComboBox::currentIndexChanged), [=](const QString &decoder) {
+	connect(ui->addDecoderComboBox, QOverload<int>::of(&QComboBox::currentIndexChanged), [=](int index) {
 		if (!ui->addDecoderComboBox->currentIndex()) {
 			return;
 		}
 
 		std::shared_ptr<logic::Decoder> initialDecoder = nullptr;
-
+		QString decoder = ui->addDecoderComboBox->itemText(index);
 		GSList *decoderList = g_slist_copy((GSList *)srd_decoder_list());
 		for (const GSList *sl = decoderList; sl; sl = sl->next) {
 		    srd_decoder *dec = (struct srd_decoder *)sl->data;
