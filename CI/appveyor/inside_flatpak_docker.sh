@@ -56,7 +56,7 @@ echo "CI_ENVS= $CI_ENVS"
 cat org.adi.Scopy.json | jq --tab '."build-options".env += ('$CI_ENVS')' > tmp.json
 cp tmp.json org.adi.Scopy.json
 
-make clean
+#make clean
 make -j4
 
 # Copy the Scopy.flatpak file in $GITHUB_WORKSPACE (which is the external location, mount when docker starts)
