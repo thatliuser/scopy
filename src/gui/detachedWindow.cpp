@@ -79,7 +79,7 @@ void DetachedWindow::showWindow()
 {
 	if (isMinimized())
 		setWindowState(state);
-	activateWindow();
+//	activateWindow();
 }
 
 DetachedWindowState::DetachedWindowState():

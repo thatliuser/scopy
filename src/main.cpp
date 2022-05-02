@@ -113,12 +113,14 @@ int main(int argc, char **argv)
 	QCoreApplication::setApplicationName("Scopy");
 	QCoreApplication::setApplicationVersion(SCOPY_VERSION_GIT);
 	QSettings::setDefaultFormat(QSettings::IniFormat);
-	QGuiApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
+//	QGuiApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
 
 #if defined(Q_OS_LINUX) and not defined(__ANDROID__)
 	// Needed for icons to work on Wayland
 	QGuiApplication::setDesktopFileName("scopy");
 #endif
+
+	std::cout << "==== " << QGuiApplication::platformName().toStdString() << "\n";
 
 #if BREAKPAD_HANDLER
 	QSettings test;
@@ -176,17 +178,17 @@ int main(int argc, char **argv)
 	myappTranslator.load(languageFileName);
 	app.installTranslator(&myappTranslator);
 
-	ScopyColorEditor *colorEditor = new ScopyColorEditor(&app);
-	colorEditor->setVisible(false);
+//	ScopyColorEditor *colorEditor = new ScopyColorEditor(&app);
+//	colorEditor->setVisible(false);
 
-	QString currentStylesheet = pref.value(QString("Preferences/currentStylesheet")).toString();
-	QStringList userStylesheets = pref.value(QString("Preferences/userStylesheets")).toStringList();
-	colorEditor->setUserStylesheets(userStylesheets);
-	colorEditor->setCurrentStylesheet(currentStylesheet);
+//	QString currentStylesheet = pref.value(QString("Preferences/currentStylesheet")).toString();
+//	QStringList userStylesheets = pref.value(QString("Preferences/userStylesheets")).toStringList();
+//	colorEditor->setUserStylesheets(userStylesheets);
+//	colorEditor->setCurrentStylesheet(currentStylesheet);
 
-	if (app.styleSheet().isEmpty()) {
-		app.setStyleSheet(colorEditor->getStyleSheet());
-	}
+//	if (app.styleSheet().isEmpty()) {
+//		app.setStyleSheet(colorEditor->getStyleSheet());
+//	}
 
 	bool openGl = parser.isSet("opengl");
 	bool noOpenGl = parser.isSet("noopengl");
@@ -202,7 +204,7 @@ int main(int argc, char **argv)
 	}
 
 	ToolLauncher launcher(prevCrashDump);
-	launcher.getPrefPanel()->setColorEditor(colorEditor);
+//	launcher.getPrefPanel()->setColorEditor(colorEditor);
 
 	bool nogui = parser.isSet("nogui");
 	bool nodecoders = parser.isSet("nodecoders");
@@ -215,7 +217,7 @@ int main(int argc, char **argv)
     nonativedialog = true;
 #endif
 	qDebug() << "Using" << (nonativedialog ? "Qt" : "Native") << "file dialogs";
-	launcher.setNativeDialogs(!nonativedialog);
+//	launcher.setNativeDialogs(!nonativedialog);
 
 	QString script = parser.value("script");
 	if (nogui) {

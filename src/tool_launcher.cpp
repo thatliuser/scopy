@@ -92,7 +92,7 @@ ToolLauncher* adiscope::getToolLauncherInstance() {
 	return tl_ptr;
 }
 
-ToolLauncher::ToolLauncher(QString prevCrashDump, QWidget *parent) :
+ToolLauncher::ToolLauncher(QString prevCrashDump, QWidget *parent, Qt::WindowFlags f) :
 	QMainWindow(parent),
 	ui(new Ui::ToolLauncher), ctx(nullptr),
 	power_control(nullptr), dmm(nullptr), signal_generator(nullptr),
@@ -166,7 +166,7 @@ ToolLauncher::ToolLauncher(QString prevCrashDump, QWidget *parent) :
 		about->setModal(false);
 		about->show();
 		about->raise();
-		about->activateWindow();
+//		about->activateWindow();
 	});
 
 	connect(prefPanel, &Preferences::reset, this, &ToolLauncher::resetSession);
@@ -357,7 +357,7 @@ void ToolLauncher::createPhoneHomeMessageBox() {
 
 	msgBox->setModal(false);
 	msgBox->show();
-	msgBox->activateWindow();
+//	msgBox->activateWindow();
 	msgBox->move( QPoint( screenRect.x() + screenRect.width()/2 - mSize.width()/2,
 			      screenRect.y() + screenRect.height()/2 - mSize.height()/2 ) );
 
@@ -388,7 +388,7 @@ void ToolLauncher::createLicenseMessageBox() {
 
 	msgBox->setModal(true);
 	msgBox->show();
-	msgBox->activateWindow();
+//	msgBox->activateWindow();
 	msgBox->move( QPoint( screenRect.x() + screenRect.width()/2 - mSize.width()/2,
 			      screenRect.y() + screenRect.height()/2 - mSize.height()/2 ) );
 
@@ -2091,7 +2091,7 @@ bool ToolLauncher::eventFilter(QObject *watched, QEvent *event)
 
 				msgBox->setModal(false);
 				msgBox->show();
-				msgBox->activateWindow();
+//				msgBox->activateWindow();
 				msgBox->move( QPoint( screenRect.x() + screenRect.width()/2 - mSize.width()/2,
 						      screenRect.y() + screenRect.height()/2 - mSize.height()/2 ) );
 

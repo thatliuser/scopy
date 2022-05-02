@@ -49,7 +49,7 @@ ConnectDialog::ConnectDialog(QWidget *widget) : QWidget(widget),
 	        this, SLOT(discardSettings()));
 	connect(this,SIGNAL(finished(struct iio_context *)),this,
 	        SLOT(updatePopUp(struct iio_context *)));
-	ui->hostname->activateWindow();
+//	ui->hostname->activateWindow();
 	ui->hostname->setFocus();
 	setDynamicProperty(ui->hostname, "invalid", false);
 	setDynamicProperty(ui->hostname, "valid", false);
