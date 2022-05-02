@@ -118,7 +118,7 @@ if(ANDROID)
 	find_package(Qt${QT_MAJOR_VERSION} COMPONENTS AndroidExtras REQUIRED PATHS $ENV{Qt${QT_MAJOR_VERSION}_HOME})
 endif()
 if ("${QT_MAJOR_VERSION}" STREQUAL "6")
-	find_package(Qt${QT_MAJOR_VERSION} REQUIRED COMPONENTS StateMachine)
+#	find_package(Qt${QT_MAJOR_VERSION} REQUIRED COMPONENTS StateMachine)
 	# Generate .qm files from the .ts files
 	qt6_add_translation(QM_FILES ${TS_FILES})
 else()
@@ -455,9 +455,9 @@ target_link_libraries(${PROJECT_NAME} LINK_PRIVATE
 		libm2k::libm2k
 )
 
-if ("${QT_MAJOR_VERSION}" STREQUAL "6")
-	target_link_libraries(${PROJECT_NAME} LINK_PRIVATE Qt${QT_MAJOR_VERSION}::StateMachine)
-endif()
+#if ("${QT_MAJOR_VERSION}" STREQUAL "6")
+#	target_link_libraries(${PROJECT_NAME} LINK_PRIVATE Qt${QT_MAJOR_VERSION}::StateMachine)
+#endif()
 if (ANDROID)
 	target_link_libraries(${PROJECT_NAME} LINK_PRIVATE Qt${QT_MAJOR_VERSION}::AndroidExtras)
 endif()
