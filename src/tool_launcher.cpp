@@ -44,7 +44,7 @@
 
 #include <QDebug>
 #include <QtConcurrentRun>
-#include <QtStateMachine/QSignalTransition>
+#include <QSignalTransition>
 #include <QMessageBox>
 #include <QTimer>
 #include <QSettings>
@@ -93,7 +93,7 @@ ToolLauncher* adiscope::getToolLauncherInstance() {
 }
 
 ToolLauncher::ToolLauncher(QString prevCrashDump, QWidget *parent, Qt::WindowFlags f) :
-	QMainWindow(parent),
+	QMainWindow(parent, f),
 	ui(new Ui::ToolLauncher), ctx(nullptr),
 	power_control(nullptr), dmm(nullptr), signal_generator(nullptr),
 	oscilloscope(nullptr), current(nullptr), filter(nullptr),
@@ -143,6 +143,9 @@ ToolLauncher::ToolLauncher(QString prevCrashDump, QWidget *parent, Qt::WindowFla
 	QApplication::setWindowIcon(QIcon(":/icon.ico"));
 #endif
 
+	qDebug() << "windows flags == " << this->windowFlags() << "\n";
+	this->setWindowFlags(Qt::Window);
+	qDebug() << "windows flags == " << this->windowFlags() << "\n";
 	// TO DO: remove this when the About menu becomes available
 	setWindowTitle(QString("Scopy - ") + QString("v"+QString(PROJECT_VERSION)) + " - " + QString(SCOPY_VERSION_GIT));
 

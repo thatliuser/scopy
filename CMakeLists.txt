@@ -105,7 +105,7 @@ endif()
 FILE(GLOB TS_FILES ${CMAKE_SOURCE_DIR}/resources/translations/*.ts)
 set_source_files_properties(${TS_FILES} PROPERTIES OUTPUT_LOCATION ${CMAKE_CURRENT_BINARY_DIR})
 
-set(QT_MAJOR_VERSION 6)
+set(QT_MAJOR_VERSION 5)
 #See if the environment var is set
 if(DEFINED ENV{Qt${QT_MAJOR_VERSION}_HOME})
     message(STATUS "Looking for Qt in: " $ENV{Qt${QT_MAJOR_VERSION}_HOME})

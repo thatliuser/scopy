@@ -20,7 +20,7 @@
 
 #include "menu_anim.hpp"
 
-#include <QtStateMachine/QSignalTransition>
+#include <QSignalTransition>
 #include <QSizePolicy>
 
 using namespace adiscope;

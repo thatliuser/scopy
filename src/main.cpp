@@ -33,6 +33,7 @@
 #include "tool_launcher.hpp"
 #include "scopyApplication.hpp"
 #include <stdio.h>
+#include <QDebug>
 #ifdef LIBM2K_ENABLE_LOG
 #include <glog/logging.h>
 #endif
@@ -49,6 +50,7 @@ using namespace adiscope;
 
 int main(int argc, char **argv)
 {
+	qputenv("QT_WAYLAND_DISABLE_WINDOWDECORATION", QByteArray("0"));
 #ifdef  __ANDROID__
 	QAndroidJniObject jniObject = QtAndroid::androidActivity().callObjectMethod("getScaleFactor", "()Ljava/lang/String;");
 	QString scaleFactor = jniObject.toString();
@@ -65,6 +67,7 @@ int main(int argc, char **argv)
 	QApplication::setAttribute(Qt::AA_ShareOpenGLContexts,true);
 
 	ScopyApplication app(argc, argv);
+	qDebug() << "==== " << QGuiApplication::platformName() << "\n";
 	app.setStyle(QStyleFactory::create("Fusion"));
 
 #ifdef LIBM2K_ENABLE_LOG
@@ -119,8 +122,6 @@ int main(int argc, char **argv)
 	// Needed for icons to work on Wayland
 	QGuiApplication::setDesktopFileName("scopy");
 #endif
-
-	std::cout << "==== " << QGuiApplication::platformName().toStdString() << "\n";
 
 #if BREAKPAD_HANDLER
 	QSettings test;
