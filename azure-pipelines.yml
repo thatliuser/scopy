@@ -1,5 +1,5 @@
 variables:
-    QT_FORMULAE: qt@5
+    QT_FORMULAE: qt6
     REPO_SLUG: $(Build.Repository.Name)
     CURRENT_COMMIT: $(Build.SourceVersion)
 

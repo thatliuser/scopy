@@ -113,7 +113,7 @@ else()
     message(STATUS "Qt${QT_MAJOR_VERSION}_HOME environment variable not set. Checking default paths.")
 endif()
 
-find_package(Qt${QT_MAJOR_VERSION} COMPONENTS Core Widgets Gui Concurrent Network Qml Svg UiTools Xml LinguistTools OpenGL REQUIRED PATHS $ENV{Qt${QT_MAJOR_VERSION}_HOME})
+find_package(Qt${QT_MAJOR_VERSION} COMPONENTS Core Widgets Gui Concurrent Network Qml Svg UiTools Xml DBus LinguistTools OpenGL REQUIRED PATHS $ENV{Qt${QT_MAJOR_VERSION}_HOME})
 if(ANDROID)
 	find_package(Qt${QT_MAJOR_VERSION} COMPONENTS AndroidExtras REQUIRED PATHS $ENV{Qt${QT_MAJOR_VERSION}_HOME})
 endif()
@@ -276,6 +276,7 @@ if (${CONFIG_STYLESHEETS})
 
 endif()
 
+set(OSX_BUNDLE FALSE)
 if (ENABLE_APPLICATION_BUNDLE)
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fvisibility=hidden")
 
@@ -316,7 +317,7 @@ if (ENABLE_APPLICATION_BUNDLE)
 		fixup_bundle(\"${CMAKE_BINARY_DIR}/Scopy.app\" \"${BUNDLED_QT_PLUGINS}\" \"${CMAKE_SOURCE_DIR}\")"
 	)
 
-	set(OSX_BUNDLE MACOSX_BUNDLE)
+	set(OSX_BUNDLE TRUE)
 	set(EXTRA_BUNDLE_FILES ${QT_PLUGINS} ${ICON_FILE} ${PKGINFO} ${QT_CONF} ${DECODERS})
 endif()
 
@@ -415,7 +416,7 @@ if(ANDROID)
 		${ABOUT_PAGE_RESOURCES}
 		)
     else()
-	add_executable(${PROJECT_NAME} WIN32 ${OSX_BUNDLE}
+	add_executable(${PROJECT_NAME} WIN32
 		${SRC_LIST}
 		${RESOURCES}
 		${m2kscope_RESOURCES}
@@ -495,6 +496,7 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 		CXX_STANDARD 11
 		CXX_STANDARD_REQUIRED ON
 		CXX_EXTENSIONS OFF
+		MACOSX_BUNDLE ${OSX_BUNDLE}
 		MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_BINARY_DIR}/Info.plist
 )
 

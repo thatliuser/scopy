@@ -1,5 +1,9 @@
 #!/bin/bash
 set -e
+echo " ===== "
+which macdeployqt
+echo " ===== "
+
 STAGINGDIR="${PWD}/staging"
 cd build
 mkdir -p ./Scopy.app/Contents/Frameworks
@@ -84,6 +88,7 @@ sudo install_name_tool -change ${libusbpath} @executable_path/../Frameworks/${li
 
 if command -v brew ; then
 	QT_PATH="$(brew --prefix ${QT_FORMULAE})/bin"
+	echo "================== ${QT_FORMULAE} ==== ${QT_PATH}"
 	export PATH="${QT_PATH}:$PATH"
 fi
 
@@ -97,7 +102,8 @@ sudo install_name_tool -id @executable_path/../Frameworks/${tinyid} ./Scopy.app/
 sudo install_name_tool -change ${tinyrpath} @executable_path/../Frameworks/${tinyid} ./Scopy.app/Contents/MacOS/iio-emu
 
 ## Bundle the Qt libraries
-sudo macdeployqt Scopy.app
+otool -L /usr/local/opt/qt/Frameworks/QtSvg.framework/QtSvg
+sudo macdeployqt Scopy.app -verbose=3
 
 curl -o /tmp/macdeployqtfix.py https://raw.githubusercontent.com/aurelien-rainone/macdeployqtfix/master/macdeployqtfix.py
 sudo python /tmp/macdeployqtfix.py ./Scopy.app/Contents/MacOS/Scopy ${QT_PATH}
