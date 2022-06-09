@@ -4,16 +4,16 @@ LIBIIO_VERSION=0ed18cd8f6b2fac5204a99e38922bea73f1f778c
 LIBAD9361_BRANCH=master
 LIBM2K_BRANCH=master
 GRIIO_BRANCH=upgrade-3.8
-GNURADIO_FORK=analogdevicesinc
-GNURADIO_BRANCH=scopy
-GRSCOPY_BRANCH=master
-GRM2K_BRANCH=master
+GNURADIO_FORK=gnuradio
+GNURADIO_BRANCH=v3.10.2.0
+GRSCOPY_BRANCH=3.10
+GRM2K_BRANCH=3.10
 QWT_BRANCH=qwt-multiaxes
-LIBSIGROKDECODE_BRANCH=master
-LIBTINYIIOD_BRANCH=master
+LIBSIGROKDECODE_BRANCH=e556e1168af7027df08622ecfe11309811249e81
+LIBTINYIIOD_BRANCH=15e79e7c0064b0476ab4608d02d5efb988b93fc9
 
 PYTHON="python3"
-PACKAGES=" ${QT_FORMULAE} boost pkg-config cmake fftw bison gettext autoconf automake libtool libzip glib libusb glog $PYTHON"
+PACKAGES=" ${QT_FORMULAE} volk spdlog boost pkg-config cmake fftw bison gettext autoconf automake libtool libzip glib libusb glog $PYTHON"
 PACKAGES="$PACKAGES doxygen wget gnu-sed libmatio dylibbundler libxml2 ghr"
 
 set -e
@@ -121,17 +121,6 @@ build_libad9361() {
 	sudo make -j $JOBS install
 }
 
-build_log4cpp() {
-	cd ${WORKDIR}
-	wget https://sourceforge.net/projects/log4cpp/files/latest/log4cpp-1.1.3.tar.gz
-	tar xvzf log4cpp-1.1.3.tar.gz
-	cd log4cpp
-	echo "liblog4cpp - v1.1.3" >> $BUILD_STATUS_FILE
-	./configure --prefix=/usr/local/
-	make -j $JOBS
-	sudo make -j ${JOBS} install
-}
-
 build_gnuradio() {
 	echo "### Building gnuradio - branch $GNURADIO_BRANCH"
 
@@ -142,26 +131,13 @@ build_gnuradio() {
 	save_version_info
 
 	cmake ${CMAKE_OPTS} \
-		-DENABLE_GR_DIGITAL:BOOL=OFF \
-		-DENABLE_GR_DTV:BOOL=OFF \
-		-DENABLE_GR_AUDIO:BOOL=OFF \
-		-DENABLE_GR_CHANNELS:BOOL=OFF \
-		-DENABLE_GR_TRELLIS:BOOL=OFF \
-		-DENABLE_GR_VOCODER:BOOL=OFF \
-		-DENABLE_GR_QTGUI:BOOL=OFF \
-		-DENABLE_GR_FEC:BOOL=OFF \
-		-DENABLE_SPHINX:BOOL=OFF \
-		-DENABLE_DOXYGEN:BOOL=OFF \
-		-DENABLE_INTERNAL_VOLK=ON \
-		-DENABLE_PYTHON=OFF \
-		-DENABLE_TESTING=OFF \
-		-DENABLE_GR_CHANNELS=OFF \
-		-DENABLE_GR_VOCODER=OFF \
-		-DENABLE_GR_TRELLIS=OFF \
-		-DENABLE_GR_WAVELET=OFF \
-		-DENABLE_GR_CTRLPORT=OFF \
-		-DENABLE_CTRLPORT_THRIFT=OFF \
-		-DCMAKE_C_FLAGS=-fno-asynchronous-unwind-tables \
+		-DENABLE_DEFAULT=OFF \
+		-DENABLE_GNURADIO_RUNTIME=ON \
+		-DENABLE_GR_ANALOG=ON \
+		-DENABLE_GR_BLOCKS=ON \
+		-DENABLE_GR_FFT=ON \
+		-DENABLE_GR_FILTER=ON \
+		-DENABLE_GR_IIO=ON \
 		${WORKDIR}/gnuradio
 	make -j $JOBS
 	sudo make -j $JOBS install
@@ -217,29 +193,6 @@ build_grscopy() {
 	make -j $JOBS
 	sudo make -j $JOBS install
 }
-build_glibmm() {
-	echo "### Building glibmm - 2.64.0"
-	cd ${WORKDIR}
-	wget http://ftp.acc.umu.se/pub/gnome/sources/glibmm/2.64/glibmm-2.64.0.tar.xz
-	tar xzvf glibmm-2.64.0.tar.xz
-	cd glibmm-2.64.0
-	echo "libglibmm - v2.64.0" >> $BUILD_STATUS_FILE
-	./configure --prefix=$STAGINGDIR
-	make -j $JOBS
-	sudo make -j $JOBS install
-}
-
-build_sigcpp() {
-	echo "### Building libsigc++ -2.10.0"
-	cd ${WORKDIR}
-	wget http://ftp.acc.umu.se/pub/GNOME/sources/libsigc++/2.10/libsigc++-2.10.0.tar.xz
-	tar xvzf libsigc++-2.10.0.tar.xz
-	cd libsigc++-2.10.0
-	echo "libsigc++ - v2.10.0" >> $BUILD_STATUS_FILE
-	./configure --prefix=$STAGINGDIR
-	make -j $JOBS
-	sudo make -j $JOBS install
-}
 
 build_libsigrokdecode() {
 	echo "### Building libsigrokdecode - branch $LIBSIGROKDECODE_BRANCH"
@@ -273,6 +226,7 @@ build_libtinyiiod() {
 	save_version_info
 
 	cmake ${CMAKE_OPTS} \
+		-DBUILD_SHARED_LIBS=OFF \
 		-DBUILD_EXAMPLES=OFF \
 		${WORKDIR}/libtinyiiod
 
@@ -280,14 +234,10 @@ build_libtinyiiod() {
 	sudo make -j $JOBS install
 }
 
-build_sigcpp
-build_glibmm
 build_libiio
 build_libad9361
 build_libm2k
-build_log4cpp
 build_gnuradio
-build_griio
 build_grscopy
 build_grm2k
 build_qwt
