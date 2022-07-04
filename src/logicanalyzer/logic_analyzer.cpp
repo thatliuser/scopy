@@ -254,6 +254,8 @@ LogicAnalyzer::LogicAnalyzer(struct iio_context *ctx, adiscope::Filter *filt,
 
 LogicAnalyzer::~LogicAnalyzer()
 {
+	ui->runSingleWidget->toggle(false);
+
 	if (saveOnExit) {
 		api->save(*settings);
 	}
