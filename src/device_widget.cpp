@@ -197,3 +197,21 @@ M2kDeviceWidget::M2kDeviceWidget(QString uri, QString name, ToolLauncher *parent
 M2kDeviceWidget::~M2kDeviceWidget()
 {
 }
+
+ad7124dash8DeviceWidget::ad7124dash8DeviceWidget(QString uri, QString name, ToolLauncher *parent) :
+        DeviceWidget(std::move(uri), std::move(name), parent)
+{
+        m_ui->name->setText(tr("ad7124-8"));
+        m_infoPage = InfoPageBuilder::newPage(InfoPageBuilder::ad7124dash8,
+                                              m_uri,
+                                              parent->getPrefPanel(),
+                                              parent->getPhoneHome(),
+                                              nullptr);
+
+        connect(m_infoPage->forgetDeviceButton(), SIGNAL(clicked(bool)),
+                this, SLOT(forgetDevice_clicked(bool)));
+        connect(m_infoPage->identifyDeviceButton(), SIGNAL(clicked(bool)),
+                this, SLOT(identifyDevice_clicked(bool)));
+}
+
+ad7124dash8DeviceWidget::~ad7124dash8DeviceWidget() = default;

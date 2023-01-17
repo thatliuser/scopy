@@ -143,7 +143,7 @@ ToolLauncher::ToolLauncher(QString prevCrashDump, QWidget *parent) :
 	QApplication::setWindowIcon(QIcon(":/icon.ico"));
 #endif
 
-	// TO DO: remove this when the About menu becomes available
+	// TODO: remove this when the About menu becomes available
 	setWindowTitle(QString("Scopy - ") + QString("v"+QString(PROJECT_VERSION)) + " - " + QString(SCOPY_VERSION_GIT));
 
 	prefPanel = new Preferences(this);
@@ -883,11 +883,15 @@ QPushButton *ToolLauncher::addContext(const QString& uri)
 	if (!tempFilter)
 		return nullptr;
 
+    // TODO: refactor here
 	DeviceWidget *deviceWidget = nullptr;
 	if (tempFilter->hw_name().compare("M2K") == 0) {
 		deviceWidget = DeviceBuilder::newDevice(DeviceBuilder::M2K,
 							uri, tempFilter->hw_name(), this);
-	} else {
+	} else if (tempFilter->hw_name().compare("ad7124-8") == 0) {
+                deviceWidget = DeviceBuilder::newDevice(DeviceBuilder::ad7124dash8,
+                                                        uri, tempFilter->hw_name(), this);
+        } else {
 		deviceWidget = DeviceBuilder::newDevice(DeviceBuilder::GENERIC,
 							uri, tempFilter->hw_name(), this);
 	}

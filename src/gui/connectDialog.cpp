@@ -27,6 +27,7 @@
 
 #include <iio.h>
 #include <iostream>
+#include <sstream>
 #include <QCoreApplication>
 #include <QFile>
 #include <QDir>
@@ -56,6 +57,10 @@ ConnectDialog::ConnectDialog(QWidget *widget) : QWidget(widget),
 	ui->infoSection->hide();
 
 	ui->demoDevicesComboBox->addItem("adalm2000");
+
+        // FIXME: undo this ig
+        ui->demoDevicesComboBox->addItem("generic /home/andrei-fabian/adi/generate_from_xml/generated_xmls/ad7124-8.xml");
+
 	ui->demoDevicesComboBox->setDisabled(false);
 	process = new QProcess(this);
 }
@@ -132,7 +137,14 @@ void ConnectDialog::enableDemoBtn()
 		}
 
 		QStringList arguments;
-		arguments.append(ui->demoDevicesComboBox->currentText());
+
+                // separate arguments for iio-emu to understand
+                std::stringstream ss(this->ui->demoDevicesComboBox->currentText().toStdString());
+                std::string buff;
+                while (std::getline(ss, buff, ' ')) {
+                        arguments.append(QString::fromStdString(buff));
+                }
+
 		process->setProgram(program);
 		process->setArguments(arguments);
 		process->start();

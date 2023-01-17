@@ -3,6 +3,12 @@
 	    "compatible": [ "debugger", "datalogger" ]
 	},
 
+	"ad7124-8": {
+		"compatible": [ "debugger", "datalogger"],
+		"compatible-devices": [ "ad7124-8" ],
+		"debugger": [ "ad7124-8" ]
+	},
+
 	"FMComms2-4": {
 		"compatible": [ "debugger" ],
 		"compatible-devices": [ "cf-ad9361-lpc", "cf-ad9361-dds-core-lpc", "ad9361-phy" ],

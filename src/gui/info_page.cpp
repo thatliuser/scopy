@@ -611,3 +611,13 @@ int M2kInfoPage::checkLatestFwVersion(const QString &currentVersion) const {
 
 	return 0;
 }
+
+ad7124dash8InfoPage::ad7124dash8InfoPage(QString uri, Preferences *prefPanel, PhoneHome *phoneHome,
+                                         struct iio_context *ctx, QWidget *parent) : InfoPage(uri, prefPanel, phoneHome,
+                                                                                              ctx, parent)
+{
+        qDebug() << "debug: building info page for ad7124";
+        setCalibrationInfoLabel(tr("Test string"));
+}
+
+ad7124dash8InfoPage::~ad7124dash8InfoPage() = default;

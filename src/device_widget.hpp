@@ -91,12 +91,20 @@ public:
 	~M2kDeviceWidget();
 };
 
+class ad7124dash8DeviceWidget : public DeviceWidget {
+        Q_OBJECT
+public:
+        explicit ad7124dash8DeviceWidget(QString uri, QString name, ToolLauncher *parent = nullptr);
+        ~ad7124dash8DeviceWidget() override;
+};
+
 class DeviceBuilder
 {
 public:
 	enum DeviceType {
 		GENERIC = 0,
 		M2K = 1,
+                ad7124dash8 = 2
 	};
 
 	static DeviceWidget* newDevice(DeviceType dev_type,
@@ -104,9 +112,10 @@ public:
 				       ToolLauncher *parent = nullptr)
 	{
 		switch (dev_type) {
-		case GENERIC: return new DeviceWidget(uri, name, parent);
-		case M2K: return new M2kDeviceWidget(uri, name, parent);
-		}
+		        case GENERIC: return new DeviceWidget(uri, name, parent);
+		        case M2K: return new M2kDeviceWidget(uri, name, parent);
+                        case ad7124dash8: return new ad7124dash8DeviceWidget(uri, name, parent);
+                }
 		return nullptr;
 	}
 };
