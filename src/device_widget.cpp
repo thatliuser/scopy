@@ -215,3 +215,19 @@ ad7124dash8DeviceWidget::ad7124dash8DeviceWidget(QString uri, QString name, Tool
 }
 
 ad7124dash8DeviceWidget::~ad7124dash8DeviceWidget() = default;
+
+SwiotWidget::SwiotWidget(QString uri, QString name, ToolLauncher *parent) : DeviceWidget(uri, name, parent) {
+        m_ui->name->setText(tr("SWIOT"));
+        m_infoPage = InfoPageBuilder::newPage(InfoPageBuilder::Swiot,
+                                              m_uri,
+                                              parent->getPrefPanel(),
+                                              parent->getPhoneHome(),
+                                              nullptr);
+
+        connect(m_infoPage->forgetDeviceButton(), SIGNAL(clicked(bool)),
+                this, SLOT(forgetDevice_clicked(bool)));
+        connect(m_infoPage->identifyDeviceButton(), SIGNAL(clicked(bool)),
+                this, SLOT(identifyDevice_clicked(bool)));
+}
+
+SwiotWidget::~SwiotWidget() = default;

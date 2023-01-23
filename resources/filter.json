@@ -9,6 +9,12 @@
 		"debugger": [ "ad7124-8" ]
 	},
 
+	"swiot": {
+		"compatible": [ "debugger", "datalogger" ],
+		"compatible-devices": [ "ad74413r", "max14906" ],
+		"debugger": [ "ad74413r", "max14906" ]
+	},
+
 	"FMComms2-4": {
 		"compatible": [ "debugger" ],
 		"compatible-devices": [ "cf-ad9361-lpc", "cf-ad9361-dds-core-lpc", "ad9361-phy" ],

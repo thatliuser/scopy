@@ -1,5 +1,11 @@
 <RCC>
     <qresource prefix="/">
+        <file>swiot/config.xml</file>
+        <file>swiot/runtime_a.xml</file>
+        <file>swiot/runtime_b.xml</file>
+        <file>swiot/runtime_c.xml</file>
+        <file>swiot/runtime_d.xml</file>
+        <!--    remove the files above / development testing only    -->
         <file>filter.json</file>
         <file>icon.ico</file>
         <file>m2k.html</file>

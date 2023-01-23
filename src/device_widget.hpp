@@ -98,13 +98,21 @@ public:
         ~ad7124dash8DeviceWidget() override;
 };
 
+class SwiotWidget : public DeviceWidget {
+        Q_OBJECT
+public:
+        explicit SwiotWidget(QString uri, QString name, ToolLauncher *parent = nullptr);
+        ~SwiotWidget() override;
+};
+
 class DeviceBuilder
 {
 public:
 	enum DeviceType {
 		GENERIC = 0,
 		M2K = 1,
-                ad7124dash8 = 2
+                ad7124dash8 = 2,
+                Swiot = 3
 	};
 
 	static DeviceWidget* newDevice(DeviceType dev_type,
@@ -115,6 +123,7 @@ public:
 		        case GENERIC: return new DeviceWidget(uri, name, parent);
 		        case M2K: return new M2kDeviceWidget(uri, name, parent);
                         case ad7124dash8: return new ad7124dash8DeviceWidget(uri, name, parent);
+                        case Swiot: return new SwiotWidget(uri, name, parent);
                 }
 		return nullptr;
 	}

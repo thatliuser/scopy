@@ -885,12 +885,15 @@ QPushButton *ToolLauncher::addContext(const QString& uri)
 
     // TODO: refactor here
 	DeviceWidget *deviceWidget = nullptr;
+        qDebug() << "Hw name is: " << tempFilter->hw_name();
 	if (tempFilter->hw_name().compare("M2K") == 0) {
 		deviceWidget = DeviceBuilder::newDevice(DeviceBuilder::M2K,
 							uri, tempFilter->hw_name(), this);
 	} else if (tempFilter->hw_name().compare("ad7124-8") == 0) {
                 deviceWidget = DeviceBuilder::newDevice(DeviceBuilder::ad7124dash8,
                                                         uri, tempFilter->hw_name(), this);
+        } else if (tempFilter->hw_name().compare("swiot") == 0) {
+                deviceWidget = DeviceBuilder::newDevice(DeviceBuilder::Swiot, uri, tempFilter->hw_name(), this);
         } else {
 		deviceWidget = DeviceBuilder::newDevice(DeviceBuilder::GENERIC,
 							uri, tempFilter->hw_name(), this);

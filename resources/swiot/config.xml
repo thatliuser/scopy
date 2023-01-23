@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE context [
+        <!ELEMENT context (device | context-attribute)*>
+        <!ELEMENT context-attribute EMPTY>
+        <!ELEMENT device (channel | attribute | debug-attribute | buffer-attribute)*>
+        <!ELEMENT channel (scan-element?, attribute*)>
+        <!ELEMENT attribute EMPTY>
+        <!ELEMENT scan-element EMPTY>
+        <!ELEMENT debug-attribute EMPTY>
+        <!ELEMENT buffer-attribute EMPTY>
+        <!ATTLIST context name CDATA #REQUIRED description CDATA #IMPLIED>
+        <!ATTLIST context-attribute name CDATA #REQUIRED value CDATA #REQUIRED>
+        <!ATTLIST device id CDATA #REQUIRED name CDATA #IMPLIED>
+        <!ATTLIST channel id CDATA #REQUIRED type (input|output) #REQUIRED name CDATA #IMPLIED>
+        <!ATTLIST scan-element index CDATA #REQUIRED format CDATA #REQUIRED scale CDATA #IMPLIED>
+        <!ATTLIST attribute name CDATA #REQUIRED filename CDATA #IMPLIED value CDATA #IMPLIED>
+        <!ATTLIST debug-attribute name CDATA #REQUIRED value CDATA #IMPLIED>
+        <!ATTLIST buffer-attribute name CDATA #REQUIRED value CDATA #IMPLIED>
+]>
+<context name="xml" description="no-OS analog 1.1.0-g0000000 #1 Tue Nov 26 09:52:32 IST 2019 armv7l">
+    <context-attribute name="no-OS" value="1.1.0-g0000000"/>
+    <device id="iio:device0" name="ad74413r">
+        <channel id="voltage0" name="config_ch0" type="input">
+            <attribute name="enabled" filename="in_voltage0_enabled" value="0"/>
+            <attribute name="function" filename="in_voltage0_function" value="voltage_out"/>
+            <attribute name="function_available" filename="function_available" value="high_z voltage_out current_out voltage_in current_in_ext current_in_loop resistance digital_input digital_input_loop current_in_ext_hart current_in_loop_hart"/>
+        </channel>
+        <channel id="voltage1" name="config_ch1" type="input">
+            <attribute name="enabled" filename="in_voltage1_enabled" value="0"/>
+            <attribute name="function" filename="in_voltage1_function" value="high_z"/>
+            <attribute name="function_available" filename="function_available" value="high_z voltage_out current_out voltage_in current_in_ext current_in_loop resistance digital_input digital_input_loop current_in_ext_hart current_in_loop_hart"/>
+        </channel>
+        <channel id="voltage2" name="config_ch2" type="input">
+            <attribute name="enabled" filename="in_voltage2_enabled" value="0"/>
+            <attribute name="function" filename="in_voltage2_function" value="high_z"/>
+            <attribute name="function_available" filename="function_available" value="high_z voltage_out current_out voltage_in current_in_ext current_in_loop resistance digital_input digital_input_loop current_in_ext_hart current_in_loop_hart"/>
+        </channel>
+        <channel id="voltage3" name="config_ch3" type="input">
+            <attribute name="enabled" filename="in_voltage3_enabled" value="0"/>
+            <attribute name="function" filename="in_voltage3_function" value="high_z"/>
+            <attribute name="function_available" filename="function_available" value="high_z voltage_out current_out voltage_in current_in_ext current_in_loop resistance digital_input digital_input_loop current_in_ext_hart current_in_loop_hart"/>
+        </channel>
+        <attribute name="apply" value="0"/>
+    </device>
+    <device id="iio:device1" name="max14906">
+        <channel id="voltage0" type="input">
+            <attribute name="direction" filename="in_voltage0_direction" value="in"/>
+            <attribute name="direction_available" filename="direction_available" value="in out"/>
+        </channel>
+        <channel id="voltage1" type="input">
+            <attribute name="direction" filename="in_voltage1_direction" value="in"/>
+            <attribute name="direction_available" filename="direction_available" value="in out"/>
+        </channel>
+        <channel id="voltage2" type="input">
+            <attribute name="direction" filename="in_voltage2_direction" value="in"/>
+            <attribute name="direction_available" filename="direction_available" value="in out"/>
+        </channel>
+        <channel id="voltage3" type="input">
+            <attribute name="direction" filename="in_voltage3_direction" value="in"/>
+            <attribute name="direction_available" filename="direction_available" value="in out"/>
+        </channel>
+        <attribute name="apply" value="0"/>
+    </device>
+</context>

@@ -621,3 +621,11 @@ ad7124dash8InfoPage::ad7124dash8InfoPage(QString uri, Preferences *prefPanel, Ph
 }
 
 ad7124dash8InfoPage::~ad7124dash8InfoPage() = default;
+
+SwiotInfoPage::SwiotInfoPage(QString uri, Preferences* prefPanel, PhoneHome* phoneHome,
+                             struct iio_context *ctx, QWidget *parent) : InfoPage(uri, prefPanel, phoneHome, ctx, parent) {
+        // TODO:
+        qDebug() << "debug: building info page for swiot";
+}
+
+SwiotInfoPage::~SwiotInfoPage() = default;
