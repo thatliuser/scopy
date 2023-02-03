@@ -1,0 +1,5 @@
+- Change PYTHONHOME when using MinGW GDB, otherwise Python fails to start since I have too many Pythons on this computer
+- Potentially revert to the v1.4.1 release? The newest release seems to be less crashy but I'm assuming it's the same underlying problem
+- Don't use LLDB, it has some bugs when reading MinGW DWARF files.
+- Could potentially set a breakpoint [here](https://github.com/analogdevicesinc/scopy/blob/master/src/network_analyzer.cpp#L1692).
+- Seems like it crashes in `libstdc++`, some container problem with GNUradio.
